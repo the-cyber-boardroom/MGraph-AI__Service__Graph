@@ -36,7 +36,7 @@ on:
         required: false
 
 env:
-  PACKAGE_NAME: 'mgraph_ai_service_graphs'
+  PACKAGE_NAME: 'mgraph_ai_service_graph'
 
 jobs:
   run-tests:
