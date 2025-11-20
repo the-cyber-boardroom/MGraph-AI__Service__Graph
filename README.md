@@ -5,4 +5,4 @@
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.116.1-009688)](https://fastapi.tiangolo.com/)
 [![AWS Lambda](https://img.shields.io/badge/AWS-Lambda-orange)](https://aws.amazon.com/lambda/)
 [![License](https://img.shields.io/badge/license-Apache%202.0-green)](LICENSE)
-[![CI Pipeline - DEV](https://github.com/the-cyber-boardroom/MGraph-AI__Service__Graph/actions/workflows/ci-pipeline__dev.yml/badge.svg)](https://github.com/the-cyber-boardroom/MGraph-AI__Service__Graphs/actions)
+[![CI Pipeline - DEV](https://github.com/the-cyber-boardroom/MGraph-AI__Service__Graph/actions/workflows/ci-pipeline__dev.yml/badge.svg)](https://github.com/the-cyber-boardroom/MGraph-AI__Service__Graph/actions)
