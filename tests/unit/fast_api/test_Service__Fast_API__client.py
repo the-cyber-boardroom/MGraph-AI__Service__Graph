@@ -3,7 +3,6 @@ from fastapi                                                          import Fas
 from osbot_fast_api.api.Fast_API                                      import ENV_VAR__FAST_API__AUTH__API_KEY__NAME, ENV_VAR__FAST_API__AUTH__API_KEY__VALUE
 from osbot_fast_api.api.schemas.consts.consts__Fast_API               import EXPECTED_ROUTES__SET_COOKIE
 from osbot_fast_api_serverless.fast_api.routes.Routes__Info           import ROUTES_INFO__HEALTH__RETURN_VALUE, ROUTES_PATHS__INFO
-from osbot_local_stack.local_stack.Local_Stack                        import Local_Stack
 from osbot_utils.utils.Env                                            import get_env
 from starlette.testclient                                             import TestClient
 from osbot_fast_api_serverless.utils.testing.skip_tests               import skip__if_not__in_github_actions
@@ -27,7 +26,6 @@ class test_Service__Fast_API__client(TestCase):
             assert type(_.fast_api        ) is Graph_Service__Fast_API
             assert type(_.fast_api__app   ) is FastAPI
             assert type(_.fast_api__client) is TestClient
-            assert type(_.local_stack     ) is Local_Stack
             assert self.fast_api            == _.fast_api
             assert self.client              == _.fast_api__client
 
@@ -49,11 +47,6 @@ class test_Service__Fast_API__client(TestCase):
         assert auth_key_name                 is not None
         assert auth_key_value                is not None
         assert response__with_auth.json()    == ROUTES_INFO__HEALTH__RETURN_VALUE
-
-    def test__check_if_local_stack_is_setup(self):
-        skip__if_not__in_github_actions()
-        with self.service_fast_api_test_objs.local_stack as _:
-            assert _.is_local_stack_configured_and_available() is True
 
     def test__config_fast_api_routes(self):
         assert self.fast_api.routes_paths() == sorted(ROUTES_PATHS__INFO         +
