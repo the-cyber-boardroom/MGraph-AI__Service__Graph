@@ -9,17 +9,17 @@ from mgraph_ai_service_graph.fast_api.Graph_Service__Fast_API           import G
 TEST_API_KEY__NAME = 'key-used-in-pytest'
 TEST_API_KEY__VALUE = Random_Guid()
 
-class Service__Fast_API__Test_Objs(Type_Safe):
+class Graph__Service__Fast_API__Test_Objs(Type_Safe):
     fast_api        : Graph_Service__Fast_API     = None
     fast_api__app   : FastAPI               = None
     fast_api__client: TestClient            = None
     setup_completed : bool                  = False
 
-service_fast_api_test_objs = Service__Fast_API__Test_Objs()
+graph_service_fast_api_test_objs = Graph__Service__Fast_API__Test_Objs()
 
-def setup__service_fast_api_test_objs():
-        with service_fast_api_test_objs as _:
-            if service_fast_api_test_objs.setup_completed is False:
+def setup__graph_service_fast_api_test_objs():
+        with graph_service_fast_api_test_objs as _:
+            if graph_service_fast_api_test_objs.setup_completed is False:
                 _.fast_api         = Graph_Service__Fast_API().setup()
                 _.fast_api__app    = _.fast_api.app()
                 _.fast_api__client = _.fast_api.client()
@@ -27,4 +27,4 @@ def setup__service_fast_api_test_objs():
 
                 set_env(ENV_VAR__FAST_API__AUTH__API_KEY__NAME , TEST_API_KEY__NAME)
                 set_env(ENV_VAR__FAST_API__AUTH__API_KEY__VALUE, TEST_API_KEY__VALUE)
-        return service_fast_api_test_objs
+        return graph_service_fast_api_test_objs
