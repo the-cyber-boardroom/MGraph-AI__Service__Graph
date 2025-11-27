@@ -74,9 +74,11 @@ class test_Area__Graph__Edit(TestCase):
             node_data = { Safe_Str__Key('name')  : Safe_Str__Text('test_node')  ,
                           Safe_Str__Key('value') : Safe_Str__Text('123')        }
             request   = Schema__Graph__Add_Node__Request(graph_id   = graph_id    ,
-                                                         node_type  = 'TestNode'  ,
+                                                         #node_type  = 'TestNode'  ,
                                                          node_data  = node_data   ,
                                                          auto_cache = True        )
+
+
             response = _.add_node(request)
 
             assert type(response)          is Schema__Graph__Add_Node__Response             # Verify response type
