@@ -39,20 +39,27 @@ class Area__Graph__CRUD(Type_Safe):                                         # Gr
                   request: Schema__Graph__Get__Request                     # Get request with graph_id and namespace
                  ) -> Schema__Graph__Get__Response:                        # Response with graph metadata and status
 
-
+        graph_id  = request.graph_id
+        cache_id  = request.cache_id
+        namespace = request.namespace
         # Retrieve graph from cache
-        mgraph = self.graph_service.cache_client.retrieve_graph(graph_id  = str(request.graph_id),
-                                                                namespace = request.namespace)
+        mgraph = self.graph_service.get_graph(cache_id = cache_id ,
+                                              graph_id = graph_id ,
+                                              namespace= namespace)
 
         # Get counts
-        node_count = len(list(mgraph.nodes()))
-        edge_count = len(list(mgraph.edges()))
+        success = False
 
-        return Schema__Graph__Get__Response(graph_id   = request.graph_id,
-                                            node_count = node_count      ,
-                                            edge_count = edge_count      ,
-                                            cached     = True            ,
-                                            cache_id   = request.graph_id)       # Using graph_id as cache_id
+        if mgraph:
+            success = True
+
+
+        return Schema__Graph__Get__Response(cache_id =  cache_id       ,
+                                            graph_id = request.graph_id,
+                                            mgraph   = mgraph          ,
+                                            #cached     = True         ,        # todo: see how we can figure out here if the value was cached
+                                            success = success          )
+
 
     @type_safe
     def delete_graph(self,                                                  # Delete a graph from cache

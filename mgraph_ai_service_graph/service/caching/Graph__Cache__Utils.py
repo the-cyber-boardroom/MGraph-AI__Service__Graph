@@ -31,10 +31,10 @@ class Graph__Cache__Utils(Type_Safe):
         return None
 
     def namespace__cache_hashes(self, namespace: Safe_Str__Id):
-        return self.cache_client.namespace().file_hashes(namespace=namespace)
+        return self.cache_client.namespace().cache_hashes(namespace=namespace)
 
     def namespace__cache_ids(self, namespace: Safe_Str__Id):
-        return self.cache_client.namespace().file_ids(namespace=namespace)
+        return self.cache_client.namespace().cache_ids(namespace=namespace)
 
     def namespaces(self):
         return self.cache_client.namespaces().list()

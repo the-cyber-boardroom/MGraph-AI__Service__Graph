@@ -1,3 +1,4 @@
+import inspect
 from typing                                                                                 import Dict
 from osbot_utils.type_safe.Type_Safe                                                        import Type_Safe
 from osbot_utils.type_safe.primitives.core.Safe_UInt                                        import Safe_UInt
@@ -9,7 +10,7 @@ from mgraph_ai_service_graph.service.areas.Area__Graph__CRUD                    
 from mgraph_ai_service_graph.service.areas.Area__Graph__Edit                                import Area__Graph__Edit
 from mgraph_ai_service_graph.service.areas.Area__Graph__Query                               import Area__Graph__Query
 
-import inspect
+
 
 class Graph__Batch__Executor(Type_Safe):                                  # Executes batch commands using enum-based method registry
     area_registry: Dict[Enum__Graph__Area, Type_Safe]                     # Registry mapping area enum → class instance

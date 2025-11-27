@@ -95,6 +95,5 @@ class Graph__Cache__Client(Type_Safe):                                   # Wrapp
     @type_safe
     def cache_id__refs(self, cache_id : Random_Guid        ,
                        namespace: Safe_Str__Id) -> Schema__Cache__File__Refs:
-        result = self.cache_client.retrieve().retrieve__cache_id__refs(cache_id  = cache_id ,
-                                                                       namespace = namespace)
-        return Schema__Cache__File__Refs.from_json(result)                      # todo: handle bug in current client retrieve__cache_id__refs, which doesn't return the correct type (which should be Schema__Cache__File__Refs)
+        return self.cache_client.retrieve().retrieve__cache_id__refs(cache_id  = cache_id ,
+                                                                     namespace = namespace)

@@ -17,8 +17,19 @@ class Graph__Service(Type_Safe):                                            # Ma
                     ) -> MGraph:                                            # Freshly initialized MGraph with no nodes or edges
         return MGraph()
 
+    def get_graph(self,                                                     # Retrieve existing graph from cache
+                  cache_id  : Random_Guid  = None  ,                        # Graph Cache_Id
+                  graph_id  : Obj_Id       = None  ,                        # Unique identifier for graph
+                  namespace : Safe_Str__Id = None                           # Cache namespace to search
+             ) -> MGraph:                                         # Existing graph from cache, or new empty graph
+
+        mgraph = self.graph_cache_client.retrieve_graph(cache_id  =cache_id  ,
+                                                        graph_id  = graph_id ,
+                                                        namespace = namespace)
+        return mgraph
+
     def get_or_create_graph(self,                                           # Retrieve existing graph from cache or create new one if not found
-                            graph_id  : Safe_Id             ,               # Unique identifier for graph
+                            graph_id  : Obj_Id             ,               # Unique identifier for graph
                             namespace : Safe_Str__Id = "graphs"      # Cache namespace to search
                        ) -> MGraph:                                         # Existing graph from cache, or new empty graph
 
