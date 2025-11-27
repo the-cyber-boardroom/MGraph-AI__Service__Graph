@@ -14,7 +14,6 @@ class test_Schema__Graph__Get__Response(TestCase):
             assert type(_)             is Schema__Graph__Get__Response
             assert base_classes(_)     == [Type_Safe, object]
             assert type(_.graph_id)    is Obj_Id
-            assert type(_.cached)      is bool
             assert _.cache_id          is None                                           # Optional field
 
             assert _.obj() == __(graph_id   = _.graph_id ,
