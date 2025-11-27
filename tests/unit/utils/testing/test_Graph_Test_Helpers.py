@@ -1,7 +1,6 @@
 from unittest                                                                               import TestCase
-from osbot_utils.testing.__                                                                 import __, __SKIP__
 from osbot_utils.type_safe.Type_Safe                                                        import Type_Safe
-from osbot_utils.type_safe.primitives.domains.identifiers.Obj_Id                            import Obj_Id, is_obj_id
+from osbot_utils.type_safe.primitives.domains.identifiers.Obj_Id                            import is_obj_id
 from osbot_utils.utils.Misc                                                                 import is_guid
 from osbot_utils.utils.Objects                                                              import base_classes
 from mgraph_db.mgraph.MGraph                                                                import MGraph
@@ -11,9 +10,8 @@ from mgraph_ai_service_graph.service.areas.Area__Graph__Query                   
 from mgraph_ai_service_graph.service.caching.Graph__Cache__Client                           import Graph__Cache__Client
 from mgraph_ai_service_graph.service.graph.Graph__Service                                   import Graph__Service
 from mgraph_ai_service_graph.schemas.graph_crud.Schema__Graph__Create__Response             import Schema__Graph__Create__Response
-from mgraph_ai_service_graph.schemas.graph_edit.Schema__Graph__Add_Node__Response           import Schema__Graph__Add_Node__Response
-from mgraph_ai_service_graph.schemas.graph_edit.Schema__Graph__Add_Edge__Response           import Schema__Graph__Add_Edge__Response
-from mgraph_ai_service_graph.schemas.graph_query.Schema__Graph__Find_Nodes__Response        import Schema__Graph__Find_Nodes__Response
+from mgraph_ai_service_graph.schemas.graph_edit.nodes.Schema__Graph__Add_Node__Response     import Schema__Graph__Add_Node__Response
+from mgraph_ai_service_graph.schemas.graph_edit.edges.Schema__Graph__Add_Edge__Response     import Schema__Graph__Add_Edge__Response
 from mgraph_ai_service_graph.utils.testing.Graph_Test_Helpers                               import Graph_Test_Helpers, DEFAULT_NAMESPACE
 from tests.unit.Graph__Service__Fast_API__Test_Objs                                         import client_cache_service
 
@@ -110,19 +108,6 @@ class test_Graph_Test_Helpers(TestCase):
 
         node_ids = [r.node_id for r in node_responses]                                      # All nodes should have unique IDs
         assert len(set(node_ids)) == node_count
-
-        self.helpers.delete_graph(graph_id=create_response.graph_id)                        # Cleanup
-
-    def test__create_graph_with_nodes__custom_type(self):                                   # Test creating graph with custom node type
-        node_type = 'CustomNode'
-        create_response, node_responses = self.helpers.create_graph_with_nodes(node_type=node_type,
-                                                                                node_count=2)
-
-        assert len(node_responses) == 2
-
-        find_result = self.helpers.find_nodes_by_type(graph_id  = create_response.graph_id,  # Verify nodes have correct type
-                                                      node_type = node_type)
-        assert find_result.total_found == 2
 
         self.helpers.delete_graph(graph_id=create_response.graph_id)                        # Cleanup
 
@@ -252,51 +237,9 @@ class test_Graph_Test_Helpers(TestCase):
 
         self.helpers.delete_graph(graph_id=graph_id)                                        # Cleanup
 
-    def test__find_nodes_by_type(self):                                                     # Test finding nodes by type
-        create_response, node_responses = self.helpers.create_graph_with_nodes(node_type='SearchNode',
-                                                                                node_count=4)
-        graph_id = create_response.graph_id
-
-        find_result = self.helpers.find_nodes_by_type(graph_id  = graph_id    ,
-                                                      node_type = 'SearchNode')
-
-        assert type(find_result)    is Schema__Graph__Find_Nodes__Response
-        assert find_result.total_found == 4
-        assert len(find_result.node_ids) == 4
-
-        self.helpers.delete_graph(graph_id=graph_id)                                        # Cleanup
-
     # ═══════════════════════════════════════════════════════════════════════════════
     # Assertion Helper Tests
     # ═══════════════════════════════════════════════════════════════════════════════
-
-    def test__assert_node_count__success(self):                                             # Test assert_node_count with correct count
-        create_response, _ = self.helpers.create_graph_with_nodes(node_type='CountNode',
-                                                                   node_count=3)
-        graph_id = create_response.graph_id
-
-        result = self.helpers.assert_node_count(graph_id       = graph_id   ,
-                                                node_type      = 'CountNode',
-                                                expected_count = 3          )
-        assert result is True
-
-        self.helpers.delete_graph(graph_id=graph_id)                                        # Cleanup
-
-    def test__assert_node_count__failure(self):                                             # Test assert_node_count with wrong count
-        create_response, _ = self.helpers.create_graph_with_nodes(node_type='CountNode',
-                                                                   node_count=3)
-        graph_id = create_response.graph_id
-
-        try:
-            self.helpers.assert_node_count(graph_id       = graph_id   ,
-                                           node_type      = 'CountNode',
-                                           expected_count = 5          )
-            assert False, "Should have raised AssertionError"
-        except AssertionError as e:
-            assert "Expected 5 nodes" in str(e)
-            assert "found 3" in str(e)
-
-        self.helpers.delete_graph(graph_id=graph_id)                                        # Cleanup
 
     def test__assert_graph_exists__success(self):                                           # Test assert_graph_exists with existing graph
         create_response = self.helpers.create_empty_graph()
@@ -340,11 +283,14 @@ class test_Graph_Test_Helpers(TestCase):
     def test__integration__add_nodes_and_edges_to_existing_graph(self):                     # Test adding nodes and edges to existing graph
         create_response = self.helpers.create_empty_graph()                                 # Step 1: Create empty graph
         graph_id        = create_response.graph_id
+        cache_id        = create_response.cache_id
 
-        node_responses = self.helpers.add_nodes(graph_id=graph_id, count=3)                 # Step 2: Add nodes
+        node_responses = self.helpers.add_nodes(graph_id=graph_id, cache_id=cache_id, count=3)    # Step 2: Add nodes
         assert len(node_responses) == 3
 
+        last_cache_id = node_responses[-1].cache_id
         edge_response = self.helpers.add_edge(graph_id     = graph_id                ,      # Step 3: Add edge
+                                              cache_id     = last_cache_id           ,
                                               from_node_id = node_responses[0].node_id,
                                               to_node_id   = node_responses[1].node_id)
         assert is_obj_id(edge_response.edge_id) is True

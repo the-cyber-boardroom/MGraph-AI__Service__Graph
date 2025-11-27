@@ -1,5 +1,5 @@
 from typing                                                                     import Type
-from mgraph_db.mgraph.schemas                                                   import Schema__MGraph__Node__Data
+from mgraph_db.mgraph.schemas.Schema__MGraph__Node__Data                        import Schema__MGraph__Node__Data
 from mgraph_db.mgraph.schemas.Schema__MGraph__Node                              import Schema__MGraph__Node
 from osbot_utils.type_safe.Type_Safe                                            import Type_Safe
 from osbot_utils.type_safe.primitives.domains.identifiers.Obj_Id                import Obj_Id
