@@ -209,7 +209,7 @@ class test_Area__Graph__CRUD(TestCase):
                 assert _.delete_graph(graph_id=graph_id_2, namespace=namespace) is False            # delete same graph_id should fail
 
 
-    def test__bug__get_graph(self):
+    def test_get_graph(self):
         with self.area_crud as _:
             create_request  =  Schema__Graph__Create__Request()
             create_response = _.create_graph(request=create_request)
@@ -222,16 +222,15 @@ class test_Area__Graph__CRUD(TestCase):
 
             assert type(get_response) is Schema__Graph__Get__Response
 
-            #assert get_response.mgraph.graph.model.data.graph_id == graph_id           # expected
-            assert get_response.mgraph.graph.model.data.graph_id != graph_id            # BUG
+            assert get_response.mgraph.graph.model.data.graph_id == graph_id           # expected
+
             assert get_response.obj() == __(cache_id=cache_id,
                                             graph_id=graph_id,
                                             mgraph=__(graph=__(domain_types=__(node_domain_type='mgraph_db.mgraph.domain.Domain__MGraph__Node.Domain__MGraph__Node',
                                                                               edge_domain_type='mgraph_db.mgraph.domain.Domain__MGraph__Edge.Domain__MGraph__Edge'),
                                                               model=__(data=__(edges=__(),
                                                                                graph_data = __(),
-                                                                               #graph_id   = graph_id,          # BUG
-                                                                               graph_id   = __SKIP__,           # BUG
+                                                                               graph_id   = graph_id,
                                                                                graph_type='mgraph_db.mgraph.schemas.Schema__MGraph__Graph.Schema__MGraph__Graph',
                                                                                nodes=__(),
                                                                                schema_types=__(edge_type='mgraph_db.mgraph.schemas.Schema__MGraph__Edge.Schema__MGraph__Edge',
@@ -246,3 +245,4 @@ class test_Area__Graph__CRUD(TestCase):
                                                      screenshot_class='mgraph_db.mgraph.actions.MGraph__Screenshot.MGraph__Screenshot'),
                                             success=True)
 
+            assert _.delete_graph(cache_id=cache_id, namespace=namespace) is True

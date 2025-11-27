@@ -1,5 +1,4 @@
-from typing import Tuple
-
+from typing                                                                                 import Tuple
 from fastapi                                                                                import FastAPI
 from mgraph_ai_service_cache.fast_api.Cache_Service__Fast_API                               import Cache_Service__Fast_API
 from mgraph_ai_service_cache.service.cache.Cache__Service                                   import Cache__Service

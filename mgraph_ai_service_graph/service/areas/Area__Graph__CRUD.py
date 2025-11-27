@@ -2,8 +2,7 @@ from osbot_utils.type_safe.Type_Safe                                            
 from osbot_utils.type_safe.primitives.domains.identifiers.Obj_Id                            import Obj_Id
 from osbot_utils.type_safe.primitives.domains.identifiers.Random_Guid                       import Random_Guid
 from osbot_utils.type_safe.primitives.domains.identifiers.safe_str.Safe_Str__Id             import Safe_Str__Id
-from osbot_utils.type_safe.type_safe_core.decorators.type_safe import type_safe
-
+from osbot_utils.type_safe.type_safe_core.decorators.type_safe                              import type_safe
 from mgraph_ai_service_graph.schemas.graph_crud.Schema__Graph__Create__Request              import Schema__Graph__Create__Request
 from mgraph_ai_service_graph.schemas.graph_crud.Schema__Graph__Create__Response             import Schema__Graph__Create__Response
 from mgraph_ai_service_graph.schemas.graph_crud.Schema__Graph__Get__Request                 import Schema__Graph__Get__Request
@@ -51,14 +50,15 @@ class Area__Graph__CRUD(Type_Safe):                                         # Gr
         success = False
 
         if mgraph:
-            success = True
+            success  = True
+            graph_id = mgraph.graph.graph_id()          # use the graph_id from the mgraph
 
 
-        return Schema__Graph__Get__Response(cache_id =  cache_id       ,
-                                            graph_id = request.graph_id,
-                                            mgraph   = mgraph          ,
+        return Schema__Graph__Get__Response(cache_id =  cache_id ,
+                                            graph_id = graph_id  ,
+                                            mgraph   = mgraph    ,
                                             #cached     = True         ,        # todo: see how we can figure out here if the value was cached
-                                            success = success          )
+                                            success = success    )
 
 
     @type_safe

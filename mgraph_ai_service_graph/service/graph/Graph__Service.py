@@ -3,7 +3,6 @@ from mgraph_db.mgraph.MGraph                                                    
 from osbot_utils.type_safe.Type_Safe                                             import Type_Safe
 from osbot_utils.type_safe.primitives.domains.identifiers.Obj_Id                 import Obj_Id
 from osbot_utils.type_safe.primitives.domains.identifiers.Random_Guid            import Random_Guid
-from osbot_utils.type_safe.primitives.domains.identifiers.Safe_Id                import Safe_Id
 from osbot_utils.type_safe.primitives.domains.identifiers.safe_str.Safe_Str__Id  import Safe_Str__Id
 from mgraph_ai_service_graph.service.caching.Graph__Cache__Client                import Graph__Cache__Client
 from osbot_utils.type_safe.type_safe_core.decorators.type_safe                   import type_safe
