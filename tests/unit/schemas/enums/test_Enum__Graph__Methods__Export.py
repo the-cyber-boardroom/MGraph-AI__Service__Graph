@@ -8,9 +8,7 @@ class test_Enum__Graph__Methods__Export(TestCase):
         assert Enum__Graph__Methods__Export.EXPORT_JSON    == "export_json"
         assert Enum__Graph__Methods__Export.EXPORT_DOT     == "export_dot"
         assert Enum__Graph__Methods__Export.EXPORT_MERMAID == "export_mermaid"
-        assert Enum__Graph__Methods__Export.IMPORT_JSON    == "import_json"
-        assert Enum__Graph__Methods__Export.IMPORT_DOT     == "import_dot"
-        assert Enum__Graph__Methods__Export.IMPORT_MERMAID == "import_mermaid"
+        assert Enum__Graph__Methods__Export.SCREENSHOT     == "screenshot"
 
     def test__is_string_enum(self):                                                      # Test enum is string-based
         assert issubclass(Enum__Graph__Methods__Export, str)
@@ -18,4 +16,4 @@ class test_Enum__Graph__Methods__Export(TestCase):
 
     def test__enum_count(self):                                                          # Test expected method count
         methods = list(Enum__Graph__Methods__Export)
-        assert len(methods) == 6
+        assert len(methods) == 4

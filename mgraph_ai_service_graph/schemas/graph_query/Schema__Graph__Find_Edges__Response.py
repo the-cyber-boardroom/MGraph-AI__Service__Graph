@@ -7,7 +7,7 @@ from mgraph_ai_service_graph.schemas.graph_query.Schema__Graph__Edge__Data      
 
 
 class Schema__Graph__Find_Edges__Response(Type_Safe):
-    graph_ref   : Schema__Graph__Ref            = None                          # Resolved reference
-    edge_type   : Safe_Str__Id                  = None                          # Edge type that was queried
-    edges       : List[Schema__Graph__Edge__Data] = None                        # Found edges
-    total_found : Safe_UInt                     = None                          # Total matches
+    graph_ref   : Schema__Graph__Ref              = None                          # Resolved reference
+    edge_type   : Safe_Str__Id                    = None                          # Edge type that was queried
+    edges       : List[Schema__Graph__Edge__Data]                                 # Found edges
+    total_found : Safe_UInt                                                       # Total matches

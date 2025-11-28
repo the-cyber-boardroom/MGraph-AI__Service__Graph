@@ -1,5 +1,6 @@
 from unittest                                                                            import TestCase
 from fastapi                                                                             import FastAPI
+from mgraph_ai_service_graph.fast_api.routes.Routes__Graph__Export import ROUTES_PATHS__GRAPH_EXPORT
 from osbot_fast_api.api.Fast_API                                                         import ENV_VAR__FAST_API__AUTH__API_KEY__NAME, ENV_VAR__FAST_API__AUTH__API_KEY__VALUE
 from osbot_fast_api.api.schemas.consts.consts__Fast_API                                  import EXPECTED_ROUTES__SET_COOKIE
 from osbot_fast_api_serverless.fast_api.routes.Routes__Info                              import ROUTES_INFO__HEALTH__RETURN_VALUE, ROUTES_PATHS__INFO
@@ -60,6 +61,7 @@ class test_Graph_Service__Fast_API__client(TestCase):
                                  ROUTES_PATHS__GRAPH_CRUD    +
                                  ROUTES_PATHS__GRAPH_EDIT    +
                                  ROUTES_PATHS__GRAPH_QUERY   +
+                                 ROUTES_PATHS__GRAPH_EXPORT  +
                                  ROUTES_PATHS__GRAPH_SERVER  )
 
         assert self.fast_api.routes_paths() == expected_routes

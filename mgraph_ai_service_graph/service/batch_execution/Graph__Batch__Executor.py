@@ -1,5 +1,6 @@
 import inspect
 from typing                                                                                 import Dict
+from mgraph_ai_service_graph.service.areas.Area__Graph__Export                              import Area__Graph__Export
 from osbot_utils.type_safe.Type_Safe                                                        import Type_Safe
 from osbot_utils.type_safe.primitives.core.Safe_UInt                                        import Safe_UInt
 from osbot_utils.type_safe.primitives.domains.common.safe_str.Safe_Str__Text                import Safe_Str__Text
@@ -26,9 +27,10 @@ class Graph__Batch__Executor(Type_Safe):                                  # Exec
                            # edit : Area__Graph__Edit ,
                            # query: Area__Graph__Query
                           ) -> 'Graph__Batch__Executor':                  # Self for chaining
-        self.area_registry[Enum__Graph__Area.GRAPH_CRUD ] = Area__Graph__CRUD ()
-        self.area_registry[Enum__Graph__Area.GRAPH_EDIT ] = Area__Graph__Edit ()
-        self.area_registry[Enum__Graph__Area.GRAPH_QUERY] = Area__Graph__Query()
+        self.area_registry[Enum__Graph__Area.GRAPH_CRUD  ] = Area__Graph__CRUD  ()
+        self.area_registry[Enum__Graph__Area.GRAPH_EDIT  ] = Area__Graph__Edit  ()
+        self.area_registry[Enum__Graph__Area.GRAPH_QUERY ] = Area__Graph__Query ()
+        self.area_registry[Enum__Graph__Area.GRAPH_EXPORT] = Area__Graph__Export()
         return self
 
     # todo: refactor this method into smaller components

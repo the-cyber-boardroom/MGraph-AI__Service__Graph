@@ -15,10 +15,11 @@ from typing                                                                     
 from osbot_utils.type_safe.Type_Safe                                                        import Type_Safe
 from osbot_utils.type_safe.type_safe_core.decorators.type_safe                              import type_safe
 from osbot_utils.type_safe.primitives.domains.identifiers.Obj_Id                            import Obj_Id
-from osbot_utils.type_safe.primitives.domains.identifiers.Random_Guid                       import Random_Guid
 from osbot_utils.type_safe.primitives.domains.identifiers.safe_str.Safe_Str__Key            import Safe_Str__Key
 from osbot_utils.type_safe.primitives.domains.common.safe_str.Safe_Str__Text                import Safe_Str__Text
 from osbot_utils.utils.Misc                                                                 import random_string
+from mgraph_ai_service_cache_client.schemas.cache.Cache_Id                                  import Cache_Id
+from mgraph_ai_service_graph.schemas.graph_ref.Schema__Graph__Ref                           import Schema__Graph__Ref
 from mgraph_ai_service_graph.schemas.graph_crud.Schema__Graph__Create__Request              import Schema__Graph__Create__Request
 from mgraph_ai_service_graph.schemas.graph_crud.Schema__Graph__Create__Response             import Schema__Graph__Create__Response
 from mgraph_ai_service_graph.schemas.graph_crud.Schema__Graph__Get__Request                 import Schema__Graph__Get__Request
@@ -29,11 +30,9 @@ from mgraph_ai_service_graph.schemas.graph_edit.edges.Schema__Graph__Add_Edge__R
 from mgraph_ai_service_graph.schemas.graph_edit.edges.Schema__Graph__Add_Edge__Response     import Schema__Graph__Add_Edge__Response
 from mgraph_ai_service_graph.schemas.graph_query.Schema__Graph__Find_Nodes__Request         import Schema__Graph__Find_Nodes__Request
 from mgraph_ai_service_graph.schemas.graph_query.Schema__Graph__Find_Nodes__Response        import Schema__Graph__Find_Nodes__Response
-from mgraph_ai_service_graph.schemas.graph_ref.Schema__Graph__Ref import Schema__Graph__Ref
 from mgraph_ai_service_graph.service.areas.Area__Graph__CRUD                                import Area__Graph__CRUD
 from mgraph_ai_service_graph.service.areas.Area__Graph__Edit                                import Area__Graph__Edit
 from mgraph_ai_service_graph.service.areas.Area__Graph__Query                               import Area__Graph__Query
-from mgraph_ai_service_graph.service.graph.Graph__Ref__Resolver import Graph__Ref__Resolver
 
 DEFAULT_NAMESPACE = 'test-graphs'
 
@@ -53,8 +52,9 @@ class Graph_Test_Helpers(Type_Safe):                # Helper methods to create a
                            namespace  : str  = DEFAULT_NAMESPACE,
                            auto_cache : bool = True
                           ) -> Schema__Graph__Create__Response:                             # Create an empty graph and return response
-        request = Schema__Graph__Create__Request(namespace  = namespace ,
-                                                 auto_cache = auto_cache)
+        graph_ref = Schema__Graph__Ref(namespace = namespace)
+        request   = Schema__Graph__Create__Request(graph_ref  = graph_ref ,
+                                                   auto_cache = auto_cache)
         return self.area_crud.create_graph(request)
 
     @type_safe
@@ -66,17 +66,14 @@ class Graph_Test_Helpers(Type_Safe):                # Helper methods to create a
                                ) -> Tuple[Schema__Graph__Create__Response, List[Schema__Graph__Add_Node__Response]]:
         create_response = self.create_empty_graph(namespace  = namespace ,                  # Create graph first
                                                   auto_cache = auto_cache)
-        graph_id        = create_response.graph_id
-        cache_id        = create_response.cache_id
+        graph_ref       = create_response.graph_ref                                         # Use the returned graph_ref
         node_responses  = []
 
         for i in range(node_count):                                                         # Add nodes
-            node_request = Schema__Graph__Add_Node__Request(graph_id   = graph_id  ,
-                                                            cache_id   = cache_id  ,
-                                                            namespace  = namespace ,
+            node_request = Schema__Graph__Add_Node__Request(graph_ref  = graph_ref ,
                                                             auto_cache = auto_cache)
             node_response = self.area_edit.add_node.add_node(node_request)
-            cache_id      = node_response.cache_id                                          # Update cache_id for next iteration
+            graph_ref     = node_response.graph_ref                                         # Update graph_ref for next iteration
             node_responses.append(node_response)
 
         return create_response, node_responses
@@ -93,21 +90,18 @@ class Graph_Test_Helpers(Type_Safe):                # Helper methods to create a
         create_response, node_responses = self.create_graph_with_nodes(namespace  = namespace  ,    # Create graph with nodes first
                                                                        node_count = node_count ,
                                                                        auto_cache = auto_cache )
-        graph_id       = create_response.graph_id
-        cache_id       = node_responses[-1].cache_id if node_responses else create_response.cache_id
+        graph_ref      = node_responses[-1].graph_ref if node_responses else create_response.graph_ref
         edge_responses = []
 
         for i in range(len(node_responses) - 1):                                            # Create chain of edges: node_0 -> node_1 -> node_2 -> ...
             from_node_id = node_responses[i].node_id
             to_node_id   = node_responses[i + 1].node_id
-            edge_request = Schema__Graph__Add_Edge__Request(graph_id     = graph_id     ,
-                                                            cache_id     = cache_id     ,
-                                                            namespace    = namespace    ,
+            edge_request = Schema__Graph__Add_Edge__Request(graph_ref    = graph_ref    ,
                                                             from_node_id = from_node_id ,
                                                             to_node_id   = to_node_id   ,
                                                             auto_cache   = auto_cache   )
             edge_response = self.area_edit.add_edge.add_edge(edge_request)
-            cache_id      = edge_response.cache_id
+            graph_ref     = edge_response.graph_ref
             edge_responses.append(edge_response)
 
         return create_response, node_responses, edge_responses
@@ -124,22 +118,19 @@ class Graph_Test_Helpers(Type_Safe):                # Helper methods to create a
         create_response, node_responses = self.create_graph_with_nodes(namespace  = namespace  ,    # Create fully connected graph (every node connects to every other node)
                                                                        node_count = node_count ,
                                                                        auto_cache = auto_cache )
-        graph_id       = create_response.graph_id
-        cache_id       = node_responses[-1].cache_id if node_responses else create_response.cache_id
+        graph_ref      = node_responses[-1].graph_ref if node_responses else create_response.graph_ref
         edge_responses = []
 
         for i in range(len(node_responses)):                                                # Connect every node to every other node
             for j in range(i + 1, len(node_responses)):
                 from_node_id = node_responses[i].node_id
                 to_node_id   = node_responses[j].node_id
-                edge_request = Schema__Graph__Add_Edge__Request(graph_id     = graph_id     ,
-                                                                cache_id     = cache_id     ,
-                                                                namespace    = namespace    ,
+                edge_request = Schema__Graph__Add_Edge__Request(graph_ref    = graph_ref    ,
                                                                 from_node_id = from_node_id ,
                                                                 to_node_id   = to_node_id   ,
                                                                 auto_cache   = auto_cache   )
                 edge_response = self.area_edit.add_edge.add_edge(edge_request)
-                cache_id      = edge_response.cache_id
+                graph_ref     = edge_response.graph_ref
                 edge_responses.append(edge_response)
 
         return create_response, node_responses, edge_responses
@@ -160,19 +151,16 @@ class Graph_Test_Helpers(Type_Safe):                # Helper methods to create a
 
         create_response = self.create_empty_graph(namespace  = namespace ,
                                                   auto_cache = auto_cache)
-        graph_id        = create_response.graph_id
-        cache_id        = create_response.cache_id
+        graph_ref       = create_response.graph_ref
         nodes_by_type   = {}
 
         for node_type, count in node_types.items():
             nodes_by_type[node_type] = []
             for i in range(count):
-                node_request = Schema__Graph__Add_Node__Request(graph_id   = graph_id  ,
-                                                                cache_id   = cache_id  ,
-                                                                namespace  = namespace ,
+                node_request = Schema__Graph__Add_Node__Request(graph_ref  = graph_ref ,
                                                                 auto_cache = auto_cache)
                 node_response = self.area_edit.add_node.add_node(node_request)
-                cache_id      = node_response.cache_id
+                graph_ref     = node_response.graph_ref
                 nodes_by_type[node_type].append(node_response)
 
         return create_response, nodes_by_type
@@ -191,8 +179,7 @@ class Graph_Test_Helpers(Type_Safe):                # Helper methods to create a
         create_response, node_responses = self.create_graph_with_nodes(namespace  = namespace ,
                                                                        node_count = 4        ,
                                                                        auto_cache = auto_cache)
-        graph_id      = create_response.graph_id
-        cache_id      = node_responses[-1].cache_id if node_responses else create_response.cache_id
+        graph_ref     = node_responses[-1].graph_ref if node_responses else create_response.graph_ref
         edges_by_type = {}
 
         for i, edge_type in enumerate(edge_types):                                          # Create one edge of each type
@@ -201,14 +188,12 @@ class Graph_Test_Helpers(Type_Safe):                # Helper methods to create a
             from_node_id = node_responses[from_idx].node_id
             to_node_id   = node_responses[to_idx].node_id
 
-            edge_request = Schema__Graph__Add_Edge__Request(graph_id     = graph_id     ,
-                                                            cache_id     = cache_id     ,
-                                                            namespace    = namespace    ,
+            edge_request = Schema__Graph__Add_Edge__Request(graph_ref    = graph_ref    ,
                                                             from_node_id = from_node_id ,
                                                             to_node_id   = to_node_id   ,
                                                             auto_cache   = auto_cache   )
             edge_response = self.area_edit.add_edge.add_edge(edge_request)
-            cache_id      = edge_response.cache_id
+            graph_ref     = edge_response.graph_ref
             edges_by_type[edge_type] = [edge_response]
 
         return create_response, node_responses, edges_by_type
@@ -219,36 +204,29 @@ class Graph_Test_Helpers(Type_Safe):                # Helper methods to create a
 
     @type_safe
     def add_node(self,
-                 graph_id   : Obj_Id                             ,
-                 node_type  : str                   = 'TestNode' ,
-                 node_data  : Dict[str, str]        = None       ,
-                 cache_id   : Random_Guid           = None       ,
-                 namespace  : str                   = DEFAULT_NAMESPACE,
+                 graph_ref  : Schema__Graph__Ref                     ,
+                 node_type  : str                   = 'TestNode'     ,
+                 node_data  : Dict[str, str]        = None           ,
                  auto_cache : bool                  = True
                 ) -> Schema__Graph__Add_Node__Response:                                     # Add a single node to an existing graph
-        node_request = Schema__Graph__Add_Node__Request(graph_id   = graph_id  ,
-                                                        cache_id   = cache_id  ,
-                                                        namespace  = namespace ,
+        node_request = Schema__Graph__Add_Node__Request(graph_ref  = graph_ref ,
                                                         auto_cache = auto_cache)
         return self.area_edit.add_node.add_node(node_request)
 
     @type_safe
     def add_nodes(self,
-                  graph_id   : Obj_Id                             ,
-                  count      : int      = 3                       ,
-                  node_type  : str      = 'TestNode'              ,
-                  cache_id   : Random_Guid = None                 ,
-                  namespace  : str      = DEFAULT_NAMESPACE       ,
+                  graph_ref  : Schema__Graph__Ref                     ,
+                  count      : int      = 3                           ,
+                  node_type  : str      = 'TestNode'                  ,
                   auto_cache : bool     = True
                  ) -> List[Schema__Graph__Add_Node__Response]:                              # Add multiple nodes to an existing graph
         responses = []
+        current_ref = graph_ref
         for i in range(count):
-            node_request = Schema__Graph__Add_Node__Request(graph_id   = graph_id  ,
-                                                            cache_id   = cache_id  ,
-                                                            namespace  = namespace ,
-                                                            auto_cache = auto_cache)
-            response  = self.area_edit.add_node.add_node(node_request)
-            cache_id  = response.cache_id                                                   # Update cache_id for next iteration
+            node_request = Schema__Graph__Add_Node__Request(graph_ref  = current_ref,
+                                                            auto_cache = auto_cache )
+            response    = self.area_edit.add_node.add_node(node_request)
+            current_ref = response.graph_ref                                                # Update graph_ref for next iteration
             responses.append(response)
         return responses
 
@@ -258,18 +236,14 @@ class Graph_Test_Helpers(Type_Safe):                # Helper methods to create a
 
     @type_safe
     def add_edge(self,
-                 graph_id     : Obj_Id                             ,
-                 from_node_id : Obj_Id                             ,
-                 to_node_id   : Obj_Id                             ,
-                 edge_type    : str                   = 'CONNECTS' ,
-                 edge_data    : Dict[str, str]        = None       ,
-                 cache_id     : Random_Guid           = None       ,
-                 namespace    : str                   = DEFAULT_NAMESPACE,
+                 graph_ref    : Schema__Graph__Ref                     ,
+                 from_node_id : Obj_Id                                 ,
+                 to_node_id   : Obj_Id                                 ,
+                 edge_type    : str                   = 'CONNECTS'     ,
+                 edge_data    : Dict[str, str]        = None           ,
                  auto_cache   : bool                  = True
                 ) -> Schema__Graph__Add_Edge__Response:                                     # Add a single edge between two nodes
-        edge_request = Schema__Graph__Add_Edge__Request(graph_id     = graph_id     ,
-                                                        cache_id     = cache_id     ,
-                                                        namespace    = namespace    ,
+        edge_request = Schema__Graph__Add_Edge__Request(graph_ref    = graph_ref    ,
                                                         from_node_id = from_node_id ,
                                                         to_node_id   = to_node_id   ,
                                                         auto_cache   = auto_cache   )
@@ -284,46 +258,50 @@ class Graph_Test_Helpers(Type_Safe):                # Helper methods to create a
                             graph_id  : Obj_Id                             ,
                             namespace : str        = DEFAULT_NAMESPACE
                            ) -> bool:                                                       # Verify a graph exists in cache
-        return self.area_crud.graph_exists(graph_id  = graph_id ,
-                                           namespace = namespace)
+        graph_ref = Schema__Graph__Ref(graph_id  = graph_id ,
+                                       namespace = namespace)
+        return self.area_crud.graph_exists(graph_ref = graph_ref)
 
     @type_safe
     def verify_graph_exists_by_cache_id(self,
-                                        cache_id  : Random_Guid                        ,
+                                        cache_id  : Cache_Id                           ,
                                         namespace : str         = DEFAULT_NAMESPACE
                                        ) -> bool:                                           # Verify a graph exists by cache_id
-        return self.area_crud.graph_exists(cache_id  = cache_id ,
-                                           namespace = namespace)
+        graph_ref = Schema__Graph__Ref(cache_id  = cache_id ,
+                                       namespace = namespace)
+        return self.area_crud.graph_exists(graph_ref = graph_ref)
 
     @type_safe
     def get_graph(self,
                   graph_id  : Obj_Id                             ,
                   namespace : str        = DEFAULT_NAMESPACE
                  ) -> Schema__Graph__Get__Response:                                         # Retrieve a graph
-        request = Schema__Graph__Get__Request(graph_id  = graph_id ,
-                                              namespace = namespace)
+        graph_ref = Schema__Graph__Ref(graph_id  = graph_id ,
+                                       namespace = namespace)
+        request   = Schema__Graph__Get__Request(graph_ref = graph_ref)
         return self.area_crud.get_graph(request)
 
     @type_safe
     def get_graph_by_cache_id(self,
-                              cache_id  : Random_Guid                        ,
+                              cache_id  : Cache_Id                           ,
                               namespace : str         = DEFAULT_NAMESPACE
                              ) -> Schema__Graph__Get__Response:                             # Retrieve a graph by cache_id
-        request = Schema__Graph__Get__Request(cache_id  = cache_id ,
-                                              namespace = namespace)
+        graph_ref = Schema__Graph__Ref(cache_id  = cache_id ,
+                                       namespace = namespace)
+        request   = Schema__Graph__Get__Request(graph_ref = graph_ref)
         return self.area_crud.get_graph(request)
 
     @type_safe
     def find_nodes_by_type(self,
-                           graph_id  : Obj_Id                             ,
-                           node_type : str                                ,
-                           limit     : int         = 100                  ,
+                           graph_ref : Schema__Graph__Ref                     ,
+                           node_type : str                                    ,
+                           limit     : int         = 100                      ,
                            offset    : int         = 0
                           ) -> Schema__Graph__Find_Nodes__Response:                         # Find nodes of a specific type
-        request = Schema__Graph__Find_Nodes__Request(graph_id  = graph_id  ,
-                                                     node_type = node_type ,
-                                                     limit     = limit     ,
-                                                     offset    = offset    )
+        request = Schema__Graph__Find_Nodes__Request(graph_ref = graph_ref,
+                                                     node_type = node_type,
+                                                     limit     = limit    ,
+                                                     offset    = offset   )
         return self.area_query.find_nodes_by_type(request)
 
     # ═══════════════════════════════════════════════════════════════════════════════
@@ -335,15 +313,17 @@ class Graph_Test_Helpers(Type_Safe):                # Helper methods to create a
                      graph_id  : Obj_Id                             ,
                      namespace : str        = DEFAULT_NAMESPACE
                     ) -> bool:                                                              # Delete a graph
-        graph_ref = Schema__Graph__Ref(graph_id = graph_id, namespace=namespace)
+        graph_ref = Schema__Graph__Ref(graph_id  = graph_id ,
+                                       namespace = namespace)
         return self.area_crud.delete_graph(graph_ref = graph_ref)
 
     @type_safe
     def delete_graph_by_cache_id(self,
-                                 cache_id  : Random_Guid                        ,
+                                 cache_id  : Cache_Id                           ,
                                  namespace : str         = DEFAULT_NAMESPACE
                                 ) -> bool:                                                  # Delete a graph by cache_id
-        graph_ref = Schema__Graph__Ref(cache_id = cache_id, namespace=namespace)
+        graph_ref = Schema__Graph__Ref(cache_id  = cache_id ,
+                                       namespace = namespace)
         return self.area_crud.delete_graph(graph_ref = graph_ref)
 
     # ═══════════════════════════════════════════════════════════════════════════════
@@ -368,13 +348,12 @@ class Graph_Test_Helpers(Type_Safe):                # Helper methods to create a
 
     @type_safe
     def assert_node_count(self,
-                          graph_id       : Obj_Id     ,
-                          node_type      : str        ,
-                          expected_count : int        ,
-                          namespace      : str        = DEFAULT_NAMESPACE
+                          graph_ref      : Schema__Graph__Ref     ,
+                          node_type      : str                    ,
+                          expected_count : int
                          ) -> bool:                                                         # Assert expected number of nodes of a type
-        result = self.find_nodes_by_type(graph_id  = graph_id  ,
-                                         node_type = node_type )
+        result = self.find_nodes_by_type(graph_ref = graph_ref,
+                                         node_type = node_type)
         actual_count = int(result.total_found)
         if actual_count != expected_count:
             raise AssertionError(f"Expected {expected_count} nodes of type '{node_type}', found {actual_count}")

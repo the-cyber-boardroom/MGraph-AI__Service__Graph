@@ -2,7 +2,6 @@ from typing                                                                     
 from mgraph_ai_service_cache_client.schemas.cache.Cache_Id                          import Cache_Id
 from mgraph_db.mgraph.MGraph                                                        import MGraph
 from osbot_utils.type_safe.Type_Safe                                                import Type_Safe
-from mgraph_ai_service_graph.exceptions.Graph__Ref__Conflict__Error                 import Graph__Ref__Conflict__Error
 from mgraph_ai_service_graph.exceptions.Graph__Ref__Not_Found__Error                import Graph__Ref__Not_Found__Error
 from mgraph_ai_service_graph.schemas.graph_ref.Schema__Graph__Ref                   import Schema__Graph__Ref
 from mgraph_ai_service_graph.service.caching.Graph__Cache__Client                   import Graph__Cache__Client
@@ -16,9 +15,9 @@ class Graph__Ref__Resolver(Type_Safe):                                          
                 graph_ref: Schema__Graph__Ref                                       # The reference to resolve
            ) -> Tuple[MGraph, Schema__Graph__Ref]:                                  # Returns (mgraph, resolved_ref with cache_id)
 
-        self._validate_ref(graph_ref)                                               # Step 1: Validate - raise if both cache_id and graph_id provided
+        #self._validate_ref(graph_ref)                                              # removed, since this was causing too many side effects, Step 1: Validate - raise if both cache_id and graph_id provided
 
-        if graph_ref.cache_id:                                                      # Step 2a: Resolve by cache_id (most efficient)
+        if graph_ref.cache_id:                                                      # (cache_id will take precedence in resolving the graph) Step 2a: Resolve by cache_id (most efficient)
             mgraph = self._resolve_by_cache_id(graph_ref)
             cache_id = graph_ref.cache_id
         elif graph_ref.graph_id:                                                    # Step 2b: Resolve by graph_id
@@ -31,15 +30,17 @@ class Graph__Ref__Resolver(Type_Safe):                                          
                                                 namespace = graph_ref.namespace    )
         return mgraph, resolved_ref
 
-    def _validate_ref(self,                                                         # Validate graph_ref - raise if conflicting identifiers
-                      graph_ref: Schema__Graph__Ref
-                     ) -> None:
-
-        if graph_ref.cache_id and graph_ref.graph_id:
-            raise Graph__Ref__Conflict__Error(
-                details = dict(cache_id  = graph_ref.cache_id  ,
-                               graph_id  = graph_ref.graph_id  ,
-                               namespace = graph_ref.namespace))
+    # note : this was removed, since although it makes sense to only want one of these values (graph_id or cache_id)
+    #        in practice this would require the caller to always have to remove the graph_id from the graph_ref received from the previous call
+    # def _validate_ref(self,                                                         # Validate graph_ref - raise if conflicting identifiers
+    #                   graph_ref: Schema__Graph__Ref
+    #                  ) -> None:
+    #
+    #     if graph_ref.cache_id and graph_ref.graph_id:
+    #         raise Graph__Ref__Conflict__Error(
+    #             details = dict(cache_id  = graph_ref.cache_id  ,
+    #                            graph_id  = graph_ref.graph_id  ,
+    #                            namespace = graph_ref.namespace))
 
     def _resolve_by_cache_id(self,                                                  # Retrieve graph directly by cache_id
                              graph_ref: Schema__Graph__Ref

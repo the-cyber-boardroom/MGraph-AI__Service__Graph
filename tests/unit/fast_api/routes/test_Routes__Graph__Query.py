@@ -28,10 +28,10 @@ class test_Routes__Graph__Query(TestCase):
         assert TAG__ROUTES_GRAPH_QUERY == 'graph-query'
 
     def test__routes_paths_constant(self):                                                  # Test routes paths constant
-        assert ROUTES_PATHS__GRAPH_QUERY == [ '/graph-query/find/nodes'                        ,
-                                              '/graph-query/find/node/{graph_id}/{node_id}'    ,
-                                              '/graph-query/find/edges/{graph_id}/{edge_type}' ,
-                                              '/graph-query/neighbors/{graph_id}/{node_id}'    ]
+        assert ROUTES_PATHS__GRAPH_QUERY == [ '/graph-query/find/nodes',
+                                              '/graph-query/find/node',
+                                              '/graph-query/find/edges',
+                                              '/graph-query/neighbors']
 
     def test__area_dependency(self):                                                        # Test area class is injected
         with Routes__Graph__Query() as _:
@@ -50,45 +50,6 @@ class test_Routes__Graph__Query(TestCase):
             assert params[0].name        == 'request'
             assert params[0].annotation  == Schema__Graph__Find_Nodes__Request
             assert sig.return_annotation == Schema__Graph__Find_Nodes__Response
-
-    def test__find_node_method_signature(self):                                             # Test find__node__graph_id__node_id method exists
-        with Routes__Graph__Query() as _:
-            assert hasattr(_, 'find__node__graph_id__node_id')
-            assert callable(_.find__node__graph_id__node_id)
-
-            import inspect
-            sig    = inspect.signature(_.find__node__graph_id__node_id)
-            params = list(sig.parameters.values())
-            assert len(params)           == 2
-            assert params[0].name        == 'graph_id'
-            assert params[1].name        == 'node_id'
-            assert sig.return_annotation == Schema__Graph__Find_Node__Response
-
-    def test__find_edges_method_signature(self):                                            # Test find__edges__graph_id__edge_type method exists
-        with Routes__Graph__Query() as _:
-            assert hasattr(_, 'find__edges__graph_id__edge_type')
-            assert callable(_.find__edges__graph_id__edge_type)
-
-            import inspect
-            sig    = inspect.signature(_.find__edges__graph_id__edge_type)
-            params = list(sig.parameters.values())
-            assert len(params)           == 2
-            assert params[0].name        == 'graph_id'
-            assert params[1].name        == 'edge_type'
-            assert sig.return_annotation == Schema__Graph__Find_Edges__Response
-
-    def test__neighbors_method_signature(self):                                             # Test neighbors__graph_id__node_id method exists
-        with Routes__Graph__Query() as _:
-            assert hasattr(_, 'neighbors__graph_id__node_id')
-            assert callable(_.neighbors__graph_id__node_id)
-
-            import inspect
-            sig    = inspect.signature(_.neighbors__graph_id__node_id)
-            params = list(sig.parameters.values())
-            assert len(params)           == 2
-            assert params[0].name        == 'graph_id'
-            assert params[1].name        == 'node_id'
-            assert sig.return_annotation == Schema__Graph__Neighbors__Response
 
     def test__setup_routes(self):                                                           # Test setup_routes method
         with Routes__Graph__Query() as _:

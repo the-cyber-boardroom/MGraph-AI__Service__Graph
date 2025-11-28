@@ -1,8 +1,10 @@
 from unittest                                                                                                   import TestCase
 from fastapi                                                                                                    import FastAPI
+from mgraph_ai_service_graph.fast_api.routes.Routes__Graph__Export import Routes__Graph__Export
 from osbot_utils.testing.Pytest                                                                                 import skip_if_in_github_action
 from osbot_utils.testing.__helpers                                                                              import obj
 from mgraph_ai_service_graph.fast_api.routes.Routes__Graph__Server                                              import Routes__Graph__Server
+from mgraph_ai_service_graph.schemas.graph_ref.Schema__Graph__Ref import Schema__Graph__Ref
 from mgraph_db.mgraph.MGraph                                                                                    import MGraph
 from starlette.testclient                                                                                       import TestClient
 from mgraph_ai_service_cache_client.utils.Version                                                               import version__mgraph_ai_service_cache_client
@@ -91,14 +93,16 @@ class test_Graph_Service__Fast_API__local_cache_server(TestCase):
                                                      Routes__Graph__Edit ,
                                                      Routes__Graph__Query,
                                                      Routes__Graph__Batch,
+                                                     Routes__Graph__Export,
                                                      Routes__Graph__Server ,]
-            assert _.routes_classes.keys().obj() == [ 'osbot_fast_api_serverless.fast_api.routes.Routes__Info.Routes__Info',
-                                                      'osbot_fast_api.api.routes.Routes__Set_Cookie.Routes__Set_Cookie',
-                                                      'mgraph_ai_service_graph.fast_api.routes.Routes__Graph__CRUD.Routes__Graph__CRUD',
-                                                      'mgraph_ai_service_graph.fast_api.routes.Routes__Graph__Edit.Routes__Graph__Edit',
-                                                      'mgraph_ai_service_graph.fast_api.routes.Routes__Graph__Query.Routes__Graph__Query',
-                                                      'mgraph_ai_service_graph.fast_api.routes.Routes__Graph__Batch.Routes__Graph__Batch',
-                                                      'mgraph_ai_service_graph.fast_api.routes.Routes__Graph__Server.Routes__Graph__Server']
+            assert _.routes_classes.keys().obj() == [ 'osbot_fast_api_serverless.fast_api.routes.Routes__Info.Routes__Info'                 ,
+                                                      'osbot_fast_api.api.routes.Routes__Set_Cookie.Routes__Set_Cookie'                     ,
+                                                      'mgraph_ai_service_graph.fast_api.routes.Routes__Graph__CRUD.Routes__Graph__CRUD'     ,
+                                                      'mgraph_ai_service_graph.fast_api.routes.Routes__Graph__Edit.Routes__Graph__Edit'     ,
+                                                      'mgraph_ai_service_graph.fast_api.routes.Routes__Graph__Query.Routes__Graph__Query'   ,
+                                                      'mgraph_ai_service_graph.fast_api.routes.Routes__Graph__Batch.Routes__Graph__Batch'   ,
+                                                      'mgraph_ai_service_graph.fast_api.routes.Routes__Graph__Export.Routes__Graph__Export' ,
+                                                      'mgraph_ai_service_graph.fast_api.routes.Routes__Graph__Server.Routes__Graph__Server' ]
 
             routes_graph_crud = _.routes_classes[Routes__Graph__CRUD]
             assert type(routes_graph_crud                                           ) == Routes__Graph__CRUD
@@ -129,19 +133,21 @@ class test_Graph_Service__Fast_API__local_cache_server(TestCase):
             namespace  = random_text('an-namespace')
             with self.graph_service.client() as _:
                 assert type(_) is TestClient
+                graph_ref      = Schema__Graph__Ref(namespace=namespace, cache_id = '', graph_id = '')
                 create_request = Schema__Graph__Create__Request(graph_name = graph_name,
-                                                                namespace  = namespace )
+                                                                graph_ref  = graph_ref  )
                 post_data      = create_request.json()
                 response = _.post(url     = '/graph-crud/create',
                                   headers = self.auth_headers   ,
                                   json    = post_data           )
                 create_response = Schema__Graph__Create__Response.from_json(response.json())
-                cache_id        = create_response.cache_id
-                graph_id        = create_response.graph_id
+
+                cache_id        = create_response.graph_ref.cache_id
+                graph_id        = create_response.graph_ref.graph_id
                 assert response.status_code  == 200
-                assert create_response.obj() == __(cache_id        = cache_id ,
-                                                   cache_namespace = namespace,
-                                                   graph_id        = graph_id ,
+                assert create_response.obj() == __(graph_ref=__(cache_id  = cache_id ,
+                                                                graph_id  = graph_id ,
+                                                                namespace = namespace),
                                                    cached          = True     )
 
             assert graph_cache_client.cache_client.config.obj() == __( base_url         = self.cache_server_url,                    # after the first request these values should be set correctly
@@ -161,7 +167,7 @@ class test_Graph_Service__Fast_API__local_cache_server(TestCase):
 
             retrieve                                 = _.retrieve().retrieve__cache_id(cache_id= cache_id, namespace= namespace)
             default_mgraph                           = MGraph()
-            default_mgraph.graph.model.data.graph_id = Obj_Id(graph_id)
+            default_mgraph.graph.model.data.graph_id = Obj_Id(str(graph_id))
             default_mgraph_data                      = obj(default_mgraph.json__compress())     # we need to use the compressed version of the .json serialisation (since that is how the graphs are stored)
             expected_retrieve_data                   = __( data     = default_mgraph_data,
                                                            metadata = __(cache_id         = cache_id,

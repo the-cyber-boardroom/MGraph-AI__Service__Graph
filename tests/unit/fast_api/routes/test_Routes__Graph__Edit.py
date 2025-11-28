@@ -8,12 +8,10 @@ from mgraph_ai_service_graph.fast_api.routes.Routes__Graph__Edit                
 from mgraph_ai_service_graph.schemas.graph_edit.nodes.Schema__Graph__Add_Node__Request              import Schema__Graph__Add_Node__Request
 from mgraph_ai_service_graph.schemas.graph_edit.nodes.Schema__Graph__Add_Node__Response             import Schema__Graph__Add_Node__Response
 from mgraph_ai_service_graph.schemas.graph_edit.nodes.Schema__Graph__Add_Node__Typed__Request       import Schema__Graph__Add_Node__Typed__Request
-from mgraph_ai_service_graph.schemas.graph_edit.nodes.Schema__Graph__Delete_Node__Response          import Schema__Graph__Delete_Node__Response
 from mgraph_ai_service_graph.schemas.graph_edit.edges.Schema__Graph__Add_Edge__Request              import Schema__Graph__Add_Edge__Request
 from mgraph_ai_service_graph.schemas.graph_edit.edges.Schema__Graph__Add_Edge__Response             import Schema__Graph__Add_Edge__Response
 from mgraph_ai_service_graph.schemas.graph_edit.edges.Schema__Graph__Add_Edge__Typed__Request       import Schema__Graph__Add_Edge__Typed__Request
 from mgraph_ai_service_graph.schemas.graph_edit.edges.Schema__Graph__Add_Edge__Predicate__Request   import Schema__Graph__Add_Edge__Predicate__Request
-from mgraph_ai_service_graph.schemas.graph_edit.edges.Schema__Graph__Delete_Edge__Response          import Schema__Graph__Delete_Edge__Response
 from mgraph_ai_service_graph.schemas.graph_edit.values.Schema__Graph__Add_Value__Request            import Schema__Graph__Add_Value__Request
 from mgraph_ai_service_graph.schemas.graph_edit.values.Schema__Graph__Add_Value__Response           import Schema__Graph__Add_Value__Response
 from mgraph_ai_service_graph.service.areas.Area__Graph__Edit                                        import Area__Graph__Edit
@@ -167,33 +165,6 @@ class test_Routes__Graph__Edit(TestCase):
     # Delete Route Method Signature Tests
     # ═══════════════════════════════════════════════════════════════════════════════
 
-    def test__delete_node_method_signature(self):                                           # Test delete__node__graph_id__node_id method exists
-        with Routes__Graph__Edit() as _:
-            assert hasattr(_, 'delete__node__graph_id__node_id')
-            assert callable(_.delete__node__graph_id__node_id)
-
-            import inspect
-            sig    = inspect.signature(_.delete__node__graph_id__node_id)
-            params = list(sig.parameters.values())
-            assert len(params)           == 3
-            assert params[0].name        == 'graph_id'
-            assert params[1].name        == 'node_id'
-            assert params[2].name        == 'namespace'
-            assert sig.return_annotation == Schema__Graph__Delete_Node__Response
-
-    def test__delete_edge_method_signature(self):                                           # Test delete__edge__graph_id__edge_id method exists
-        with Routes__Graph__Edit() as _:
-            assert hasattr(_, 'delete__edge__graph_id__edge_id')
-            assert callable(_.delete__edge__graph_id__edge_id)
-
-            import inspect
-            sig    = inspect.signature(_.delete__edge__graph_id__edge_id)
-            params = list(sig.parameters.values())
-            assert len(params)           == 3
-            assert params[0].name        == 'graph_id'
-            assert params[1].name        == 'edge_id'
-            assert params[2].name        == 'namespace'
-            assert sig.return_annotation == Schema__Graph__Delete_Edge__Response
 
     def test__setup_routes(self):                                                           # Test setup_routes method
         from fastapi import FastAPI

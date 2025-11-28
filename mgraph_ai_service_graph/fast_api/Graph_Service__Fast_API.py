@@ -1,4 +1,5 @@
 from typing                                                                                 import Dict, Type
+from mgraph_ai_service_graph.fast_api.routes.Routes__Graph__Export                          import Routes__Graph__Export
 from osbot_fast_api.api.routes.Fast_API__Routes                                             import Fast_API__Routes
 from osbot_fast_api.api.routes.Routes__Set_Cookie                                           import Routes__Set_Cookie
 from osbot_fast_api_serverless.fast_api.Serverless__Fast_API                                import Serverless__Fast_API
@@ -33,6 +34,7 @@ class Graph_Service__Fast_API(Serverless__Fast_API):                            
         self.add_routes(Routes__Graph__Edit  )                                              # Graph edit operations
         self.add_routes(Routes__Graph__Query )                                              # Graph query operations
         self.add_routes(Routes__Graph__Batch )                                              # Batch execution
+        self.add_routes(Routes__Graph__Export)                                              # Graph export
         self.add_routes(Routes__Graph__Server)                                              # Server details and stats
 
     def setup_exception_handlers(self):                                             # Register global exception handlers
