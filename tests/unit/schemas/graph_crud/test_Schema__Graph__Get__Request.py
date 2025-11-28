@@ -1,3 +1,4 @@
+from types                                                                                  import NoneType
 from unittest                                                                               import TestCase
 from osbot_utils.testing.__                                                                 import __
 from osbot_utils.type_safe.Type_Safe                                                        import Type_Safe
@@ -19,15 +20,15 @@ class test_Schema__Graph__Get__Request(TestCase):
         with Schema__Graph__Get__Request() as _:
             assert type(_)           is Schema__Graph__Get__Request
             assert base_classes(_)   == [Type_Safe, object]
-            assert type(_.graph_ref) is Schema__Graph__Ref                                                  # Optional until set
+            assert type(_.graph_ref) is NoneType                                                  # Optional until set
 
     def test__init__field_types(self):                                                      # Test field types at initialization
         with Schema__Graph__Get__Request() as _:
-            assert type(_.graph_ref) is Schema__Graph__Ref
+            assert type(_.graph_ref) is NoneType
 
     def test__init__obj_comparison(self):                                                   # Test .obj() with default values
         with Schema__Graph__Get__Request() as _:
-            assert _.obj() == __(graph_ref=__(cache_id='', graph_id=Graph_Id(''), namespace='graph-service'))
+            assert _.obj() == __(graph_ref=None)
 
     # ═══════════════════════════════════════════════════════════════════════════════
     # Value Assignment Tests
@@ -97,7 +98,7 @@ class test_Schema__Graph__Get__Request(TestCase):
             json_data = original.json()
 
             with Schema__Graph__Get__Request.from_json(json_data) as restored:
-                assert restored.graph_ref.obj() == original.graph_ref.obj()
+                assert restored.obj() == original.obj()
 
     def test__serialization_round_trip__with_graph_id(self):                                # Test JSON round-trip with graph_id
         graph_ref = Schema__Graph__Ref(graph_id  = Graph_Id()  ,
