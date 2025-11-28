@@ -1,4 +1,6 @@
 from typing                                                                      import Dict
+
+from mgraph_ai_service_graph.service.graph.Graph__Ref__Resolver                  import Graph__Ref__Resolver
 from mgraph_db.mgraph.MGraph                                                     import MGraph
 from osbot_utils.type_safe.Type_Safe                                             import Type_Safe
 from osbot_utils.type_safe.primitives.domains.identifiers.Obj_Id                 import Obj_Id
@@ -10,7 +12,13 @@ from osbot_utils.type_safe.type_safe_core.decorators.type_safe                  
 # todo: rename all this from Graph to MGraph (including methods) , since we at this level we are dealing with MGraph objects
 class Graph__Service(Type_Safe):                                            # Main orchestration service for graph operations
 
-    graph_cache_client: Graph__Cache__Client                                      # Injected cache client for storage and retrieval
+    graph_cache_client : Graph__Cache__Client                                      # Injected cache client for storage and retrieval
+    graph_ref_resolver : Graph__Ref__Resolver = None
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)                                                                        # this will create a new instance of Graph__Ref__Resolver (if it has not been provided)
+        self.graph_ref_resolver = Graph__Ref__Resolver(graph_cache_client = self.graph_cache_client)      # Initialize resolver with same cache client |  todo: see if there is a better way to do this (without needing to have this code in the __init_()
+
 
     def create_new_graph(self                                               # Create a new empty MGraph instance
                     ) -> MGraph:                                            # Freshly initialized MGraph with no nodes or edges

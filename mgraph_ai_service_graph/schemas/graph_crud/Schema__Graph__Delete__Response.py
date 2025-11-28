@@ -1,11 +1,7 @@
-from osbot_utils.type_safe.Type_Safe                                                        import Type_Safe
-from osbot_utils.type_safe.primitives.domains.identifiers.Obj_Id                            import Obj_Id
-from osbot_utils.type_safe.primitives.domains.identifiers.Random_Guid                       import Random_Guid
-from osbot_utils.type_safe.primitives.domains.identifiers.safe_str.Safe_Str__Id             import Safe_Str__Id
+from osbot_utils.type_safe.Type_Safe                                            import Type_Safe
+from mgraph_ai_service_graph.schemas.graph_ref.Schema__Graph__Ref               import Schema__Graph__Ref
 
 
-class Schema__Graph__Delete__Response(Type_Safe):                                           # Response for graph deletion operations
-    graph_id  : Obj_Id          = None                                                      # Graph that was deleted
-    cache_id  : Random_Guid     = None                                                      # Cache ID if applicable
-    namespace : Safe_Str__Id    = None                                                      # Cache namespace
-    deleted   : bool            = False                                                     # Whether deletion succeeded
+class Schema__Graph__Delete__Response(Type_Safe):
+    graph_ref : Schema__Graph__Ref          = None                              # Reference to deleted graph
+    deleted   : bool                        = False                             # Whether deletion succeeded
