@@ -47,7 +47,8 @@ class test_Schema__Graph__Get__Response(TestCase):
         graph_ref = Schema__Graph__Ref(graph_id  = graph_id       ,
                                        cache_id  = cache_id       ,
                                        namespace = 'test-namespace')
-        mgraph    = MGraph()
+        #mgraph    = MGraph()
+        mgraph    = MGraph().json()
 
         with Schema__Graph__Get__Response(graph_ref = graph_ref,
                                           mgraph    = mgraph   ,
@@ -56,7 +57,8 @@ class test_Schema__Graph__Get__Response(TestCase):
             assert _.graph_ref.cache_id  == cache_id
             assert _.graph_ref.namespace == 'test-namespace'
             assert _.mgraph              is not None
-            assert type(_.mgraph)        is MGraph
+            #assert type(_.mgraph)        is MGraph
+            assert type(_.mgraph)        is dict
             assert _.success             is True
 
     def test__with_graph_ref__success_false(self):                                          # Test failed graph retrieval (not found)
@@ -75,7 +77,8 @@ class test_Schema__Graph__Get__Response(TestCase):
         cache_id  = Cache_Id()
         graph_ref = Schema__Graph__Ref(cache_id  = cache_id ,
                                        namespace = 'cache-ns')
-        mgraph    = MGraph()
+        #mgraph    = MGraph()
+        mgraph    = MGraph().json()
 
         with Schema__Graph__Get__Response(graph_ref = graph_ref,
                                           mgraph    = mgraph   ,
@@ -88,7 +91,8 @@ class test_Schema__Graph__Get__Response(TestCase):
         graph_id  = Graph_Id()
         graph_ref = Schema__Graph__Ref(graph_id  = graph_id  ,
                                        namespace = 'graph-ns')
-        mgraph    = MGraph()
+        #mgraph    = MGraph()
+        mgraph    = MGraph().json()
 
         with Schema__Graph__Get__Response(graph_ref = graph_ref,
                                           mgraph    = mgraph   ,
@@ -107,7 +111,7 @@ class test_Schema__Graph__Get__Response(TestCase):
         graph_ref = Schema__Graph__Ref(graph_id  = graph_id ,
                                        cache_id  = cache_id ,
                                        namespace = 'type-ns')
-        mgraph    = MGraph()
+        mgraph    = MGraph().json()
 
         with Schema__Graph__Get__Response(graph_ref = graph_ref,
                                           mgraph    = mgraph   ,
@@ -116,15 +120,18 @@ class test_Schema__Graph__Get__Response(TestCase):
             assert type(_.graph_ref.graph_id)  is Graph_Id
             assert type(_.graph_ref.cache_id)  is Cache_Id
             assert type(_.graph_ref.namespace) is Safe_Str__Id
-            assert type(_.mgraph)              is MGraph
+            #assert type(_.mgraph)              is MGraph
+            assert type(_.mgraph)              is dict
             assert type(_.success)             is bool
 
     def test__mgraph_type(self):                                                            # Test MGraph type specifically
-        mgraph = MGraph()
+        #mgraph = MGraph()
+        mgraph    = MGraph().json()
 
         with Schema__Graph__Get__Response(mgraph  = mgraph,
                                           success = True  ) as _:
-            assert type(_.mgraph) is MGraph
+            #assert type(_.mgraph) is MGraph
+            assert type(_.mgraph) is dict
             assert _.mgraph       is mgraph                                                 # Same instance
 
     # ═══════════════════════════════════════════════════════════════════════════════
@@ -202,7 +209,8 @@ class test_Schema__Graph__Get__Response(TestCase):
 
     def test__success_false_with_mgraph(self):                                              # Edge case: success=False but mgraph set (shouldn't happen in practice)
         graph_ref = Schema__Graph__Ref(graph_id = Graph_Id())
-        mgraph    = MGraph()
+        #mgraph    = MGraph()
+        mgraph    = MGraph().json()
 
         with Schema__Graph__Get__Response(graph_ref = graph_ref,
                                           mgraph    = mgraph   ,
@@ -216,11 +224,11 @@ class test_Schema__Graph__Get__Response(TestCase):
 
     def test__mgraph_is_usable(self):                                                       # Test that returned MGraph is functional
         graph_ref = Schema__Graph__Ref(graph_id = Graph_Id())
-        mgraph    = MGraph()
+        #mgraph    = MGraph()
+        mgraph    = MGraph().json()
 
         with Schema__Graph__Get__Response(graph_ref = graph_ref,
                                           mgraph    = mgraph   ,
                                           success   = True     ) as _:
-            assert _.mgraph is not None
-            assert hasattr(_.mgraph, 'edit')                                                # MGraph should have edit method
-            assert hasattr(_.mgraph, 'query')                                               # MGraph should have query method
+            assert _.mgraph       is not None
+            assert type(_.mgraph) is dict

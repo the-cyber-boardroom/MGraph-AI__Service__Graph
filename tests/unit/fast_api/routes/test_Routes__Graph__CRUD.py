@@ -477,7 +477,8 @@ class test_Routes__Graph__CRUD(TestCase):
             assert type(response.graph_ref)          is Schema__Graph__Ref
             assert type(response.graph_ref.graph_id) is Graph_Id
             assert type(response.success)            is bool
-            assert type(response.mgraph)             is MGraph
+            #assert type(response.mgraph)             is MGraph
+            assert type(response.mgraph)             is dict
 
         assert self.helpers.delete_graph(graph_id=graph_id, namespace=self.test_namespace) is True
 

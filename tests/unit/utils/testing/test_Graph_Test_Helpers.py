@@ -237,7 +237,8 @@ class test_Graph_Test_Helpers(TestCase):
 
         assert get_response.success            is True
         assert get_response.graph_ref.graph_id == graph_id
-        assert type(get_response.mgraph)       is MGraph
+        #assert type(get_response.mgraph)       is MGraph
+        assert type(get_response.mgraph)       is dict
 
         self.helpers.delete_graph(graph_id=graph_id)                                        # Cleanup
 

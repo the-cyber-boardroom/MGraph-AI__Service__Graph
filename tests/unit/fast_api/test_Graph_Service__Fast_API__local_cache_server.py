@@ -129,13 +129,11 @@ class test_Graph_Service__Fast_API__local_cache_server(TestCase):
         #                                    FAST_API__AUTH__API_KEY__VALUE                =  cls.api_key_value   )
 
         with Temp_Env_Vars(env_vars=self.env_vars__cache_client):
-            graph_name = random_text('an-graph')
             namespace  = random_text('an-namespace')
             with self.graph_service.client() as _:
                 assert type(_) is TestClient
                 graph_ref      = Schema__Graph__Ref(namespace=namespace, cache_id = '', graph_id = '')
-                create_request = Schema__Graph__Create__Request(graph_name = graph_name,
-                                                                graph_ref  = graph_ref  )
+                create_request = Schema__Graph__Create__Request(graph_ref  = graph_ref  )
                 post_data      = create_request.json()
                 response = _.post(url     = '/graph-crud/create',
                                   headers = self.auth_headers   ,

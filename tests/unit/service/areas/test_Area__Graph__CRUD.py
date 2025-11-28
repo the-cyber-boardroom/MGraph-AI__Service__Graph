@@ -270,8 +270,12 @@ class test_Area__Graph__CRUD(TestCase):
             assert get_response.graph_ref.cache_id  == cache_id
             assert get_response.graph_ref.graph_id  == graph_id                                             # Resolved from cache lookup
             assert get_response.success             is True
+            assert type(get_response.mgraph) is dict                                                        # due to a pydantic bug we don't return the MGraph object
+            #assert get_response.mgraph.graph.model.data.graph_id == Obj_Id(graph_id)
+            mgraph = MGraph.from_json(get_response.mgraph)
+            assert mgraph.json() == get_response.mgraph                                                     # which we can convert to an mgraph
 
-            assert get_response.mgraph.graph.model.data.graph_id == Obj_Id(graph_id)                        # Expected # todo: see if this conversion to Obj_Id is a sign of a bigger problem, or this is the only edge case where we hit it
+            assert mgraph.graph.model.data.graph_id == Obj_Id(graph_id)                        # Expected # todo: see if this conversion to Obj_Id is a sign of a bigger problem, or this is the only edge case where we hit it
 
             assert get_response.obj() == __(graph_ref = __(cache_id  = cache_id                             ,
                                                           graph_id  = graph_id                              ,
@@ -319,7 +323,8 @@ class test_Area__Graph__CRUD(TestCase):
             assert get_response.graph_ref.graph_id  == graph_id
             assert get_response.graph_ref.cache_id  == cache_id                                 # Resolved
             assert get_response.success             is True
-            assert type(get_response.mgraph)        is MGraph
+            #assert type(get_response.mgraph)        is MGraph
+            assert type(get_response.mgraph)        is dict
 
             # Cleanup
             delete_graph_ref = Schema__Graph__Ref(graph_id  = graph_id ,

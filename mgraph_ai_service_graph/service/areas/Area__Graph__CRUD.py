@@ -37,8 +37,9 @@ class Area__Graph__CRUD(Type_Safe):                                             
 
         try:
             mgraph, resolved_ref = self.graph_service.resolve_graph_ref(request.graph_ref)
+            mgraph_json          = mgraph.json()                                            # todo: we need to do this dues to a pydantic issue with returning the raw MGraph value
             return Schema__Graph__Get__Response(graph_ref = resolved_ref,
-                                                mgraph    = mgraph      ,
+                                                mgraph    = mgraph_json ,
                                                 success   = True        )
         except Exception:                                                       # Graph not found - return failure response
             return Schema__Graph__Get__Response(graph_ref = request.graph_ref,
