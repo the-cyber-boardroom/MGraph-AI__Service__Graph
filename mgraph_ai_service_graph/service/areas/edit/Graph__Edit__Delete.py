@@ -25,6 +25,9 @@ class Graph__Edit__Delete(Type_Safe):
                                                     node_id   = node_id     ,
                                                     deleted   = result      )
 
+    # todo: look at the interesting edge case that happens if graph_ref doesn't resolve a graph
+    #       in that case a new graph (empty) will be created
+    #       which is a weird side effect of this delete scenario
     def delete_edge(self,                                                       # Delete an edge from graph
                     graph_ref : Schema__Graph__Ref,
                     edge_id   : Obj_Id

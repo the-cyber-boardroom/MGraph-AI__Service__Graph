@@ -1,10 +1,13 @@
 from unittest                                                                               import TestCase
-from osbot_utils.testing.__                                                                 import __, __SKIP__
+from mgraph_ai_service_graph.schemas.graph_edit.nodes.Schema__Graph__Delete_Node__Response  import Schema__Graph__Delete_Node__Response
+from osbot_utils.testing.__                                                                 import __
 from osbot_utils.type_safe.Type_Safe                                                        import Type_Safe
 from osbot_utils.type_safe.primitives.domains.identifiers.Obj_Id                            import Obj_Id
-from osbot_utils.type_safe.primitives.domains.identifiers.Random_Guid                       import Random_Guid
 from osbot_utils.type_safe.primitives.domains.identifiers.safe_str.Safe_Str__Id             import Safe_Str__Id
 from osbot_utils.utils.Objects                                                              import base_classes
+from mgraph_ai_service_cache_client.schemas.cache.Cache_Id                                  import Cache_Id
+from mgraph_ai_service_graph.schemas.graph_ref.Graph_Id                                     import Graph_Id
+from mgraph_ai_service_graph.schemas.graph_ref.Schema__Graph__Ref                           import Schema__Graph__Ref, GRAPH_REF__DEFAULT_NAMESPACE
 from mgraph_ai_service_graph.service.areas.Area__Graph__CRUD                                import Area__Graph__CRUD
 from mgraph_ai_service_graph.service.areas.Area__Graph__Edit                                import Area__Graph__Edit
 from mgraph_ai_service_graph.service.areas.Area__Graph__Query                               import Area__Graph__Query
@@ -83,14 +86,16 @@ class test_Area__Graph__Edit(TestCase):
 
     def _create_empty_graph(self, namespace=None):                                          # Helper to create empty graph
         namespace = namespace or self.test_namespace
-        request   = Schema__Graph__Create__Request(namespace  = namespace,
+        graph_ref = Schema__Graph__Ref(namespace=namespace)
+        request   = Schema__Graph__Create__Request(graph_ref  = graph_ref,
                                                    auto_cache = True     )
         return self.area_crud.create_graph(request)
 
     def _delete_graph(self, graph_id, namespace=None):                                      # Helper to delete graph
         namespace = namespace or self.test_namespace
-        return self.area_crud.delete_graph(graph_id  = graph_id ,
-                                           namespace = namespace)
+        graph_ref = Schema__Graph__Ref(graph_id  = graph_id ,
+                                       namespace = namespace)
+        return self.area_crud.delete_graph(graph_ref=graph_ref)
 
     # ═══════════════════════════════════════════════════════════════════════════════
     # Add Node Tests
@@ -98,34 +103,39 @@ class test_Area__Graph__Edit(TestCase):
 
     def test_add_node__add_node(self):                                                      # Test basic node addition via handler
         create_response = self._create_empty_graph()
-        graph_id        = create_response.graph_id
-        cache_id        = create_response.cache_id
+        graph_ref       = create_response.graph_ref
+        graph_id        = graph_ref.graph_id
+        cache_id        = graph_ref.cache_id
 
         with self.area_edit as _:
-            request  = Schema__Graph__Add_Node__Request(graph_id   = graph_id          ,
-                                                        cache_id   = cache_id          ,
-                                                        namespace  = self.test_namespace,
-                                                        auto_cache = True              )
+            request_graph_ref = Schema__Graph__Ref(graph_id  = graph_id         ,
+                                                   cache_id  = cache_id         ,
+                                                   namespace = self.test_namespace)
+            request  = Schema__Graph__Add_Node__Request(graph_ref  = request_graph_ref,
+                                                        auto_cache = True             )
             response = _.add_node.add_node(request)
 
-            assert type(response)          is Schema__Graph__Add_Node__Response
-            assert type(response.node_id)  is Obj_Id
-            assert type(response.graph_id) is Obj_Id
-            assert response.success        is True
-            assert response.cached         is True
+            assert type(response)                   is Schema__Graph__Add_Node__Response
+            assert type(response.node_id)           is Obj_Id
+            assert type(response.graph_ref)         is Schema__Graph__Ref
+            assert type(response.graph_ref.graph_id) is Graph_Id
+            assert response.success                 is True
+            assert response.cached                  is True
 
         self._delete_graph(graph_id=graph_id)
 
     def test_add_node__add_node__without_cache(self):                                       # Test node addition without caching
         create_response = self._create_empty_graph()
-        graph_id        = create_response.graph_id
-        cache_id        = create_response.cache_id
+        graph_ref       = create_response.graph_ref
+        graph_id        = graph_ref.graph_id
+        cache_id        = graph_ref.cache_id
 
         with self.area_edit as _:
-            request  = Schema__Graph__Add_Node__Request(graph_id   = graph_id          ,
-                                                        cache_id   = cache_id          ,
-                                                        namespace  = self.test_namespace,
-                                                        auto_cache = False             )
+            request_graph_ref = Schema__Graph__Ref(graph_id  = graph_id         ,
+                                                   cache_id  = cache_id         ,
+                                                   namespace = self.test_namespace)
+            request  = Schema__Graph__Add_Node__Request(graph_ref  = request_graph_ref,
+                                                        auto_cache = False            )
             response = _.add_node.add_node(request)
 
             assert type(response)    is Schema__Graph__Add_Node__Response
@@ -136,18 +146,20 @@ class test_Area__Graph__Edit(TestCase):
 
     def test_add_node__add_node__multiple_nodes(self):                                      # Test adding multiple nodes
         create_response = self._create_empty_graph()
-        graph_id        = create_response.graph_id
-        cache_id        = create_response.cache_id
+        graph_ref       = create_response.graph_ref
+        graph_id        = graph_ref.graph_id
+        cache_id        = graph_ref.cache_id
         node_ids        = []
 
         with self.area_edit as _:
             for i in range(5):
-                request   = Schema__Graph__Add_Node__Request(graph_id   = graph_id          ,
-                                                             cache_id   = cache_id          ,
-                                                             namespace  = self.test_namespace,
-                                                             auto_cache = True              )
+                request_graph_ref = Schema__Graph__Ref(graph_id  = graph_id         ,
+                                                       cache_id  = cache_id         ,
+                                                       namespace = self.test_namespace)
+                request   = Schema__Graph__Add_Node__Request(graph_ref  = request_graph_ref,
+                                                             auto_cache = True             )
                 response = _.add_node.add_node(request)
-                cache_id = response.cache_id                                                # Update cache_id for next iteration
+                cache_id = response.graph_ref.cache_id                                      # Update cache_id for next iteration
 
                 assert response.success is True
                 node_ids.append(response.node_id)
@@ -159,21 +171,23 @@ class test_Area__Graph__Edit(TestCase):
 
     def test_add_node__add_node__response_structure(self):                                  # Test complete response structure
         create_response = self._create_empty_graph()
-        graph_id        = create_response.graph_id
-        cache_id        = create_response.cache_id
+        graph_ref       = create_response.graph_ref
+        graph_id        = graph_ref.graph_id
+        cache_id        = graph_ref.cache_id
 
         with self.area_edit as _:
-            request  = Schema__Graph__Add_Node__Request(graph_id   = graph_id          ,
-                                                        cache_id   = cache_id          ,
-                                                        namespace  = self.test_namespace,
-                                                        auto_cache = True              )
+            request_graph_ref = Schema__Graph__Ref(graph_id  = graph_id         ,
+                                                   cache_id  = cache_id         ,
+                                                   namespace = self.test_namespace)
+            request  = Schema__Graph__Add_Node__Request(graph_ref  = request_graph_ref,
+                                                        auto_cache = True             )
             response = _.add_node.add_node(request)
 
-            assert response.obj().contains(__(node_id   = __SKIP__ ,
-                                              graph_id  = graph_id ,
-                                              cache_id  = __SKIP__ ,
-                                              success   = True     ,
-                                              cached    = True     ))
+            assert response.graph_ref.graph_id  == graph_id
+            assert response.graph_ref.namespace == self.test_namespace
+            assert response.success             is True
+            assert response.cached              is True
+            assert response.node_id             is not None
 
         self._delete_graph(graph_id=graph_id)
 
@@ -183,56 +197,58 @@ class test_Area__Graph__Edit(TestCase):
 
     def test_add_value__add_value(self):                                                    # Test basic value node addition
         create_response = self._create_empty_graph()
-        graph_id        = create_response.graph_id
-        cache_id        = create_response.cache_id
+        graph_ref       = create_response.graph_ref
+        graph_id        = graph_ref.graph_id
+        cache_id        = graph_ref.cache_id
 
         with self.area_edit as _:
-            request  = Schema__Graph__Add_Value__Request(graph_id   = graph_id          ,
-                                                         cache_id   = cache_id          ,
-                                                         namespace  = self.test_namespace,
-                                                         value      = 'test-value'      ,
-                                                         auto_cache = True              )
+            request_graph_ref = Schema__Graph__Ref(graph_id  = graph_id         ,
+                                                   cache_id  = cache_id         ,
+                                                   namespace = self.test_namespace)
+            request  = Schema__Graph__Add_Value__Request(graph_ref  = request_graph_ref,
+                                                         value      = 'test-value'     ,
+                                                         auto_cache = True             )
             response = _.add_value.add_value(request)
 
-            assert type(response)          is Schema__Graph__Add_Value__Response
-            assert type(response.node_id)  is Obj_Id
-            assert type(response.graph_id) is Obj_Id
-            assert response.value          == 'test-value'
-            assert response.success        is True
-            assert response.cached         is True
+            assert type(response)                    is Schema__Graph__Add_Value__Response
+            assert type(response.node_id)            is Obj_Id
+            assert type(response.graph_ref)          is Schema__Graph__Ref
+            assert type(response.graph_ref.graph_id) is Graph_Id
+            assert response.value                    == 'test-value'
+            assert response.success                  is True
+            assert response.cached                   is True
 
         self._delete_graph(graph_id=graph_id)
 
     def test_add_value__get_or_create_value(self):                                          # Test get or create value node
         create_response = self._create_empty_graph()
-        graph_id        = create_response.graph_id
-        cache_id        = create_response.cache_id
+        graph_ref       = create_response.graph_ref
+        graph_id        = graph_ref.graph_id
+        cache_id        = graph_ref.cache_id
 
         with self.area_edit as _:
-            request_1 = Schema__Graph__Add_Value__Request(graph_id   = graph_id          ,
-                                                          cache_id   = cache_id          ,
-                                                          namespace  = self.test_namespace,
-                                                          value      = 'unique-value'    ,
-                                                          auto_cache = True              )
+            request_graph_ref_1 = Schema__Graph__Ref(graph_id  = graph_id         ,
+                                                     cache_id  = cache_id         ,
+                                                     namespace = self.test_namespace)
+            request_1 = Schema__Graph__Add_Value__Request(graph_ref  = request_graph_ref_1,
+                                                          value      = 'unique-value'     ,
+                                                          auto_cache = True               )
             response_1 = _.add_value.get_or_create_value(request_1)
+
             assert type(response_1) is Schema__Graph__Add_Value__Response
-            assert response_1.obj() == __( node_id  = __SKIP__,
-                                           graph_id = graph_id,
-                                           cache_id = cache_id,
-                                           value    = 'unique-value',
-                                           cached   = True,
-                                           success  = True)
+            assert response_1.graph_ref.cache_id == cache_id                                # Confirm we didn't create a new graph
+            assert response_1.success            is True
+            assert response_1.value              == 'unique-value'
 
-            assert response_1.cache_id == cache_id                      # confirm that we didn't create a new graph
-            assert response_1.success  is True
             node_id_1 = response_1.node_id
-            cache_id  = response_1.cache_id
+            cache_id  = response_1.graph_ref.cache_id
 
-            request_2 = Schema__Graph__Add_Value__Request(graph_id   = graph_id          ,     # Same value, should return same node
-                                                          cache_id   = cache_id          ,
-                                                          namespace  = self.test_namespace,
-                                                          value      = 'unique-value'    ,
-                                                          auto_cache = True              )
+            request_graph_ref_2 = Schema__Graph__Ref(graph_id  = graph_id         ,         # Same value, should return same node
+                                                     cache_id  = cache_id         ,
+                                                     namespace = self.test_namespace)
+            request_2 = Schema__Graph__Add_Value__Request(graph_ref  = request_graph_ref_2,
+                                                          value      = 'unique-value'     ,
+                                                          auto_cache = True               )
             response_2 = _.add_value.get_or_create_value(request_2)
 
             assert response_2.success is True
@@ -246,68 +262,79 @@ class test_Area__Graph__Edit(TestCase):
 
     def test_add_edge__add_edge(self):                                                      # Test basic edge addition
         create_response = self._create_empty_graph()
-        graph_id        = create_response.graph_id
-        cache_id        = create_response.cache_id
+        graph_ref       = create_response.graph_ref
+        graph_id        = graph_ref.graph_id
+        cache_id        = graph_ref.cache_id
 
         with self.area_edit as _:
-            node_request_1 = Schema__Graph__Add_Node__Request(graph_id   = graph_id          ,     # Create two nodes first
-                                                              cache_id   = cache_id          ,
-                                                              namespace  = self.test_namespace,
-                                                              auto_cache = True              )
-            node_response_1 = _.add_node.add_node(node_request_1)
-            cache_id        = node_response_1.cache_id
-            from_node_id    = node_response_1.node_id
+            # Create two nodes first
+            node_graph_ref_1 = Schema__Graph__Ref(graph_id  = graph_id         ,
+                                                  cache_id  = cache_id         ,
+                                                  namespace = self.test_namespace)
+            node_request_1   = Schema__Graph__Add_Node__Request(graph_ref  = node_graph_ref_1,
+                                                                auto_cache = True            )
+            node_response_1  = _.add_node.add_node(node_request_1)
+            cache_id         = node_response_1.graph_ref.cache_id
+            from_node_id     = node_response_1.node_id
 
-            node_request_2  = Schema__Graph__Add_Node__Request(graph_id   = graph_id          ,
-                                                               cache_id   = cache_id          ,
-                                                               namespace  = self.test_namespace,
-                                                               auto_cache = True              )
-            node_response_2 = _.add_node.add_node(node_request_2)
-            cache_id        = node_response_2.cache_id
-            to_node_id      = node_response_2.node_id
+            node_graph_ref_2 = Schema__Graph__Ref(graph_id  = graph_id         ,
+                                                  cache_id  = cache_id         ,
+                                                  namespace = self.test_namespace)
+            node_request_2   = Schema__Graph__Add_Node__Request(graph_ref  = node_graph_ref_2,
+                                                                auto_cache = True            )
+            node_response_2  = _.add_node.add_node(node_request_2)
+            cache_id         = node_response_2.graph_ref.cache_id
+            to_node_id       = node_response_2.node_id
 
-            edge_request = Schema__Graph__Add_Edge__Request(graph_id     = graph_id          ,     # Add edge between them
-                                                            cache_id     = cache_id          ,
-                                                            namespace    = self.test_namespace,
-                                                            from_node_id = from_node_id      ,
-                                                            to_node_id   = to_node_id        ,
-                                                            auto_cache   = True              )
+            # Add edge between them
+            edge_graph_ref = Schema__Graph__Ref(graph_id  = graph_id         ,
+                                                cache_id  = cache_id         ,
+                                                namespace = self.test_namespace)
+            edge_request   = Schema__Graph__Add_Edge__Request(graph_ref    = edge_graph_ref,
+                                                              from_node_id = from_node_id  ,
+                                                              to_node_id   = to_node_id    ,
+                                                              auto_cache   = True          )
             edge_response = _.add_edge.add_edge(edge_request)
 
-            assert type(edge_response)              is Schema__Graph__Add_Edge__Response
-            assert type(edge_response.edge_id)      is Obj_Id
-            assert type(edge_response.graph_id)     is Obj_Id
-            assert type(edge_response.from_node_id) is Obj_Id
-            assert type(edge_response.to_node_id)   is Obj_Id
-            assert edge_response.from_node_id       == from_node_id
-            assert edge_response.to_node_id         == to_node_id
-            assert edge_response.success            is True
-            assert edge_response.cached             is True
+            assert type(edge_response)                    is Schema__Graph__Add_Edge__Response
+            assert type(edge_response.edge_id)            is Obj_Id
+            assert type(edge_response.graph_ref)          is Schema__Graph__Ref
+            assert type(edge_response.graph_ref.graph_id) is Graph_Id
+            assert type(edge_response.from_node_id)       is Obj_Id
+            assert type(edge_response.to_node_id)         is Obj_Id
+            assert edge_response.from_node_id             == from_node_id
+            assert edge_response.to_node_id               == to_node_id
+            assert edge_response.success                  is True
+            assert edge_response.cached                   is True
 
         self._delete_graph(graph_id=graph_id)
 
     def test_add_edge__add_edge__without_cache(self):                                       # Test edge addition without caching
         create_response = self._create_empty_graph()
-        graph_id        = create_response.graph_id
-        cache_id        = create_response.cache_id
+        graph_ref       = create_response.graph_ref
+        graph_id        = graph_ref.graph_id
+        cache_id        = graph_ref.cache_id
 
         with self.area_edit as _:
-            node_request_1  = Schema__Graph__Add_Node__Request(graph_id=graph_id, cache_id=cache_id,     # Create two nodes
-                                                               namespace=self.test_namespace, auto_cache=True)
-            node_response_1 = _.add_node.add_node(node_request_1)
-            cache_id        = node_response_1.cache_id
+            # Create two nodes
+            node_graph_ref_1 = Schema__Graph__Ref(graph_id=graph_id, cache_id=cache_id,
+                                                  namespace=self.test_namespace)
+            node_request_1   = Schema__Graph__Add_Node__Request(graph_ref=node_graph_ref_1, auto_cache=True)
+            node_response_1  = _.add_node.add_node(node_request_1)
+            cache_id         = node_response_1.graph_ref.cache_id
 
-            node_request_2  = Schema__Graph__Add_Node__Request(graph_id=graph_id, cache_id=cache_id,
-                                                               namespace=self.test_namespace, auto_cache=True)
-            node_response_2 = _.add_node.add_node(node_request_2)
-            cache_id        = node_response_2.cache_id
+            node_graph_ref_2 = Schema__Graph__Ref(graph_id=graph_id, cache_id=cache_id,
+                                                  namespace=self.test_namespace)
+            node_request_2   = Schema__Graph__Add_Node__Request(graph_ref=node_graph_ref_2, auto_cache=True)
+            node_response_2  = _.add_node.add_node(node_request_2)
+            cache_id         = node_response_2.graph_ref.cache_id
 
-            edge_request = Schema__Graph__Add_Edge__Request(graph_id     = graph_id                ,
-                                                            cache_id     = cache_id                ,
-                                                            namespace    = self.test_namespace     ,
-                                                            from_node_id = node_response_1.node_id ,
-                                                            to_node_id   = node_response_2.node_id ,
-                                                            auto_cache   = False                   )
+            edge_graph_ref = Schema__Graph__Ref(graph_id=graph_id, cache_id=cache_id,
+                                                namespace=self.test_namespace)
+            edge_request   = Schema__Graph__Add_Edge__Request(graph_ref    = edge_graph_ref           ,
+                                                              from_node_id = node_response_1.node_id  ,
+                                                              to_node_id   = node_response_2.node_id  ,
+                                                              auto_cache   = False                    )
             edge_response = _.add_edge.add_edge(edge_request)
 
             assert edge_response.success is True
@@ -317,30 +344,30 @@ class test_Area__Graph__Edit(TestCase):
 
     def test_add_edge__add_edge__multiple_edges(self):                                      # Test adding multiple edges (chain)
         create_response = self._create_empty_graph()
-        graph_id        = create_response.graph_id
-        cache_id        = create_response.cache_id
+        graph_ref       = create_response.graph_ref
+        graph_id        = graph_ref.graph_id
+        cache_id        = graph_ref.cache_id
         node_ids        = []
         edge_ids        = []
 
         with self.area_edit as _:
             for i in range(4):                                                              # Create 4 nodes
-                node_request  = Schema__Graph__Add_Node__Request(graph_id   = graph_id          ,
-                                                                 cache_id   = cache_id          ,
-                                                                 namespace  = self.test_namespace,
-                                                                 auto_cache = True              )
-                node_response = _.add_node.add_node(node_request)
-                cache_id      = node_response.cache_id
+                node_graph_ref = Schema__Graph__Ref(graph_id=graph_id, cache_id=cache_id,
+                                                    namespace=self.test_namespace)
+                node_request   = Schema__Graph__Add_Node__Request(graph_ref=node_graph_ref, auto_cache=True)
+                node_response  = _.add_node.add_node(node_request)
+                cache_id       = node_response.graph_ref.cache_id
                 node_ids.append(node_response.node_id)
 
             for i in range(len(node_ids) - 1):                                              # Create chain: 0->1->2->3
-                edge_request = Schema__Graph__Add_Edge__Request(graph_id     = graph_id          ,
-                                                                cache_id     = cache_id          ,
-                                                                namespace    = self.test_namespace,
-                                                                from_node_id = node_ids[i]       ,
-                                                                to_node_id   = node_ids[i + 1]   ,
-                                                                auto_cache   = True              )
+                edge_graph_ref = Schema__Graph__Ref(graph_id=graph_id, cache_id=cache_id,
+                                                    namespace=self.test_namespace)
+                edge_request   = Schema__Graph__Add_Edge__Request(graph_ref    = edge_graph_ref  ,
+                                                                  from_node_id = node_ids[i]     ,
+                                                                  to_node_id   = node_ids[i + 1] ,
+                                                                  auto_cache   = True            )
                 edge_response = _.add_edge.add_edge(edge_request)
-                cache_id      = edge_response.cache_id
+                cache_id      = edge_response.graph_ref.cache_id
 
                 assert edge_response.success is True
                 edge_ids.append(edge_response.edge_id)
@@ -352,38 +379,39 @@ class test_Area__Graph__Edit(TestCase):
 
     def test_add_edge__add_edge__response_structure(self):                                  # Test complete response structure
         create_response = self._create_empty_graph()
-        graph_id        = create_response.graph_id
-        cache_id        = create_response.cache_id
+        graph_ref       = create_response.graph_ref
+        graph_id        = graph_ref.graph_id
+        cache_id        = graph_ref.cache_id
 
         with self.area_edit as _:
-            node_request_1  = Schema__Graph__Add_Node__Request(graph_id=graph_id, cache_id=cache_id,
-                                                               namespace=self.test_namespace, auto_cache=True)
-            node_response_1 = _.add_node.add_node(node_request_1)
-            cache_id        = node_response_1.cache_id
+            node_graph_ref_1 = Schema__Graph__Ref(graph_id=graph_id, cache_id=cache_id,
+                                                  namespace=self.test_namespace)
+            node_request_1   = Schema__Graph__Add_Node__Request(graph_ref=node_graph_ref_1, auto_cache=True)
+            node_response_1  = _.add_node.add_node(node_request_1)
+            cache_id         = node_response_1.graph_ref.cache_id
 
-            node_request_2  = Schema__Graph__Add_Node__Request(graph_id=graph_id, cache_id=cache_id,
-                                                               namespace=self.test_namespace, auto_cache=True)
-            node_response_2 = _.add_node.add_node(node_request_2)
-            cache_id        = node_response_2.cache_id
+            node_graph_ref_2 = Schema__Graph__Ref(graph_id=graph_id, cache_id=cache_id,
+                                                  namespace=self.test_namespace)
+            node_request_2   = Schema__Graph__Add_Node__Request(graph_ref=node_graph_ref_2, auto_cache=True)
+            node_response_2  = _.add_node.add_node(node_request_2)
+            cache_id         = node_response_2.graph_ref.cache_id
 
             from_node_id = node_response_1.node_id
             to_node_id   = node_response_2.node_id
 
-            edge_request = Schema__Graph__Add_Edge__Request(graph_id     = graph_id          ,
-                                                            cache_id     = cache_id          ,
-                                                            namespace    = self.test_namespace,
-                                                            from_node_id = from_node_id      ,
-                                                            to_node_id   = to_node_id        ,
-                                                            auto_cache   = True              )
+            edge_graph_ref = Schema__Graph__Ref(graph_id=graph_id, cache_id=cache_id,
+                                                namespace=self.test_namespace)
+            edge_request   = Schema__Graph__Add_Edge__Request(graph_ref    = edge_graph_ref,
+                                                              from_node_id = from_node_id  ,
+                                                              to_node_id   = to_node_id    ,
+                                                              auto_cache   = True          )
             edge_response = _.add_edge.add_edge(edge_request)
 
-            assert edge_response.obj().contains(__(edge_id      = __SKIP__     ,
-                                                   graph_id     = graph_id     ,
-                                                   from_node_id = from_node_id ,
-                                                   to_node_id   = to_node_id   ,
-                                                   cache_id     = __SKIP__     ,
-                                                   success      = True         ,
-                                                   cached       = True         ))
+            assert edge_response.graph_ref.graph_id == graph_id
+            assert edge_response.from_node_id       == from_node_id
+            assert edge_response.to_node_id         == to_node_id
+            assert edge_response.success            is True
+            assert edge_response.cached             is True
 
         self._delete_graph(graph_id=graph_id)
 
@@ -393,37 +421,41 @@ class test_Area__Graph__Edit(TestCase):
 
     def test_delete__delete_node(self):                                                     # Test basic node deletion
         create_response = self._create_empty_graph()
-        graph_id        = create_response.graph_id
-        cache_id        = create_response.cache_id
+        graph_ref       = create_response.graph_ref
+        graph_id        = graph_ref.graph_id
+        cache_id        = graph_ref.cache_id
 
         with self.area_edit as _:
-            node_request = Schema__Graph__Add_Node__Request(graph_id   = graph_id          ,     # Create a node
-                                                            cache_id   = cache_id          ,
-                                                            namespace  = self.test_namespace,
-                                                            auto_cache = True              )
-            node_response = _.add_node.add_node(node_request)
-            node_id       = node_response.node_id
+            # Create a node
+            node_graph_ref = Schema__Graph__Ref(graph_id=graph_id, cache_id=cache_id,
+                                                namespace=self.test_namespace)
+            node_request   = Schema__Graph__Add_Node__Request(graph_ref=node_graph_ref, auto_cache=True)
+            node_response  = _.add_node.add_node(node_request)
+            node_id        = node_response.node_id
+            cache_id       = node_response.graph_ref.cache_id
 
-            result = _.delete.delete_node(graph_id  = graph_id           ,                  # Delete the node
-                                          node_id   = node_id            ,
-                                          cache_id  = cache_id           ,
-                                          namespace = self.test_namespace)
+            # Delete the node
+            delete_graph_ref = Schema__Graph__Ref(graph_id=graph_id, cache_id=cache_id,
+                                                  namespace=self.test_namespace)
+            result = _.delete.delete_node(graph_ref = delete_graph_ref,
+                                          node_id   = node_id         )
 
-            assert result is True
+            assert result.deleted is True
 
         self._delete_graph(graph_id=graph_id)
 
     def test_delete__delete_node__non_existent(self):                                       # Test deleting non-existent node
         create_response = self._create_empty_graph()
-        graph_id        = create_response.graph_id
+        graph_ref       = create_response.graph_ref
+        graph_id        = graph_ref.graph_id
         fake_node_id    = Obj_Id()
 
         with self.area_edit as _:
-            result = _.delete.delete_node(graph_id  = graph_id           ,
-                                          node_id   = fake_node_id       ,
-                                          namespace = self.test_namespace)
+            delete_graph_ref = Schema__Graph__Ref(graph_id=graph_id, namespace=self.test_namespace)
+            result = _.delete.delete_node(graph_ref = delete_graph_ref,
+                                          node_id   = fake_node_id    )
 
-            assert result is False
+            assert result.deleted is False
 
         self._delete_graph(graph_id=graph_id)
 
@@ -433,49 +465,61 @@ class test_Area__Graph__Edit(TestCase):
 
     def test_delete__delete_edge(self):                                                     # Test basic edge deletion
         create_response = self._create_empty_graph()
-        graph_id        = create_response.graph_id
-        cache_id        = create_response.cache_id
+        graph_ref       = create_response.graph_ref
+        graph_id        = graph_ref.graph_id
+        cache_id        = graph_ref.cache_id
 
         with self.area_edit as _:
-            node_request_1  = Schema__Graph__Add_Node__Request(graph_id=graph_id, cache_id=cache_id,     # Create two nodes
-                                                               namespace=self.test_namespace, auto_cache=True)
-            node_response_1 = _.add_node.add_node(node_request_1)
-            cache_id        = node_response_1.cache_id
+            # Create two nodes
+            node_graph_ref_1 = Schema__Graph__Ref(graph_id=graph_id, cache_id=cache_id,
+                                                  namespace=self.test_namespace)
+            node_request_1   = Schema__Graph__Add_Node__Request(graph_ref=node_graph_ref_1, auto_cache=True)
+            node_response_1  = _.add_node.add_node(node_request_1)
+            cache_id         = node_response_1.graph_ref.cache_id
 
-            node_request_2  = Schema__Graph__Add_Node__Request(graph_id=graph_id, cache_id=cache_id,
-                                                               namespace=self.test_namespace, auto_cache=True)
-            node_response_2 = _.add_node.add_node(node_request_2)
-            cache_id        = node_response_2.cache_id
+            node_graph_ref_2 = Schema__Graph__Ref(graph_id=graph_id, cache_id=cache_id,
+                                                  namespace=self.test_namespace)
+            node_request_2   = Schema__Graph__Add_Node__Request(graph_ref=node_graph_ref_2, auto_cache=True)
+            node_response_2  = _.add_node.add_node(node_request_2)
+            cache_id         = node_response_2.graph_ref.cache_id
 
-            edge_request = Schema__Graph__Add_Edge__Request(graph_id     = graph_id                ,     # Create edge
-                                                            cache_id     = cache_id                ,
-                                                            namespace    = self.test_namespace     ,
-                                                            from_node_id = node_response_1.node_id ,
-                                                            to_node_id   = node_response_2.node_id ,
-                                                            auto_cache   = True                    )
+            # Create edge
+            edge_graph_ref = Schema__Graph__Ref(graph_id=graph_id, cache_id=cache_id,
+                                                namespace=self.test_namespace)
+            edge_request   = Schema__Graph__Add_Edge__Request(graph_ref    = edge_graph_ref          ,
+                                                              from_node_id = node_response_1.node_id ,
+                                                              to_node_id   = node_response_2.node_id ,
+                                                              auto_cache   = True                    )
             edge_response = _.add_edge.add_edge(edge_request)
             edge_id       = edge_response.edge_id
+            cache_id      = edge_response.graph_ref.cache_id
 
-            result = _.delete.delete_edge(graph_id  = graph_id           ,                  # Delete edge
-                                          cache_id  = cache_id           ,
-                                          edge_id   = edge_id            ,
-                                          namespace = self.test_namespace)
+            # Delete edge
+            delete_graph_ref = Schema__Graph__Ref(graph_id=graph_id, cache_id=cache_id,
+                                                  namespace=self.test_namespace)
+            result = _.delete.delete_edge(graph_ref = delete_graph_ref,
+                                          edge_id   = edge_id         )
 
-            assert result is True
+            assert result.deleted is True
 
         self._delete_graph(graph_id=graph_id)
 
     def test_delete__delete_edge__non_existent(self):                                       # Test deleting non-existent edge
         create_response = self._create_empty_graph()
-        graph_id        = create_response.graph_id
+        graph_ref       = create_response.graph_ref
+        graph_id        = graph_ref.graph_id
         fake_edge_id    = Obj_Id()
 
         with self.area_edit as _:
-            result = _.delete.delete_edge(graph_id  = graph_id           ,
-                                          edge_id   = fake_edge_id       ,
-                                          namespace = self.test_namespace)
+            delete_graph_ref = Schema__Graph__Ref(graph_id=graph_id, namespace=self.test_namespace)
+            result = _.delete.delete_edge       (graph_ref = delete_graph_ref,
+                                                 edge_id   = fake_edge_id    )
 
-            assert result is False
+            assert result.obj() == __(graph_ref =__( cache_id = result.graph_ref.cache_id,
+                                                     graph_id = graph_id,
+                                                     namespace='test-area-edit'),
+                                       edge_id = fake_edge_id,
+                                       deleted=False)
 
         self._delete_graph(graph_id=graph_id)
 
@@ -485,32 +529,33 @@ class test_Area__Graph__Edit(TestCase):
 
     def test_workflow__add_nodes_and_edges(self):                                           # Test complete workflow
         create_response = self._create_empty_graph()
-        graph_id        = create_response.graph_id
-        cache_id        = create_response.cache_id
+        graph_ref       = create_response.graph_ref
+        graph_id        = graph_ref.graph_id
+        cache_id        = graph_ref.cache_id
 
         with self.area_edit as _:
-            node_request_1 = Schema__Graph__Add_Node__Request(graph_id   = graph_id          ,     # Step 1: Add nodes
-                                                              cache_id   = cache_id          ,
-                                                              namespace  = self.test_namespace,
-                                                              auto_cache = True              )
-            node_response_1 = _.add_node.add_node(node_request_1)
-            cache_id        = node_response_1.cache_id
+            # Step 1: Add nodes
+            node_graph_ref_1 = Schema__Graph__Ref(graph_id=graph_id, cache_id=cache_id,
+                                                  namespace=self.test_namespace)
+            node_request_1   = Schema__Graph__Add_Node__Request(graph_ref=node_graph_ref_1, auto_cache=True)
+            node_response_1  = _.add_node.add_node(node_request_1)
+            cache_id         = node_response_1.graph_ref.cache_id
             assert node_response_1.success is True
 
-            node_request_2 = Schema__Graph__Add_Node__Request(graph_id   = graph_id          ,
-                                                              cache_id   = cache_id          ,
-                                                              namespace  = self.test_namespace,
-                                                              auto_cache = True              )
-            node_response_2 = _.add_node.add_node(node_request_2)
-            cache_id        = node_response_2.cache_id
+            node_graph_ref_2 = Schema__Graph__Ref(graph_id=graph_id, cache_id=cache_id,
+                                                  namespace=self.test_namespace)
+            node_request_2   = Schema__Graph__Add_Node__Request(graph_ref=node_graph_ref_2, auto_cache=True)
+            node_response_2  = _.add_node.add_node(node_request_2)
+            cache_id         = node_response_2.graph_ref.cache_id
             assert node_response_2.success is True
 
-            edge_request = Schema__Graph__Add_Edge__Request(graph_id     = graph_id                ,     # Step 2: Add edge
-                                                            cache_id     = cache_id                ,
-                                                            namespace    = self.test_namespace     ,
-                                                            from_node_id = node_response_1.node_id ,
-                                                            to_node_id   = node_response_2.node_id ,
-                                                            auto_cache   = True                    )
+            # Step 2: Add edge
+            edge_graph_ref = Schema__Graph__Ref(graph_id=graph_id, cache_id=cache_id,
+                                                namespace=self.test_namespace)
+            edge_request   = Schema__Graph__Add_Edge__Request(graph_ref    = edge_graph_ref          ,
+                                                              from_node_id = node_response_1.node_id ,
+                                                              to_node_id   = node_response_2.node_id ,
+                                                              auto_cache   = True                    )
             edge_response = _.add_edge.add_edge(edge_request)
             assert edge_response.success is True
 
@@ -518,71 +563,79 @@ class test_Area__Graph__Edit(TestCase):
 
     def test_workflow__add_then_delete_nodes(self):                                         # Test add and delete cycle
         create_response = self._create_empty_graph()
-        graph_id        = create_response.graph_id
-        cache_id        = create_response.cache_id
+        graph_ref       = create_response.graph_ref
+        graph_id        = graph_ref.graph_id
+        cache_id        = graph_ref.cache_id
 
         with self.area_edit as _:
-            node_request = Schema__Graph__Add_Node__Request(graph_id   = graph_id          ,     # Add node
-                                                            cache_id   = cache_id          ,
-                                                            namespace  = self.test_namespace,
-                                                            auto_cache = True              )
-            node_response = _.add_node.add_node(node_request)
-            node_id       = node_response.node_id
+            # Add node
+            node_graph_ref = Schema__Graph__Ref(graph_id=graph_id, cache_id=cache_id,
+                                                namespace=self.test_namespace)
+            node_request   = Schema__Graph__Add_Node__Request(graph_ref=node_graph_ref, auto_cache=True)
+            node_response  = _.add_node.add_node(node_request)
+            node_id        = node_response.node_id
+            cache_id       = node_response.graph_ref.cache_id
 
             assert node_response.success is True
 
-            delete_result = _.delete.delete_node(graph_id  = graph_id           ,                # Delete node
-                                                 node_id   = node_id            ,
-                                                 cache_id  = cache_id           ,
-                                                 namespace = self.test_namespace)
-            assert delete_result is True
+            # Delete node
+            delete_graph_ref = Schema__Graph__Ref(graph_id=graph_id, cache_id=cache_id,
+                                                  namespace=self.test_namespace)
+            delete_result = _.delete.delete_node(graph_ref = delete_graph_ref,
+                                                 node_id   = node_id         )
+            assert delete_result.deleted is True
 
-            delete_again = _.delete.delete_node(graph_id  = graph_id           ,                 # Try delete again
-                                                node_id   = node_id            ,
-                                                cache_id  = cache_id           ,
-                                                namespace = self.test_namespace)
-            assert delete_again is False                                                         # Already deleted
+            # Try delete again
+            delete_again = _.delete.delete_node(graph_ref = delete_graph_ref,
+                                                node_id   = node_id         )
+            assert delete_again.deleted is False                                                    # Already deleted
 
         self._delete_graph(graph_id=graph_id)
 
     def test_workflow__add_then_delete_edges(self):                                         # Test add and delete edges
         create_response = self._create_empty_graph()
-        graph_id        = create_response.graph_id
-        cache_id        = create_response.cache_id
+        graph_ref       = create_response.graph_ref
+        graph_id        = graph_ref.graph_id
+        cache_id        = graph_ref.cache_id
 
         with self.area_edit as _:
-            node_request_1  = Schema__Graph__Add_Node__Request(graph_id=graph_id, cache_id=cache_id,     # Create nodes
-                                                               namespace=self.test_namespace, auto_cache=True)
-            node_response_1 = _.add_node.add_node(node_request_1)
-            cache_id        = node_response_1.cache_id
+            # Create nodes
+            node_graph_ref_1 = Schema__Graph__Ref(graph_id=graph_id, cache_id=cache_id,
+                                                  namespace=self.test_namespace)
+            node_request_1   = Schema__Graph__Add_Node__Request(graph_ref=node_graph_ref_1, auto_cache=True)
+            node_response_1  = _.add_node.add_node(node_request_1)
+            cache_id         = node_response_1.graph_ref.cache_id
 
-            node_request_2  = Schema__Graph__Add_Node__Request(graph_id=graph_id, cache_id=cache_id,
-                                                               namespace=self.test_namespace, auto_cache=True)
-            node_response_2 = _.add_node.add_node(node_request_2)
-            cache_id        = node_response_2.cache_id
+            node_graph_ref_2 = Schema__Graph__Ref(graph_id=graph_id, cache_id=cache_id,
+                                                  namespace=self.test_namespace)
+            node_request_2   = Schema__Graph__Add_Node__Request(graph_ref=node_graph_ref_2, auto_cache=True)
+            node_response_2  = _.add_node.add_node(node_request_2)
+            cache_id         = node_response_2.graph_ref.cache_id
 
-            edge_request = Schema__Graph__Add_Edge__Request(graph_id     = graph_id                ,     # Add edge
-                                                            cache_id     = cache_id                ,
-                                                            namespace    = self.test_namespace     ,
-                                                            from_node_id = node_response_1.node_id ,
-                                                            to_node_id   = node_response_2.node_id ,
-                                                            auto_cache   = True                    )
+            # Add edge
+            edge_graph_ref = Schema__Graph__Ref(graph_id=graph_id, cache_id=cache_id,
+                                                namespace=self.test_namespace)
+            edge_request   = Schema__Graph__Add_Edge__Request(graph_ref    = edge_graph_ref          ,
+                                                              from_node_id = node_response_1.node_id ,
+                                                              to_node_id   = node_response_2.node_id ,
+                                                              auto_cache   = True                    )
             edge_response = _.add_edge.add_edge(edge_request)
             edge_id       = edge_response.edge_id
+            cache_id      = edge_response.graph_ref.cache_id
 
             assert edge_response.success is True
 
-            delete_result = _.delete.delete_edge(graph_id  = graph_id           ,                # Delete edge
-                                                 edge_id   = edge_id            ,
-                                                 cache_id  = cache_id           ,
-                                                 namespace = self.test_namespace)
-            assert delete_result is True
+            # Delete edge
+            delete_graph_ref = Schema__Graph__Ref(graph_id=graph_id, cache_id=cache_id,
+                                                  namespace=self.test_namespace)
+            delete_result = _.delete.delete_edge(graph_ref = delete_graph_ref,
+                                                 edge_id   = edge_id         )
+            assert delete_result.deleted is True
 
-            delete_again = _.delete.delete_edge(graph_id  = graph_id           ,                 # Try delete again
-                                                edge_id   = edge_id            ,
-                                                cache_id  = cache_id           ,
-                                                namespace = self.test_namespace)
-            assert delete_again is False                                                         # Already deleted
+            # Try delete again
+            delete_again = _.delete.delete_edge(graph_ref = delete_graph_ref,
+                                                edge_id   = edge_id         )
+            assert delete_again.deleted is False                                                    # Already deleted
 
         self._delete_graph(graph_id=graph_id)
 
@@ -592,98 +645,109 @@ class test_Area__Graph__Edit(TestCase):
 
     def test_types__add_node_response_fields(self):                                         # Test all field types in add_node response
         create_response = self._create_empty_graph()
-        graph_id        = create_response.graph_id
-        cache_id        = create_response.cache_id
+        graph_ref       = create_response.graph_ref
+        graph_id        = graph_ref.graph_id
+        cache_id        = graph_ref.cache_id
 
         with self.area_edit as _:
-            request  = Schema__Graph__Add_Node__Request(graph_id   = graph_id          ,
-                                                        cache_id   = cache_id          ,
-                                                        namespace  = self.test_namespace,
-                                                        auto_cache = True              )
+            request_graph_ref = Schema__Graph__Ref(graph_id=graph_id, cache_id=cache_id,
+                                                   namespace=self.test_namespace)
+            request  = Schema__Graph__Add_Node__Request(graph_ref=request_graph_ref, auto_cache=True)
             response = _.add_node.add_node(request)
 
-            assert type(response)          is Schema__Graph__Add_Node__Response
-            assert type(response.node_id)  is Obj_Id
-            assert type(response.graph_id) is Obj_Id
-            assert type(response.cache_id) is Random_Guid
-            assert type(response.success)  is bool
-            assert type(response.cached)   is bool
+            assert type(response)                     is Schema__Graph__Add_Node__Response
+            assert type(response.node_id)             is Obj_Id
+            assert type(response.graph_ref)           is Schema__Graph__Ref
+            assert type(response.graph_ref.graph_id)  is Graph_Id
+            assert type(response.graph_ref.cache_id)  is Cache_Id
+            assert type(response.success)             is bool
+            assert type(response.cached)              is bool
 
         self._delete_graph(graph_id=graph_id)
 
     def test_types__add_edge_response_fields(self):                                         # Test all field types in add_edge response
         create_response = self._create_empty_graph()
-        graph_id        = create_response.graph_id
-        cache_id        = create_response.cache_id
+        graph_ref       = create_response.graph_ref
+        graph_id        = graph_ref.graph_id
+        cache_id        = graph_ref.cache_id
 
         with self.area_edit as _:
-            node_request_1  = Schema__Graph__Add_Node__Request(graph_id=graph_id, cache_id=cache_id,
-                                                               namespace=self.test_namespace, auto_cache=True)
-            node_response_1 = _.add_node.add_node(node_request_1)
-            cache_id        = node_response_1.cache_id
+            node_graph_ref_1 = Schema__Graph__Ref(graph_id=graph_id, cache_id=cache_id,
+                                                  namespace=self.test_namespace)
+            node_request_1   = Schema__Graph__Add_Node__Request(graph_ref=node_graph_ref_1, auto_cache=True)
+            node_response_1  = _.add_node.add_node(node_request_1)
+            cache_id         = node_response_1.graph_ref.cache_id
 
-            node_request_2  = Schema__Graph__Add_Node__Request(graph_id=graph_id, cache_id=cache_id,
-                                                               namespace=self.test_namespace, auto_cache=True)
-            node_response_2 = _.add_node.add_node(node_request_2)
-            cache_id        = node_response_2.cache_id
+            node_graph_ref_2 = Schema__Graph__Ref(graph_id=graph_id, cache_id=cache_id,
+                                                  namespace=self.test_namespace)
+            node_request_2   = Schema__Graph__Add_Node__Request(graph_ref=node_graph_ref_2, auto_cache=True)
+            node_response_2  = _.add_node.add_node(node_request_2)
+            cache_id         = node_response_2.graph_ref.cache_id
 
-            edge_request = Schema__Graph__Add_Edge__Request(graph_id     = graph_id                ,
-                                                            cache_id     = cache_id                ,
-                                                            namespace    = self.test_namespace     ,
-                                                            from_node_id = node_response_1.node_id ,
-                                                            to_node_id   = node_response_2.node_id ,
-                                                            auto_cache   = True                    )
+            edge_graph_ref = Schema__Graph__Ref(graph_id=graph_id, cache_id=cache_id,
+                                                namespace=self.test_namespace)
+            edge_request   = Schema__Graph__Add_Edge__Request(graph_ref    = edge_graph_ref          ,
+                                                              from_node_id = node_response_1.node_id ,
+                                                              to_node_id   = node_response_2.node_id ,
+                                                              auto_cache   = True                    )
             edge_response = _.add_edge.add_edge(edge_request)
 
-            assert type(edge_response)              is Schema__Graph__Add_Edge__Response
-            assert type(edge_response.edge_id)      is Obj_Id
-            assert type(edge_response.graph_id)     is Obj_Id
-            assert type(edge_response.from_node_id) is Obj_Id
-            assert type(edge_response.to_node_id)   is Obj_Id
-            assert type(edge_response.cache_id)     is Random_Guid
-            assert type(edge_response.success)      is bool
-            assert type(edge_response.cached)       is bool
+            assert type(edge_response)                     is Schema__Graph__Add_Edge__Response
+            assert type(edge_response.edge_id)             is Obj_Id
+            assert type(edge_response.graph_ref)           is Schema__Graph__Ref
+            assert type(edge_response.graph_ref.graph_id)  is Graph_Id
+            assert type(edge_response.graph_ref.cache_id)  is Cache_Id
+            assert type(edge_response.from_node_id)        is Obj_Id
+            assert type(edge_response.to_node_id)          is Obj_Id
+            assert type(edge_response.success)             is bool
+            assert type(edge_response.cached)              is bool
 
         self._delete_graph(graph_id=graph_id)
 
     def test_types__add_value_response_fields(self):                                        # Test all field types in add_value response
         create_response = self._create_empty_graph()
-        graph_id        = create_response.graph_id
-        cache_id        = create_response.cache_id
+        graph_ref       = create_response.graph_ref
+        graph_id        = graph_ref.graph_id
+        cache_id        = graph_ref.cache_id
 
         with self.area_edit as _:
-            request  = Schema__Graph__Add_Value__Request(graph_id   = graph_id          ,
-                                                         cache_id   = cache_id          ,
-                                                         namespace  = self.test_namespace,
-                                                         value      = 'test-value'      ,
-                                                         auto_cache = True              )
+            request_graph_ref = Schema__Graph__Ref(graph_id=graph_id, cache_id=cache_id,
+                                                   namespace=self.test_namespace)
+            request  = Schema__Graph__Add_Value__Request(graph_ref  = request_graph_ref,
+                                                         value      = 'test-value'     ,
+                                                         auto_cache = True             )
             response = _.add_value.add_value(request)
 
-            assert type(response)          is Schema__Graph__Add_Value__Response
-            assert type(response.node_id)  is Obj_Id
-            assert type(response.graph_id) is Obj_Id
-            assert type(response.cache_id) is Random_Guid
-            assert type(response.value)    is str
-            assert type(response.success)  is bool
-            assert type(response.cached)   is bool
+            assert type(response)                     is Schema__Graph__Add_Value__Response
+            assert type(response.node_id)             is Obj_Id
+            assert type(response.graph_ref)           is Schema__Graph__Ref
+            assert type(response.graph_ref.graph_id)  is Graph_Id
+            assert type(response.graph_ref.cache_id)  is Cache_Id
+            assert type(response.value)               is str
+            assert type(response.success)             is bool
+            assert type(response.cached)              is bool
 
         self._delete_graph(graph_id=graph_id)
 
     def test_types__delete_returns_bool(self):                                              # Test delete methods return bool
         create_response = self._create_empty_graph()
-        graph_id        = create_response.graph_id
-        cache_id        = create_response.cache_id
+        graph_ref       = create_response.graph_ref
+        graph_id        = graph_ref.graph_id
+        cache_id        = graph_ref.cache_id
 
         with self.area_edit as _:
-            node_request = Schema__Graph__Add_Node__Request(graph_id=graph_id, cache_id=cache_id,
-                                                            namespace=self.test_namespace, auto_cache=True)
-            node_response = _.add_node.add_node(node_request)
-            node_id       = node_response.node_id
+            node_graph_ref = Schema__Graph__Ref(graph_id=graph_id, cache_id=cache_id,
+                                                namespace=self.test_namespace)
+            node_request   = Schema__Graph__Add_Node__Request(graph_ref=node_graph_ref, auto_cache=True)
+            node_response  = _.add_node.add_node(node_request)
+            node_id        = node_response.node_id
+            cache_id       = node_response.graph_ref.cache_id
 
-            result = _.delete.delete_node(graph_id  = graph_id           ,
-                                          node_id   = node_id            ,
-                                          namespace = self.test_namespace)
+            delete_graph_ref = Schema__Graph__Ref(graph_id=graph_id, cache_id=cache_id,
+                                                  namespace=self.test_namespace)
+            result = _.delete.delete_node(graph_ref = delete_graph_ref,
+                                          node_id   = node_id         )
 
-            assert type(result) is bool
+            assert type(result) is Schema__Graph__Delete_Node__Response
 
         self._delete_graph(graph_id=graph_id)

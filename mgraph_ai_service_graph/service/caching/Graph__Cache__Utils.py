@@ -1,11 +1,13 @@
-from osbot_utils.type_safe.type_safe_core.decorators.type_safe import type_safe
+from typing import List
 
+from mgraph_ai_service_cache_client.schemas.cache.Cache_Id                                  import Cache_Id
+from osbot_utils.type_safe.type_safe_core.decorators.type_safe                              import type_safe
 from mgraph_ai_service_cache_client.client.client_contract.Cache__Service__Fast_API__Client import Cache__Service__Fast_API__Client
 from osbot_utils.helpers.cache.Cache__Hash__Generator                                       import Cache__Hash__Generator
 from osbot_utils.type_safe.Type_Safe                                                        import Type_Safe
 from osbot_utils.type_safe.primitives.domains.cryptography.safe_str.Safe_Str__Cache_Hash    import Safe_Str__Cache_Hash
 from osbot_utils.type_safe.primitives.domains.identifiers.Obj_Id                            import Obj_Id
-from osbot_utils.type_safe.primitives.domains.identifiers.safe_str.Safe_Str__Id import Safe_Str__Id
+from osbot_utils.type_safe.primitives.domains.identifiers.safe_str.Safe_Str__Id             import Safe_Str__Id
 
 
 class Graph__Cache__Utils(Type_Safe):
@@ -33,7 +35,7 @@ class Graph__Cache__Utils(Type_Safe):
     def namespace__cache_hashes(self, namespace: Safe_Str__Id):
         return self.cache_client.namespace().cache_hashes(namespace=namespace)
 
-    def namespace__cache_ids(self, namespace: Safe_Str__Id):
+    def namespace__cache_ids(self, namespace: Safe_Str__Id) -> List[Cache_Id]:
         return self.cache_client.namespace().cache_ids(namespace=namespace)
 
     def namespaces(self):

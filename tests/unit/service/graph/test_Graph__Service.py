@@ -1,6 +1,7 @@
 import inspect
 from unittest                                                                               import TestCase
 
+from mgraph_ai_service_cache_client.schemas.cache.Cache_Id import Cache_Id
 from osbot_utils.testing.Pytest import skip_if_in_github_action
 from osbot_utils.testing.__helpers                                                          import obj
 from mgraph_db.mgraph.MGraph                                                                import MGraph
@@ -98,7 +99,7 @@ class test_Graph__Service(TestCase):
             params = list(sig.parameters.keys())
 
             assert params                == ['mgraph', 'namespace', 'cache_id']             # 3 parameters
-            assert sig.return_annotation == Random_Guid                                     # Returns cache_id
+            assert sig.return_annotation == Cache_Id                                        # Returns cache_id
 
     def test__delete_graph__method_signature(self):                                         # Test delete_graph signature
         with Graph__Service() as _:
@@ -156,7 +157,7 @@ class test_Graph__Service(TestCase):
                                     namespace = self.test_namespace )
 
             assert cache_id             is not None
-            assert type(cache_id)       is Random_Guid
+            assert type(cache_id)       is Cache_Id
             assert is_guid(cache_id)    is True
 
             raw_graph_json = _.graph_cache_client.cache_client.retrieve().retrieve__cache_id__json(cache_id  = cache_id ,
@@ -670,7 +671,7 @@ class test_Graph__Service(TestCase):
             cache_id = _.save_graph(mgraph    = graph               ,
                                     namespace = self.test_namespace )
 
-            assert type(cache_id)    is Random_Guid
+            assert type(cache_id)    is Cache_Id
             assert is_guid(cache_id) is True
 
             _.delete_graph(cache_id  = cache_id           ,
