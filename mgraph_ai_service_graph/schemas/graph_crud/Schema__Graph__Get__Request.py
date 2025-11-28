@@ -7,4 +7,4 @@ from osbot_utils.type_safe.primitives.domains.identifiers.safe_str.Safe_Str__Id 
 class Schema__Graph__Get__Request(Type_Safe):
     cache_id  : Random_Guid     = None                                               # Graph cache_id
     graph_id  : Obj_Id          = None                                               # Graph to retrieve
-    namespace : Safe_Str__Id                                                         # Cache namespace
+    namespace : Safe_Str__Id    = None                                               # Cache namespace

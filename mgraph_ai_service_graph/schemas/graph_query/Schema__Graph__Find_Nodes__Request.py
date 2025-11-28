@@ -5,8 +5,8 @@ from osbot_utils.type_safe.primitives.domains.identifiers.safe_str.Safe_Str__Id 
 
 
 class Schema__Graph__Find_Nodes__Request(Type_Safe):
-    graph_id   : Obj_Id                             # Target graph
-    node_type  : Safe_Str__Id                       # Type to search
+    graph_id   : Obj_Id             = None          # Target graph
+    node_type  : Safe_Str__Id       = None          # Type to search        # todo: check if this shouldn't be a Type[Node_Type]
     limit      : Safe_UInt          = 100           # Max results
     offset     : Safe_UInt          = 0             # Pagination
 

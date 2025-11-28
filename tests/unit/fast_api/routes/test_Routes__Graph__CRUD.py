@@ -1,4 +1,6 @@
+from types import NoneType
 from unittest                                                                               import TestCase
+from mgraph_db.mgraph.MGraph                                                                import MGraph
 from osbot_fast_api.api.routes.Fast_API__Routes                                             import Fast_API__Routes
 from osbot_utils.testing.__                                                                 import __, __SKIP__
 from osbot_utils.type_safe.Type_Safe                                                        import Type_Safe
@@ -6,7 +8,6 @@ from osbot_utils.type_safe.primitives.domains.identifiers.Obj_Id                
 from osbot_utils.type_safe.primitives.domains.identifiers.Random_Guid                       import Random_Guid
 from osbot_utils.type_safe.primitives.domains.identifiers.safe_str.Safe_Str__Id             import Safe_Str__Id
 from osbot_utils.utils.Objects                                                              import base_classes
-
 from mgraph_ai_service_graph.fast_api.routes.Routes__Graph__CRUD                            import Routes__Graph__CRUD
 from mgraph_ai_service_graph.fast_api.routes.Routes__Graph__CRUD                            import TAG__ROUTES_GRAPH_CRUD
 from mgraph_ai_service_graph.fast_api.routes.Routes__Graph__CRUD                            import ROUTES_PATHS__GRAPH_CRUD
@@ -18,11 +19,10 @@ from mgraph_ai_service_graph.schemas.graph_crud.Schema__Graph__Exists__Response 
 from mgraph_ai_service_graph.service.areas.Area__Graph__CRUD                                import Area__Graph__CRUD
 from mgraph_ai_service_graph.service.areas.Area__Graph__Edit                                import Area__Graph__Edit
 from mgraph_ai_service_graph.service.areas.Area__Graph__Query                               import Area__Graph__Query
+from mgraph_ai_service_graph.service.caching.Graph__Cache__Client                           import Graph__Cache__Client
 from mgraph_ai_service_graph.service.graph.Graph__Service                                   import Graph__Service
-from mgraph_ai_service_graph.service.graph.Graph__Cache__Client                             import Graph__Cache__Client
-from mgraph_ai_service_cache_client.cache.client.Cache__Client                              import Cache__Client
-from mgraph_ai_service_cache_client.cache.client.test_helpers.client_cache_service          import client_cache_service
-from tests.unit.test_helpers.Graph_Test_Helpers                                             import Graph_Test_Helpers
+from mgraph_ai_service_graph.utils.testing.Graph_Test_Helpers                               import Graph_Test_Helpers
+from tests.unit.Graph__Service__Fast_API__Test_Objs                                         import client_cache_service
 
 
 class test_Routes__Graph__CRUD(TestCase):
@@ -91,9 +91,8 @@ class test_Routes__Graph__CRUD(TestCase):
             assert type(response)           is Schema__Graph__Create__Response              # Verify response type
             assert type(response.graph_id)  is Obj_Id                                       # Verify field types
             assert type(response.cache_id)  is Random_Guid
-            assert response.namespace       == self.test_namespace
+            assert response.cache_namespace == self.test_namespace
             assert response.cached          is True
-            assert response.success         is True
 
             self.helpers.delete_graph(graph_id  = response.graph_id ,                       # Cleanup
                                       namespace = self.test_namespace)
@@ -107,7 +106,6 @@ class test_Routes__Graph__CRUD(TestCase):
             assert type(response)           is Schema__Graph__Create__Response
             assert type(response.graph_id)  is Obj_Id
             assert response.cached          is False                                        # Not cached
-            assert response.success         is True
 
     def test_create__default_namespace(self):                                               # Test creation with default namespace
         with self.routes as _:
@@ -115,23 +113,21 @@ class test_Routes__Graph__CRUD(TestCase):
             response = _.create(request)
 
             assert type(response)           is Schema__Graph__Create__Response
-            assert response.success         is True
-            assert response.namespace       == 'graph-service'                              # Default namespace
+            assert response.cache_namespace  == 'graph-service'                             # Default namespace
 
-            self.helpers.delete_graph(graph_id  = response.graph_id ,                       # Cleanup
-                                      namespace = response.namespace)
+            self.helpers.delete_graph(graph_id  = response.graph_id       ,                 # Cleanup
+                                      namespace = response.cache_namespace)
 
     def test_create__response_structure(self):                                              # Test complete response structure
         with self.routes as _:
             request  = Schema__Graph__Create__Request(namespace  = self.test_namespace,
                                                       auto_cache = True               )
             response = _.create(request)
-
-            assert response.obj().contains(__(graph_id  = __SKIP__            ,             # Use obj() for comparison
-                                              cache_id  = __SKIP__            ,
-                                              namespace = self.test_namespace ,
-                                              cached    = True                ,
-                                              success   = True                ))
+            assert type(response) is Schema__Graph__Create__Response
+            assert response.obj() == __(graph_id  = __SKIP__            ,             # Use obj() for comparison
+                                        cache_id  = __SKIP__            ,
+                                        cache_namespace = self.test_namespace ,
+                                        cached    = True                )
 
             self.helpers.delete_graph(graph_id  = response.graph_id ,
                                       namespace = self.test_namespace)
@@ -347,7 +343,6 @@ class test_Routes__Graph__CRUD(TestCase):
             cache_id = create_response.cache_id
 
             assert type(create_response) is Schema__Graph__Create__Response
-            assert create_response.success is True
 
             get_response = _.get__by_id__graph_id(graph_id  = graph_id          ,           # Step 2: Get by graph_id
                                                   namespace = self.test_namespace)
@@ -357,8 +352,8 @@ class test_Routes__Graph__CRUD(TestCase):
 
             get_by_cache_response = _.get__by_cache_id__cache_id(cache_id  = cache_id       ,     # Step 3: Get by cache_id
                                                                   namespace = self.test_namespace)
-            assert type(get_by_cache_response) is Schema__Graph__Get__Response
-            assert get_by_cache_response.success is True
+            assert type(get_by_cache_response)    is Schema__Graph__Get__Response
+            assert get_by_cache_response.success  is True
             assert get_by_cache_response.cache_id == cache_id
 
             exists_response = _.exists__graph_id(graph_id  = graph_id          ,            # Step 4: Check exists
@@ -430,12 +425,12 @@ class test_Routes__Graph__CRUD(TestCase):
                                                       auto_cache = True               )
             response = _.create(request)
 
-            assert type(response)           is Schema__Graph__Create__Response              # Response type
-            assert type(response.graph_id)  is Obj_Id                                       # Field types
-            assert type(response.cache_id)  is Random_Guid
-            assert type(response.namespace) is Safe_Str__Id
-            assert type(response.cached)    is bool
-            assert type(response.success)   is bool
+            assert type(response)                 is Schema__Graph__Create__Response              # Response type
+            assert type(response.graph_id)        is Obj_Id                                       # Field types
+            assert type(response.cache_id)        is Random_Guid
+            assert type(response.cache_namespace) is Safe_Str__Id
+            assert type(response.cached)          is bool
+
 
             self.helpers.delete_graph(graph_id=response.graph_id, namespace=self.test_namespace)
 
@@ -449,11 +444,11 @@ class test_Routes__Graph__CRUD(TestCase):
 
             assert type(response)           is Schema__Graph__Get__Response
             assert type(response.graph_id)  is Obj_Id
-            assert type(response.cache_id)  is Random_Guid
+            assert type(response.cache_id)  is NoneType
             assert type(response.success)   is bool
-            # Note: response.mgraph type depends on graph implementation
+            assert type(response.mgraph)    is MGraph
 
-        self.helpers.delete_graph(graph_id=graph_id, namespace=self.test_namespace)
+        assert self.helpers.delete_graph(graph_id=graph_id, namespace=self.test_namespace) is True
 
     def test_types__delete_response_fields(self):                                           # Test all field types in delete response
         create_response = self.helpers.create_empty_graph(namespace=self.test_namespace)

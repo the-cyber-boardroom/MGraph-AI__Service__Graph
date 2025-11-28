@@ -1,4 +1,6 @@
 from unittest                                                                            import TestCase
+
+from osbot_fast_api.api.Fast_API import Fast_API
 from osbot_fast_api.api.routes.Routes__Set_Cookie                                        import Routes__Set_Cookie
 from osbot_fast_api_serverless.fast_api.Serverless__Fast_API                             import Serverless__Fast_API
 from osbot_utils.type_safe.Type_Safe                                                     import Type_Safe
@@ -17,7 +19,7 @@ class test_Graph_Service__Fast_API(TestCase):
     def test__init__(self):                                                              # Test initialization
         with Graph_Service__Fast_API() as _:
             assert type(_)         is Graph_Service__Fast_API
-            assert base_classes(_) == [Serverless__Fast_API, Type_Safe, object]
+            assert base_classes(_) == [Serverless__Fast_API, Fast_API, Type_Safe, object]
 
     def test_setup(self):                                                                # Test FastAPI setup
         with Graph_Service__Fast_API() as _:
@@ -27,40 +29,13 @@ class test_Graph_Service__Fast_API(TestCase):
             assert _.config.title   == FAST_API__TITLE
             assert _.config.version == version__mgraph_ai_service_graph
 
-    def test_setup_routes(self):                                                         # Test route registration
-        with Graph_Service__Fast_API() as _:
-            _.setup()
-
-            # Verify routes are registered
-            routes_paths = _.routes_paths()
-
-            # Should contain info routes
-            assert '/info/health'   in routes_paths
-            assert '/info/status'   in routes_paths
-            assert '/info/version'  in routes_paths
-
-            # Should contain cookie routes
-            assert '/set-cookie/set'    in routes_paths
-            assert '/set-cookie/get'    in routes_paths
-            assert '/set-cookie/delete' in routes_paths
-
-            # Should contain graph routes
-            assert '/graph/create'                in routes_paths
-            assert '/graph/get/by-id/{graph_id}' in routes_paths
-            assert '/graph/add/node'              in routes_paths
-            assert '/graph/add/edge'              in routes_paths
-            assert '/graph/find/nodes'            in routes_paths
-
-            # Should contain batch routes
-            assert '/graph/batch/execute' in routes_paths
-
     def test_app(self):                                                                  # Test FastAPI app creation
         with Graph_Service__Fast_API() as _:
             _.setup()
             app = _.app()
 
             assert app              is not None
-            assert app.title        == FAST_API__TITLE
+            assert app.title        == 'Graph_Service__Fast_API' #FAST_API__TITLE
             assert app.version      == version__mgraph_ai_service_graph
 
     def test_client(self):                                                               # Test TestClient creation

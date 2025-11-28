@@ -17,7 +17,7 @@ from mgraph_ai_service_graph.schemas.graph_query.Schema__Graph__Neighbors__Respo
 from mgraph_ai_service_graph.service.areas.Area__Graph__Query                               import Area__Graph__Query
 
 
-TAG__ROUTES_GRAPH_QUERY = 'graph-query'
+TAG__ROUTES_GRAPH_QUERY   = 'graph-query'
 ROUTES_PATHS__GRAPH_QUERY = [ '/graph-query/find/nodes'                           ,
                               '/graph-query/find/node/{graph_id}/{node_id}'       ,
                               '/graph-query/find/edges/{graph_id}/{edge_type}'    ,

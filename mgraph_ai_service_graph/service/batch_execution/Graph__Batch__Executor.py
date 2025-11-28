@@ -15,25 +15,20 @@ from mgraph_ai_service_graph.service.areas.Area__Graph__Query                   
 class Graph__Batch__Executor(Type_Safe):                                  # Executes batch commands using enum-based method registry
     area_registry: Dict[Enum__Graph__Area, Type_Safe]                     # Registry mapping area enum → class instance
 
-    def __init__(self):                                                   # Initialize registry with empty entries
-        super().__init__()
+    def __init__(self, **kwargs):                                                   # Initialize registry with empty entries
+        super().__init__(**kwargs)
+        self.set_area_instances()
 
-        # Build static registry with actual instances (to be injected later)
-        self.area_registry = { Enum__Graph__Area.GRAPH_CRUD  : None ,
-                               Enum__Graph__Area.GRAPH_EDIT  : None ,
-                               Enum__Graph__Area.GRAPH_QUERY : None }
-                             # Enum__Graph__Area.GRAPH_CACHE  : Area__Graph__Cache(),                # Future areas:
-                             # Enum__Graph__Area.GRAPH_EXPORT : Area__Graph__Export(),
 
     # todo: see if we can refactor this engine logic into another class
     def set_area_instances(self,                                          # Inject area instances with their dependencies
-                           crud : Area__Graph__CRUD ,
-                           edit : Area__Graph__Edit ,
-                           query: Area__Graph__Query
+                           # crud : Area__Graph__CRUD ,                   # todo: see if we need this mode of injection Area__Graph__* instances, or what we do below is enough
+                           # edit : Area__Graph__Edit ,
+                           # query: Area__Graph__Query
                           ) -> 'Graph__Batch__Executor':                  # Self for chaining
-        self.area_registry[Enum__Graph__Area.GRAPH_CRUD ] = crud
-        self.area_registry[Enum__Graph__Area.GRAPH_EDIT ] = edit
-        self.area_registry[Enum__Graph__Area.GRAPH_QUERY] = query
+        self.area_registry[Enum__Graph__Area.GRAPH_CRUD ] = Area__Graph__CRUD ()
+        self.area_registry[Enum__Graph__Area.GRAPH_EDIT ] = Area__Graph__Edit ()
+        self.area_registry[Enum__Graph__Area.GRAPH_QUERY] = Area__Graph__Query()
         return self
 
     # todo: refactor this method into smaller components

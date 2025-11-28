@@ -11,7 +11,7 @@ from mgraph_ai_service_graph.schemas.graph_crud.Schema__Graph__Exists__Response 
 from mgraph_ai_service_graph.service.areas.Area__Graph__CRUD                                import Area__Graph__CRUD
 
 
-TAG__ROUTES_GRAPH_CRUD = 'graph-crud'
+TAG__ROUTES_GRAPH_CRUD   = 'graph-crud'
 ROUTES_PATHS__GRAPH_CRUD = [ '/graph-crud/create'                     ,
                              '/graph-crud/get/by-id/{graph_id}'       ,
                              '/graph-crud/get/by-cache-id/{cache_id}' ,

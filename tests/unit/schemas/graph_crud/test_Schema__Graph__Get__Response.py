@@ -1,3 +1,4 @@
+from types import NoneType
 from unittest                                                                            import TestCase
 from osbot_utils.testing.__                                                              import __
 from osbot_utils.type_safe.Type_Safe                                                     import Type_Safe
@@ -13,47 +14,32 @@ class test_Schema__Graph__Get__Response(TestCase):
         with Schema__Graph__Get__Response() as _:
             assert type(_)             is Schema__Graph__Get__Response
             assert base_classes(_)     == [Type_Safe, object]
-            assert type(_.graph_id)    is Obj_Id
+            assert type(_.graph_id)    is NoneType
             assert _.cache_id          is None                                           # Optional field
 
-            assert _.obj() == __(graph_id   = _.graph_id ,
-                                 node_count = 0          ,
-                                 edge_count = 0          ,
-                                 cached     = False      ,
-                                 cache_id   = None       )
+            assert _.obj() == __(graph_id=None, cache_id=None, mgraph=None, success=False)
 
     def test__with_values(self):                                                         # Test with explicit values
         graph_id = Obj_Id()
         cache_id = Random_Guid()
 
         with Schema__Graph__Get__Response(graph_id   = graph_id ,
-                                          node_count = 10       ,
-                                          edge_count = 5        ,
-                                          cached     = True     ,
                                           cache_id   = cache_id ) as _:
             assert _.graph_id   == graph_id
-            assert _.node_count == 10
-            assert _.edge_count == 5
-            assert _.cached     is True
+            #assert _.cached     is True
             assert _.cache_id   == cache_id
 
             assert _.obj() == __(graph_id   = graph_id ,
-                                 node_count = 10       ,
-                                 edge_count = 5        ,
-                                 cached     = True     ,
-                                 cache_id   = cache_id )
+                                 cache_id   = cache_id ,
+                                 mgraph     = None     ,
+                                 success    = False    )
 
     def test__serialization_round_trip(self):                                            # Test JSON round-trip
         cache_id = Random_Guid()
-        with Schema__Graph__Get__Response(node_count = 42      ,
-                                          edge_count = 7       ,
-                                          cached     = True    ,
-                                          cache_id   = cache_id) as original:
+        with Schema__Graph__Get__Response(cache_id   = cache_id) as original:
             json_data = original.json()
 
             with Schema__Graph__Get__Response.from_json(json_data) as restored:
                 assert restored.obj() == original.obj()
-                assert type(restored.node_count) is Safe_UInt
-                assert type(restored.edge_count) is Safe_UInt
 
 

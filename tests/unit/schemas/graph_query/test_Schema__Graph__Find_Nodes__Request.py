@@ -1,3 +1,4 @@
+from types import NoneType
 from unittest                                                                            import TestCase
 from osbot_utils.testing.__                                                              import __
 from osbot_utils.type_safe.Type_Safe                                                     import Type_Safe
@@ -14,8 +15,8 @@ class test_Schema__Graph__Find_Nodes__Request(TestCase):
         with Schema__Graph__Find_Nodes__Request() as _:
             assert type(_)            is Schema__Graph__Find_Nodes__Request
             assert base_classes(_)    == [Type_Safe, object]
-            assert type(_.graph_id)   is Obj_Id
-            assert type(_.node_type)  is Safe_Str__Id
+            assert type(_.graph_id)   is NoneType
+            assert type(_.node_type)  is NoneType
             assert type(_.limit)      is Safe_UInt
             assert type(_.offset)     is Safe_UInt
             assert _.limit            == 100                                             # Default value
@@ -51,7 +52,7 @@ class test_Schema__Graph__Find_Nodes__Request(TestCase):
             json_data = original.json()
 
             with Schema__Graph__Find_Nodes__Request.from_json(json_data) as restored:
-                assert type(restored.graph_id)  is Obj_Id
+                assert type(restored.graph_id)  is NoneType
                 assert type(restored.node_type) is Safe_Str__Id
                 assert type(restored.limit)     is Safe_UInt
                 assert type(restored.offset)    is Safe_UInt

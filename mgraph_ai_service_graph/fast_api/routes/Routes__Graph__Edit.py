@@ -16,7 +16,15 @@ from mgraph_ai_service_graph.service.areas.Area__Graph__Edit                    
 
 
 TAG__ROUTES_GRAPH_EDIT = 'graph-edit'
-
+ROUTES_PATHS__GRAPH_EDIT = ['/graph-edit/add/edge'                          ,
+                            '/graph-edit/add/edge/predicate'                ,
+                            '/graph-edit/add/edge/typed'                    ,
+                            '/graph-edit/add/node'                          ,
+                            '/graph-edit/add/node/typed'                    ,
+                            '/graph-edit/add/value'                         ,
+                            '/graph-edit/add/value/get-or-create'           ,
+                            '/graph-edit/delete/edge/{graph_id}/{edge_id}'  ,
+                            '/graph-edit/delete/node/{graph_id}/{node_id}'  ]
 
 class Routes__Graph__Edit(Fast_API__Routes):
     tag       : str              = TAG__ROUTES_GRAPH_EDIT

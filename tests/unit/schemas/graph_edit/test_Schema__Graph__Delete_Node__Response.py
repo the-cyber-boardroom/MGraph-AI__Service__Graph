@@ -2,7 +2,7 @@ from unittest                                                                   
 from osbot_utils.type_safe.Type_Safe                                                        import Type_Safe
 from osbot_utils.type_safe.primitives.domains.identifiers.Obj_Id                            import Obj_Id
 from osbot_utils.utils.Objects                                                              import base_classes
-from mgraph_ai_service_graph.schemas.graph_edit.Schema__Graph__Delete_Node__Response        import Schema__Graph__Delete_Node__Response
+from mgraph_ai_service_graph.schemas.graph_edit.nodes.Schema__Graph__Delete_Node__Response  import Schema__Graph__Delete_Node__Response
 
 
 class test_Schema__Graph__Delete_Node__Response(TestCase):

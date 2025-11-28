@@ -4,6 +4,7 @@ from osbot_fast_api.api.routes.Routes__Set_Cookie                               
 from osbot_fast_api_serverless.fast_api.Serverless__Fast_API                                import Serverless__Fast_API
 from osbot_fast_api_serverless.fast_api.routes.Routes__Info                                 import Routes__Info
 from mgraph_ai_service_graph.config                                                         import FAST_API__TITLE
+from mgraph_ai_service_graph.fast_api.routes.Routes__Graph__Server                          import Routes__Graph__Server
 from mgraph_ai_service_graph.utils.Version                                                  import version__mgraph_ai_service_graph
 from mgraph_ai_service_graph.fast_api.routes.Routes__Graph__CRUD                            import Routes__Graph__CRUD
 from mgraph_ai_service_graph.fast_api.routes.Routes__Graph__Edit                            import Routes__Graph__Edit
@@ -27,6 +28,7 @@ class Graph_Service__Fast_API(Serverless__Fast_API):                            
         self.add_routes(Routes__Graph__Edit  )                                              # Graph edit operations
         self.add_routes(Routes__Graph__Query )                                              # Graph query operations
         self.add_routes(Routes__Graph__Batch )                                              # Batch execution
+        self.add_routes(Routes__Graph__Server)                                              # Server details and stats
 
     # todo: add these changes to the main Fast_API project (since these are quite useful)
     def add_routes(self, class_routes):

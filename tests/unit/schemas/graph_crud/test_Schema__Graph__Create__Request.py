@@ -12,7 +12,7 @@ class test_Schema__Graph__Create__Request(TestCase):
             assert base_classes(_) == [Type_Safe, object]
             assert _.graph_name    is None
             assert _.auto_cache    is True                                               # Default value
-            assert _.namespace     == "default"                                          # Default value
+            assert _.namespace     == 'graph-service'                                          # Default value
 
     def test__with_values(self):                                                         # Test with explicit values
         with Schema__Graph__Create__Request(graph_name = "my-graph"  ,

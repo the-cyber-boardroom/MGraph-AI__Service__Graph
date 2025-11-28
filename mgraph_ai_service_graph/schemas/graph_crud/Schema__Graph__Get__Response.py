@@ -5,8 +5,8 @@ from osbot_utils.type_safe.primitives.domains.identifiers.Random_Guid           
 
 
 class Schema__Graph__Get__Response(Type_Safe):
-    graph_id   : Obj_Id                                                                 # Retrieved graph ID
+    graph_id   : Obj_Id                = None                                           # Retrieved graph ID
     #cached     : bool                                                                  # Whether graph is cached
     cache_id   : Random_Guid           = None                                           # Cache ID if cached
-    mgraph     : MGraph
+    mgraph     : MGraph                = None
     success    : bool

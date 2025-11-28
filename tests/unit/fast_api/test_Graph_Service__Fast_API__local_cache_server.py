@@ -1,5 +1,7 @@
 from unittest                                                                                                   import TestCase
 from fastapi                                                                                                    import FastAPI
+
+from mgraph_ai_service_graph.fast_api.routes.Routes__Graph__Server import Routes__Graph__Server
 from mgraph_db.mgraph.MGraph                                                                                    import MGraph
 from starlette.testclient                                                                                       import TestClient
 from mgraph_ai_service_cache_client.utils.Version                                                               import version__mgraph_ai_service_cache_client
@@ -86,13 +88,15 @@ class test_Graph_Service__Fast_API__local_cache_server(TestCase):
                                                      Routes__Graph__CRUD ,
                                                      Routes__Graph__Edit ,
                                                      Routes__Graph__Query,
-                                                     Routes__Graph__Batch]
+                                                     Routes__Graph__Batch,
+                                                     Routes__Graph__Server ,]
             assert _.routes_classes.keys().obj() == [ 'osbot_fast_api_serverless.fast_api.routes.Routes__Info.Routes__Info',
                                                       'osbot_fast_api.api.routes.Routes__Set_Cookie.Routes__Set_Cookie',
                                                       'mgraph_ai_service_graph.fast_api.routes.Routes__Graph__CRUD.Routes__Graph__CRUD',
                                                       'mgraph_ai_service_graph.fast_api.routes.Routes__Graph__Edit.Routes__Graph__Edit',
                                                       'mgraph_ai_service_graph.fast_api.routes.Routes__Graph__Query.Routes__Graph__Query',
-                                                      'mgraph_ai_service_graph.fast_api.routes.Routes__Graph__Batch.Routes__Graph__Batch']
+                                                      'mgraph_ai_service_graph.fast_api.routes.Routes__Graph__Batch.Routes__Graph__Batch',
+                                                      'mgraph_ai_service_graph.fast_api.routes.Routes__Graph__Server.Routes__Graph__Server']
 
             routes_graph_crud = _.routes_classes[Routes__Graph__CRUD]
             assert type(routes_graph_crud                                           ) == Routes__Graph__CRUD

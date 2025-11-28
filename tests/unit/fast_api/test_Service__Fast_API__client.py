@@ -6,16 +6,12 @@ from osbot_fast_api_serverless.fast_api.routes.Routes__Info                     
 from osbot_utils.utils.Env                                                               import get_env
 from starlette.testclient                                                                import TestClient
 from mgraph_ai_service_graph.fast_api.Graph_Service__Fast_API                            import Graph_Service__Fast_API
+from mgraph_ai_service_graph.fast_api.routes.Routes__Graph__Batch import ROUTES_PATHS__GRAPH_BATCH
+from mgraph_ai_service_graph.fast_api.routes.Routes__Graph__CRUD import ROUTES_PATHS__GRAPH_CRUD
+from mgraph_ai_service_graph.fast_api.routes.Routes__Graph__Edit import ROUTES_PATHS__GRAPH_EDIT
+from mgraph_ai_service_graph.fast_api.routes.Routes__Graph__Query import ROUTES_PATHS__GRAPH_QUERY
+from mgraph_ai_service_graph.fast_api.routes.Routes__Graph__Server import ROUTES_PATHS__GRAPH_SERVER
 from tests.unit.Graph__Service__Fast_API__Test_Objs                                      import setup__graph_service_fast_api_test_objs, Graph__Service__Fast_API__Test_Objs, TEST_API_KEY__NAME
-
-
-EXPECTED_ROUTES__GRAPH       = [ '/graph/add/edge'              ,
-                                 '/graph/add/node'              ,
-                                 '/graph/create'                ,
-                                 '/graph/find/nodes'            ,
-                                 '/graph/get/by-id/{graph_id}'  ]
-
-EXPECTED_ROUTES__GRAPH_BATCH = [ '/graph/batch/execute'         ]
 
 
 class test_Graph_Service__Fast_API__client(TestCase):
@@ -59,9 +55,12 @@ class test_Graph_Service__Fast_API__client(TestCase):
 
     def test__config_fast_api_routes(self):                                              # Test routes are configured correctly
         expected_routes = sorted(ROUTES_PATHS__INFO          +
-                                 EXPECTED_ROUTES__SET_COOKIE +
-                                 EXPECTED_ROUTES__GRAPH      +
-                                 EXPECTED_ROUTES__GRAPH_BATCH)
+                                 EXPECTED_ROUTES__SET_COOKIE +                           # todo: fix this variable name in osbot_fast_api
+                                 ROUTES_PATHS__GRAPH_BATCH    +
+                                 ROUTES_PATHS__GRAPH_CRUD    +
+                                 ROUTES_PATHS__GRAPH_EDIT    +
+                                 ROUTES_PATHS__GRAPH_QUERY   +
+                                 ROUTES_PATHS__GRAPH_SERVER  )
 
         assert self.fast_api.routes_paths() == expected_routes
 

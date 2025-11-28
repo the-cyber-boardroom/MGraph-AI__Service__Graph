@@ -18,7 +18,7 @@ class test_Schema__Graph__Batch__Command(TestCase):
             assert type(_)         is Schema__Graph__Batch__Command
             assert base_classes(_) == [Type_Safe, object]
             assert type(_.area)    is NoneType
-            assert type(_.method)  is Safe_Str__Python__Identifier
+            assert type(_.method)  is NoneType
             assert type(_.payload) is Type_Safe__Dict                                    # Type_Safe__Dict not raw dict
 
     def test__with_values(self):                                                         # Test with explicit values

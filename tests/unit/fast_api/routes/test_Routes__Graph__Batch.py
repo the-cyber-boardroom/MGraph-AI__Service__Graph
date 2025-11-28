@@ -15,12 +15,12 @@ class test_Routes__Graph__Batch(TestCase):
         with Routes__Graph__Batch() as _:
             assert type(_)                 is Routes__Graph__Batch
             assert base_classes(_)         == [Fast_API__Routes, Type_Safe, object]
-            assert _.tag                   == 'graph-batch'
+            assert _.tag                   == 'graph/batch'
             assert type(_.batch_executor)  is Graph__Batch__Executor
 
     def test__tag(self):                                                                 # Test tag value
         with Routes__Graph__Batch() as _:
-            assert _.tag == 'graph-batch'
+            assert _.tag == 'graph/batch'
 
     def test__batch_executor_dependency(self):                                           # Test batch executor is injected
         with Routes__Graph__Batch() as _:

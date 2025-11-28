@@ -8,4 +8,4 @@ class Schema__Graph__Create__Response(Type_Safe):
     graph_id        : Obj_Id                        # Generated ID
     cached          : bool                          # Whether cached
     cache_id        : Random_Guid         = None    # Cache id (if cached in cache service)
-    cache_namespace : Safe_Str__Id        = None    # Cache namespace (this is needed in order to get the graph_id)
+    cache_namespace : Safe_Str__Id        = None    # Cache namespace (this is needed in order to get the graph_id) # todo: see if we should not just use 'namespace' here, instead of 'cache_namespace'

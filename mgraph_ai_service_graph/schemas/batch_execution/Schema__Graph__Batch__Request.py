@@ -8,3 +8,4 @@ class Schema__Graph__Batch__Request(Type_Safe):
     stop_on_error : bool                = False                     # Transaction mode
     namespace     : Safe_Str__Id = "default"                        # Cache namespace
 
+

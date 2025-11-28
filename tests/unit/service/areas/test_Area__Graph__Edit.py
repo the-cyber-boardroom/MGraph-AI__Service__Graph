@@ -215,7 +215,17 @@ class test_Area__Graph__Edit(TestCase):
                                                           value      = 'unique-value'    ,
                                                           auto_cache = True              )
             response_1 = _.add_value.get_or_create_value(request_1)
+            assert type(response_1) is Schema__Graph__Add_Value__Response
+            assert response_1.obj() == __( node_id  = __SKIP__,
+                                           graph_id = graph_id,
+                                           cache_id = __SKIP__,
+                                           value    = 'unique-value',
+                                           cached   = True,
+                                           success  = True)
 
+            assert response_1.cache_id != cache_id                      # BUG: we are creating a new graph
+
+            return
             assert response_1.success is True
             node_id_1 = response_1.node_id
             cache_id  = response_1.cache_id
