@@ -1,78 +1,79 @@
-from typing                                                                                 import List
 from osbot_utils.type_safe.Type_Safe                                                        import Type_Safe
 from osbot_utils.type_safe.primitives.core.Safe_UInt                                        import Safe_UInt
 from osbot_utils.type_safe.primitives.domains.identifiers.Obj_Id                            import Obj_Id
+from osbot_utils.type_safe.primitives.domains.identifiers.safe_str.Safe_Str__Key            import Safe_Str__Key
+from osbot_utils.type_safe.primitives.domains.common.safe_str.Safe_Str__Text                import Safe_Str__Text
+from mgraph_ai_service_graph.schemas.graph_ref.Schema__Graph__Ref                           import Schema__Graph__Ref
 from mgraph_ai_service_graph.schemas.graph_query.Schema__Graph__Find_Nodes__Request         import Schema__Graph__Find_Nodes__Request
 from mgraph_ai_service_graph.schemas.graph_query.Schema__Graph__Find_Nodes__Response        import Schema__Graph__Find_Nodes__Response
+from mgraph_ai_service_graph.schemas.graph_query.Schema__Graph__Find_Node__Response         import Schema__Graph__Find_Node__Response
+from mgraph_ai_service_graph.schemas.graph_query.Schema__Graph__Find_Edges__Response        import Schema__Graph__Find_Edges__Response
+from mgraph_ai_service_graph.schemas.graph_query.Schema__Graph__Edge__Data                  import Schema__Graph__Edge__Data
+from mgraph_ai_service_graph.schemas.graph_query.Schema__Graph__Neighbors__Response         import Schema__Graph__Neighbors__Response
 from mgraph_ai_service_graph.service.graph.Graph__Service                                   import Graph__Service
 
-
 # todo this section has quite a number of bugs in how to access the graph data and it is also not using the cache_id when needed
-class Area__Graph__Query(Type_Safe):                                        # Graph query operations area - handles searching and exploration
-                                                                            # This area provides read-only query operations on graphs using
-                                                                            # MGraph's powerful query system.
 
-    graph_service: Graph__Service                                           # Injected graph service dependency
+class Area__Graph__Query(Type_Safe):                                            # Graph query operations area
 
-    def find_nodes_by_type(self,                                           # Find all nodes of a specific type in a graph
-                           request: Schema__Graph__Find_Nodes__Request     # Query request with graph_id, node_type, limit, offset
-                          ) -> Schema__Graph__Find_Nodes__Response:        # Response with list of node_ids and pagination info
+    graph_service: Graph__Service
 
+    def find_nodes_by_type(self,                                                # Find all nodes of a specific type
+                           request: Schema__Graph__Find_Nodes__Request
+                          ) -> Schema__Graph__Find_Nodes__Response:
 
-        graph = self.graph_service.get_or_create_graph(cache_id = request.cache_id,
-                                                       graph_id  = str(request.graph_id),           # Retrieve graph
-                                                       namespace = "graphs")
+        graph_ref                = request.graph_ref or Schema__Graph__Ref()
+        mgraph, resolved_ref     = self.graph_service.resolve_graph_ref(graph_ref)
 
-        query_result = graph.query().by_type(str(request.node_type))                                # Query nodes by type using MGraph's query API
-        all_node_ids = list(query_result.nodes_ids())
+        query_result   = mgraph.query().by_type(str(request.node_type))
+        all_node_ids   = list(query_result.nodes_ids())
 
-        offset = int(request.offset)                                                                # Apply pagination
+        offset = int(request.offset)
         limit  = int(request.limit)
 
         paginated_node_ids = all_node_ids[offset:offset + limit]
+        node_ids_typed     = [Obj_Id(str(node_id)) for node_id in paginated_node_ids]
+        total_found        = Safe_UInt(len(all_node_ids))
+        has_more           = (offset + limit) < len(all_node_ids)
 
-        # todo: see if we need this
-        node_ids_typed = [Obj_Id(str(node_id)) for node_id in paginated_node_ids]                   # Convert to Obj_Id type
+        return Schema__Graph__Find_Nodes__Response(graph_ref   = resolved_ref  ,
+                                                   node_ids    = node_ids_typed,
+                                                   total_found = total_found   ,
+                                                   has_more    = has_more      )
 
-        total_found = Safe_UInt(len(all_node_ids))                                                  # Calculate pagination info
-        has_more    = (offset + limit) < len(all_node_ids)
+    def find_node_by_id(self,                                                   # Find a specific node by ID
+                        graph_ref : Schema__Graph__Ref,
+                        node_id   : Obj_Id
+                   ) -> Schema__Graph__Find_Node__Response:
 
-        return Schema__Graph__Find_Nodes__Response(cache_id    = request.cache_id,
-                                                   graph_id    = request.graph_id,
-                                                   node_ids    = node_ids_typed   ,
-                                                   total_found = total_found      ,
-                                                   has_more    = has_more         )
-
-    def find_node_by_id(self,                           # Find a specific node by ID
-                        graph_id: str,                  # Target graph
-                        node_id : str                   # Node to find
-                   ) -> dict:                           # Node data as dict | todo: convert to type_safe class
-
-        graph = self.graph_service.get_or_create_graph(graph_id, "graphs")
-
-        node = graph.query().mgraph_data.node(node_id)                                                      # Use MGraph's query API
+        mgraph, resolved_ref = self.graph_service.resolve_graph_ref(graph_ref)
+        node                 = mgraph.query().mgraph_data.node(str(node_id))
 
         if node is None:
-            raise KeyError(f"Node {node_id} not found in graph {graph_id}")
+            return Schema__Graph__Find_Node__Response(graph_ref = resolved_ref,
+                                                      node_id   = node_id     ,
+                                                      found     = False       )
 
-        # todo: convert to type_safe class
-        return { "node_id"  : str(node.node_id),
-                 "node_type": str(node.node_type),
-                 "node_data": node.node_data
-        }
+        node_data_typed = {Safe_Str__Key(k): Safe_Str__Text(str(v))
+                          for k, v in (node.node_data or {}).items()}
 
-    # todo: see if there is not a better way to calculate this using MGraph (for example using the indexes)
-    def get_neighbors(self,                             # Get all neighboring nodes (connected by edges)
-                      graph_id: str,                    # Target graph
-                      node_id : str                     # Node to get neighbors for
-                 ) -> List[str]:                        # List of neighbor node IDs | todo: return type_safe list
+        return Schema__Graph__Find_Node__Response(graph_ref = resolved_ref              ,
+                                                  node_id   = Obj_Id(str(node.node_id)) ,
+                                                  node_type = str(node.node_type)       ,
+                                                  node_data = node_data_typed           ,
+                                                  found     = True                      )
 
-        graph    = self.graph_service.get_or_create_graph(graph_id, "graphs")
-        query    = graph.query()                                                # Use MGraph's query API to get edges
-        outgoing = query.from_node(node_id).edges()                             # Get outgoing edges
-        incoming = query.to_node(node_id).edges()                               # Get incoming edges
+    def get_neighbors(self,                                                     # Get all neighboring nodes
+                      graph_ref : Schema__Graph__Ref,
+                      node_id   : Obj_Id
+                 ) -> Schema__Graph__Neighbors__Response:
 
-        neighbor_ids = set()                                                    # Collect unique neighbor IDs
+        mgraph, resolved_ref = self.graph_service.resolve_graph_ref(graph_ref)
+        query                = mgraph.query()
+        outgoing             = query.from_node(str(node_id)).edges()
+        incoming             = query.to_node(str(node_id)).edges()
+
+        neighbor_ids = set()
 
         for edge in outgoing:
             neighbor_ids.add(str(edge.to_node_id))
@@ -80,21 +81,34 @@ class Area__Graph__Query(Type_Safe):                                        # Gr
         for edge in incoming:
             neighbor_ids.add(str(edge.from_node_id))
 
-        return list(neighbor_ids)                                                    # todo: return type_safe list
+        neighbor_ids_typed = [Obj_Id(nid) for nid in neighbor_ids]
 
-    def find_edges_by_type(self,                         # Find all edges of a specific type
-                           graph_id : str,               # Target graph
-                           edge_type: str                # Type of edges to find
-                      ) -> List[dict]:                  # List of edge data dicts    | todo: return type_safe Dict
+        return Schema__Graph__Neighbors__Response(graph_ref    = resolved_ref          ,
+                                                  node_id      = node_id               ,
+                                                  neighbor_ids = neighbor_ids_typed    ,
+                                                  total_found  = Safe_UInt(len(neighbor_ids_typed)))
 
-        graph = self.graph_service.get_or_create_graph(graph_id, "graphs")
+    def find_edges_by_type(self,                                                # Find all edges of a specific type
+                           graph_ref : Schema__Graph__Ref,
+                           edge_type : str
+                      ) -> Schema__Graph__Find_Edges__Response:
 
-        edges = graph.query().by_edge_type(edge_type).edges()                       # Query edges by type
+        mgraph, resolved_ref = self.graph_service.resolve_graph_ref(graph_ref)
+        edges                = mgraph.query().by_edge_type(edge_type).edges()
 
-        return [ {                                                                  # todo: return type_safe Dict
-                    "edge_id"     : str(edge.edge_id)     ,
-                    "from_node_id": str(edge.from_node_id),
-                    "to_node_id"  : str(edge.to_node_id)  ,
-                    "edge_type"   : str(edge.edge_type)   ,
-                    "edge_data"   : edge.edge_data
-                 } for edge in edges ]
+        edges_typed = []
+        for edge in edges:
+            edge_data_typed = {Safe_Str__Key(k): Safe_Str__Text(str(v))
+                               for k, v in (edge.edge_data or {}).items()}
+
+            edges_typed.append(Schema__Graph__Edge__Data(
+                edge_id      = Obj_Id(str(edge.edge_id))     ,
+                from_node_id = Obj_Id(str(edge.from_node_id)),
+                to_node_id   = Obj_Id(str(edge.to_node_id))  ,
+                edge_type    = str(edge.edge_type)           ,
+                edge_data    = edge_data_typed               ))
+
+        return Schema__Graph__Find_Edges__Response(graph_ref   = resolved_ref       ,
+                                                   edge_type   = edge_type          ,
+                                                   edges       = edges_typed        ,
+                                                   total_found = Safe_UInt(len(edges_typed)))

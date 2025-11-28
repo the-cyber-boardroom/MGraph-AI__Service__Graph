@@ -1,5 +1,3 @@
-# service/areas/Area__Graph__Edit.py
-
 from osbot_utils.type_safe.Type_Safe                                     import Type_Safe
 from mgraph_ai_service_graph.service.areas.edit.Graph__Edit__Add_Node    import Graph__Edit__Add_Node
 from mgraph_ai_service_graph.service.areas.edit.Graph__Edit__Add_Value   import Graph__Edit__Add_Value
