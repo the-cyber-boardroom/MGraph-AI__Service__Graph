@@ -1,5 +1,6 @@
 from mgraph_ai_service_cache_client.client.client_contract.Cache__Service__Fast_API__Client import Cache__Service__Fast_API__Client
 from mgraph_ai_service_cache_client.schemas.cache.Schema__Cache__Store__Response            import Schema__Cache__Store__Response
+from mgraph_ai_service_cache_client.schemas.cache.Schema__Cache__Update__Response import Schema__Cache__Update__Response
 from mgraph_ai_service_cache_client.schemas.cache.enums.Enum__Cache__Store__Strategy        import Enum__Cache__Store__Strategy
 from mgraph_ai_service_cache_client.schemas.cache.file.Schema__Cache__File__Refs            import Schema__Cache__File__Refs
 from mgraph_db.mgraph.MGraph                                                                import MGraph
@@ -97,3 +98,14 @@ class Graph__Cache__Client(Type_Safe):                                   # Wrapp
                        namespace: Safe_Str__Id) -> Schema__Cache__File__Refs:
         return self.cache_client.retrieve().retrieve__cache_id__refs(cache_id  = cache_id ,
                                                                      namespace = namespace)
+
+    def update_graph(self,                                                                  # Update existing graph in cache service
+                     mgraph    : MGraph        ,                                            # MGraph instance to update
+                     cache_id  : Random_Guid   ,                                            # Existing cache entry ID
+                     namespace : Safe_Str__Id                                               # Cache namespace
+                    ) -> Schema__Cache__Update__Response:                                   # Return update response with cache_id
+        graph_json = mgraph.json()                                                          # Serialize graph to JSON
+        result = self.cache_client.update().update__json(cache_id  = cache_id ,
+                                                         namespace = namespace,
+                                                         body      = graph_json)
+        return result

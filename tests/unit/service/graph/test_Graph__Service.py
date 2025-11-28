@@ -14,14 +14,14 @@ class test_Graph__Service(TestCase):
 
     def test__init__(self):                                                              # Test auto-initialization
         with Graph__Service() as _:
-            assert type(_)              is Graph__Service
-            assert base_classes(_)      == [Type_Safe, object]
-            assert type(_.cache_client) is Graph__Cache__Client
+            assert type(_)                    is Graph__Service
+            assert base_classes(_)            == [Type_Safe, object]
+            assert type(_.graph_cache_client) is Graph__Cache__Client
 
     def test__cache_client_dependency(self):                                             # Test cache client is initialized
         with Graph__Service() as _:
-            assert _.cache_client is not None
-            assert type(_.cache_client) is Graph__Cache__Client
+            assert _.graph_cache_client is not None
+            assert type(_.graph_cache_client) is Graph__Cache__Client
 
     def test__create_new_graph(self):                                                    # Test creating a new empty graph
         with self.graph_service as _:
@@ -67,37 +67,4 @@ class test_Graph__Service(TestCase):
             assert params[1].name == 'namespace'
             assert params[1].default == 'graphs'                                         # Default namespace
 
-    def test__save_graph__method_signature(self):                                        # Test save_graph signature
-        with Graph__Service() as _:
-            import inspect
-            sig = inspect.signature(_.save_graph)
-            params = list(sig.parameters.values())
-
-            # Should have graph_id, graph, and namespace parameters
-            assert len(params) == 3
-            assert params[0].name == 'graph_id'
-            assert params[1].name == 'graph'
-            assert params[2].name == 'namespace'
-            assert params[2].default == 'graphs'
-
-    def test__delete_graph__method_signature(self):                                      # Test delete_graph signature
-        with Graph__Service() as _:
-            import inspect
-            sig = inspect.signature(_.delete_graph)
-            params = list(sig.parameters.values())
-
-            assert len(params) == 2
-            assert params[0].name == 'graph_id'
-            assert params[1].name == 'namespace'
-            assert params[1].default == 'graphs'
-
-    def test__graph_exists__method_signature(self):                                      # Test graph_exists signature
-        with Graph__Service() as _:
-            import inspect
-            sig = inspect.signature(_.graph_exists)
-            params = list(sig.parameters.values())
-
-            assert len(params) == 2
-            assert params[0].name == 'graph_id'
-            assert params[1].name == 'namespace'
-            assert params[1].default == 'graphs'
+    # todo: add methods that actually test the methods from Graph__Service

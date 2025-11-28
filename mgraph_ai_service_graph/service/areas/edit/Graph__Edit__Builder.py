@@ -35,11 +35,12 @@ class Graph__Edit__Builder(Type_Safe):
         edge_id  = Obj_Id(str(builder.current_edge().edge_id)) if builder.current_edge() else None
 
         cached   = False
-        cache_id = None
+        cache_id = request.cache_id                                     # Start with request's cache_id
 
         if request.auto_cache:
             cache_id = self.graph_service.save_graph(mgraph    = graph    ,
-                                                     namespace = namespace)
+                                                     namespace = namespace,
+                                                     cache_id  = cache_id )   # Pass cache_id for update
             cached = True
 
         return Schema__Graph__Builder__Add_Connected__Response(node_id  = node_id          ,

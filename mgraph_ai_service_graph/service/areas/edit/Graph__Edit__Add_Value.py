@@ -1,3 +1,5 @@
+from osbot_utils.type_safe.primitives.domains.identifiers.Random_Guid import Random_Guid
+
 from mgraph_ai_service_graph.schemas.graph_edit.values.Schema__Graph__Add_Value__Response   import Schema__Graph__Add_Value__Response
 from mgraph_db.mgraph.MGraph                                                                import MGraph
 from osbot_utils.type_safe.Type_Safe                                                        import Type_Safe
@@ -26,12 +28,13 @@ class Graph__Edit__Add_Value(Type_Safe):
         node = graph.edit().new_value(value = request.value,
                                       key   = request.key  )
 
-        return self._create_response(node       = node            ,
-                                     graph      = graph           ,
-                                     graph_id   = request.graph_id,
-                                     namespace  = namespace       ,
-                                     value      = request.value   ,
-                                     auto_cache = request.auto_cache)
+        return self._create_response(node       = node              ,
+                                     graph      = graph             ,
+                                     graph_id   = request.graph_id  ,
+                                     namespace  = namespace         ,
+                                     value      = request.value     ,
+                                     auto_cache = request.auto_cache,
+                                     cache_id   = request.cache_id  )   # Pass cache_id
 
     def get_or_create_value(self,                                       # Get existing or create new value node
                             request: Schema__Graph__Add_Value__Request  # Wraps: graph.values().get_or_create()
@@ -42,12 +45,13 @@ class Graph__Edit__Add_Value(Type_Safe):
         node = graph.values().get_or_create(value = request.value,
                                             key   = request.key  )
 
-        return self._create_response(node       = node            ,
-                                     graph      = graph           ,
-                                     graph_id   = request.graph_id,
-                                     namespace  = namespace       ,
-                                     value      = request.value   ,
-                                     auto_cache = request.auto_cache)
+        return self._create_response(node       = node              ,
+                                     graph      = graph             ,
+                                     graph_id   = request.graph_id  ,
+                                     namespace  = namespace         ,
+                                     value      = request.value     ,
+                                     auto_cache = request.auto_cache,
+                                     cache_id   = request.cache_id  )   # Pass cache_id
 
     # ═══════════════════════════════════════════════════════════════════════════════
     # Helper Methods
@@ -55,10 +59,15 @@ class Graph__Edit__Add_Value(Type_Safe):
 
     def _get_graph(self,
                    request  : Schema__Graph__Add_Value__Request
-              ) -> tuple[MGraph, Safe_Str__Id]:                         # todo: should just be MGraph (since we shouldn't be setting the namespace deep in this code)
+              ) -> tuple[MGraph, Safe_Str__Id]:
 
         namespace = request.namespace or DEFAULT_NAMESPACE
-        graph     = self.graph_service.get_or_create_graph(graph_id  = request.graph_id,
+
+        if request.cache_id:                                            # Retrieve from cache if cache_id provided
+            graph = self.graph_service.get_graph(cache_id  = request.cache_id,
+                                                 namespace = namespace       )
+        else:                                                           # Otherwise get or create by graph_id
+            graph = self.graph_service.get_or_create_graph(graph_id  = request.graph_id,
                                                            namespace = namespace       )
         return graph, namespace
 
@@ -68,16 +77,17 @@ class Graph__Edit__Add_Value(Type_Safe):
                          graph_id   : Obj_Id      ,
                          namespace  : Safe_Str__Id,
                          value      : str         ,
-                         auto_cache : bool
+                         auto_cache : bool        ,
+                         cache_id   : Random_Guid = None                # pass cache_id for updates
                     ) -> Schema__Graph__Add_Value__Response:
 
         node_id  = Obj_Id(str(node.node_id))
         cached   = False
-        cache_id = None
 
         if auto_cache:
             cache_id = self.graph_service.save_graph(mgraph    = graph    ,
-                                                     namespace = namespace)
+                                                     namespace = namespace,
+                                                     cache_id  = cache_id )   # Pass cache_id for update
             cached = True
 
         return Schema__Graph__Add_Value__Response(node_id  = node_id ,

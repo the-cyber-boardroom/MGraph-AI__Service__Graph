@@ -40,12 +40,20 @@ class Graph__Service(Type_Safe):                                            # Ma
 
     @type_safe
     def save_graph(self,                                                # Persist graph to cache service
-                   mgraph    : MGraph              ,                    # MGraph instance to save
-                   namespace : Safe_Str__Id = "graphs"                  # Cache namespace for organization
-              ) -> Random_Guid:                                         # Cache hash identifying stored graph
+                   mgraph    : MGraph                    ,              # MGraph instance to save
+                   namespace : Safe_Str__Id = "graphs"   ,              # Cache namespace for organization
+                   cache_id  : Random_Guid  = None                      # Optional: existing cache_id to update
+              ) -> Random_Guid:                                         # Cache id identifying stored graph
 
-        store_response =  self.graph_cache_client.store_graph(mgraph=mgraph, namespace=namespace)
-        return store_response.cache_id
+        if cache_id:                                                    # Update existing cache entry
+            update_response = self.graph_cache_client.update_graph(mgraph    = mgraph   ,
+                                                                   cache_id  = cache_id ,
+                                                                   namespace = namespace)
+            return update_response.cache_id
+        else:                                                           # Create new cache entry
+            store_response = self.graph_cache_client.store_graph(mgraph    = mgraph   ,
+                                                                 namespace = namespace)
+            return store_response.cache_id
 
     @type_safe
     def delete_graph(self,                                              # Delete graph from cache

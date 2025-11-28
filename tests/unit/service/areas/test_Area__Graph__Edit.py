@@ -218,15 +218,13 @@ class test_Area__Graph__Edit(TestCase):
             assert type(response_1) is Schema__Graph__Add_Value__Response
             assert response_1.obj() == __( node_id  = __SKIP__,
                                            graph_id = graph_id,
-                                           cache_id = __SKIP__,
+                                           cache_id = cache_id,
                                            value    = 'unique-value',
                                            cached   = True,
                                            success  = True)
 
-            assert response_1.cache_id != cache_id                      # BUG: we are creating a new graph
-
-            return
-            assert response_1.success is True
+            assert response_1.cache_id == cache_id                      # confirm that we didn't create a new graph
+            assert response_1.success  is True
             node_id_1 = response_1.node_id
             cache_id  = response_1.cache_id
 
@@ -408,6 +406,7 @@ class test_Area__Graph__Edit(TestCase):
 
             result = _.delete.delete_node(graph_id  = graph_id           ,                  # Delete the node
                                           node_id   = node_id            ,
+                                          cache_id  = cache_id           ,
                                           namespace = self.test_namespace)
 
             assert result is True
@@ -458,6 +457,7 @@ class test_Area__Graph__Edit(TestCase):
             edge_id       = edge_response.edge_id
 
             result = _.delete.delete_edge(graph_id  = graph_id           ,                  # Delete edge
+                                          cache_id  = cache_id           ,
                                           edge_id   = edge_id            ,
                                           namespace = self.test_namespace)
 
@@ -533,11 +533,13 @@ class test_Area__Graph__Edit(TestCase):
 
             delete_result = _.delete.delete_node(graph_id  = graph_id           ,                # Delete node
                                                  node_id   = node_id            ,
+                                                 cache_id  = cache_id           ,
                                                  namespace = self.test_namespace)
             assert delete_result is True
 
             delete_again = _.delete.delete_node(graph_id  = graph_id           ,                 # Try delete again
                                                 node_id   = node_id            ,
+                                                cache_id  = cache_id           ,
                                                 namespace = self.test_namespace)
             assert delete_again is False                                                         # Already deleted
 
@@ -572,11 +574,13 @@ class test_Area__Graph__Edit(TestCase):
 
             delete_result = _.delete.delete_edge(graph_id  = graph_id           ,                # Delete edge
                                                  edge_id   = edge_id            ,
+                                                 cache_id  = cache_id           ,
                                                  namespace = self.test_namespace)
             assert delete_result is True
 
             delete_again = _.delete.delete_edge(graph_id  = graph_id           ,                 # Try delete again
                                                 edge_id   = edge_id            ,
+                                                cache_id  = cache_id           ,
                                                 namespace = self.test_namespace)
             assert delete_again is False                                                         # Already deleted
 
