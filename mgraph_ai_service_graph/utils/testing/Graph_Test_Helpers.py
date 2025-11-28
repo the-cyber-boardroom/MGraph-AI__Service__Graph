@@ -29,10 +29,11 @@ from mgraph_ai_service_graph.schemas.graph_edit.edges.Schema__Graph__Add_Edge__R
 from mgraph_ai_service_graph.schemas.graph_edit.edges.Schema__Graph__Add_Edge__Response     import Schema__Graph__Add_Edge__Response
 from mgraph_ai_service_graph.schemas.graph_query.Schema__Graph__Find_Nodes__Request         import Schema__Graph__Find_Nodes__Request
 from mgraph_ai_service_graph.schemas.graph_query.Schema__Graph__Find_Nodes__Response        import Schema__Graph__Find_Nodes__Response
+from mgraph_ai_service_graph.schemas.graph_ref.Schema__Graph__Ref import Schema__Graph__Ref
 from mgraph_ai_service_graph.service.areas.Area__Graph__CRUD                                import Area__Graph__CRUD
 from mgraph_ai_service_graph.service.areas.Area__Graph__Edit                                import Area__Graph__Edit
 from mgraph_ai_service_graph.service.areas.Area__Graph__Query                               import Area__Graph__Query
-
+from mgraph_ai_service_graph.service.graph.Graph__Ref__Resolver import Graph__Ref__Resolver
 
 DEFAULT_NAMESPACE = 'test-graphs'
 
@@ -334,16 +335,16 @@ class Graph_Test_Helpers(Type_Safe):                # Helper methods to create a
                      graph_id  : Obj_Id                             ,
                      namespace : str        = DEFAULT_NAMESPACE
                     ) -> bool:                                                              # Delete a graph
-        return self.area_crud.delete_graph(graph_id  = graph_id ,
-                                           namespace = namespace)
+        graph_ref = Schema__Graph__Ref(graph_id = graph_id, namespace=namespace)
+        return self.area_crud.delete_graph(graph_ref = graph_ref)
 
     @type_safe
     def delete_graph_by_cache_id(self,
                                  cache_id  : Random_Guid                        ,
                                  namespace : str         = DEFAULT_NAMESPACE
                                 ) -> bool:                                                  # Delete a graph by cache_id
-        return self.area_crud.delete_graph(cache_id  = cache_id ,
-                                           namespace = namespace)
+        graph_ref = Schema__Graph__Ref(cache_id = cache_id, namespace=namespace)
+        return self.area_crud.delete_graph(graph_ref = graph_ref)
 
     # ═══════════════════════════════════════════════════════════════════════════════
     # Test Data Generators

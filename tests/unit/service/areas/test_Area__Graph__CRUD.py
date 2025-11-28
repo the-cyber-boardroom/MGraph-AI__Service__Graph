@@ -15,7 +15,7 @@ from osbot_utils.utils.Objects                                                  
 from mgraph_ai_service_graph.service.areas.Area__Graph__CRUD                                    import Area__Graph__CRUD
 from mgraph_ai_service_graph.service.caching.Graph__Cache__Utils                                import Graph__Cache__Utils
 from mgraph_ai_service_graph.service.graph.Graph__Service                                       import Graph__Service
-from mgraph_ai_service_graph.schemas.graph_crud.Schema__Graph__Create__Request                  import Schema__Graph__Create__Request, NAMESPACE__DEFAULT__GRAPH__CREATE
+from mgraph_ai_service_graph.schemas.graph_crud.Schema__Graph__Create__Request                  import Schema__Graph__Create__Request
 from mgraph_ai_service_graph.schemas.graph_crud.Schema__Graph__Create__Response                 import Schema__Graph__Create__Response
 from mgraph_ai_service_graph.schemas.graph_crud.Schema__Graph__Get__Request                     import Schema__Graph__Get__Request
 from mgraph_ai_service_graph.schemas.graph_crud.Schema__Graph__Get__Response                    import Schema__Graph__Get__Response
