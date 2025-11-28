@@ -1,5 +1,4 @@
-from osbot_utils.type_safe.primitives.domains.identifiers.Random_Guid import Random_Guid
-
+from osbot_utils.type_safe.primitives.domains.identifiers.Random_Guid                           import Random_Guid
 from mgraph_ai_service_graph.schemas.graph_edit.nodes.Schema__Graph__Add_Node__Response         import Schema__Graph__Add_Node__Response
 from mgraph_ai_service_graph.schemas.graph_edit.nodes.Schema__Graph__Add_Node__Typed__Request   import Schema__Graph__Add_Node__Typed__Request
 from mgraph_db.mgraph.MGraph                                                                    import MGraph

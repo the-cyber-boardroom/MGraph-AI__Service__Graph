@@ -7,7 +7,7 @@ from osbot_utils.type_safe.primitives.domains.identifiers.safe_str.Safe_Str__Id 
 from mgraph_ai_service_graph.service.caching.Graph__Cache__Client                import Graph__Cache__Client
 from osbot_utils.type_safe.type_safe_core.decorators.type_safe                   import type_safe
 
-
+# todo: rename all this from Graph to MGraph (including methods) , since we at this level we are dealing with MGraph objects
 class Graph__Service(Type_Safe):                                            # Main orchestration service for graph operations
 
     graph_cache_client: Graph__Cache__Client                                      # Injected cache client for storage and retrieval

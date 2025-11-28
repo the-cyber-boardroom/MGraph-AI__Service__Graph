@@ -8,7 +8,7 @@ from mgraph_ai_service_graph.service.areas.edit.Graph__Edit__Delete      import 
 from mgraph_ai_service_graph.service.areas.edit.Graph__Edit__Builder     import Graph__Edit__Builder
 from mgraph_ai_service_graph.service.graph.Graph__Service                import Graph__Service
 
-
+# todo: move this class to the areas/edit folder
 class Area__Graph__Edit(Type_Safe):                                     # Graph editing operations - thin orchestrator
 
     graph_service : Graph__Service                                      # Injected dependency

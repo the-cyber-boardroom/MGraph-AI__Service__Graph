@@ -1,6 +1,6 @@
 from mgraph_ai_service_cache_client.client.client_contract.Cache__Service__Fast_API__Client import Cache__Service__Fast_API__Client
 from mgraph_ai_service_cache_client.schemas.cache.Schema__Cache__Store__Response            import Schema__Cache__Store__Response
-from mgraph_ai_service_cache_client.schemas.cache.Schema__Cache__Update__Response import Schema__Cache__Update__Response
+from mgraph_ai_service_cache_client.schemas.cache.Schema__Cache__Update__Response           import Schema__Cache__Update__Response
 from mgraph_ai_service_cache_client.schemas.cache.enums.Enum__Cache__Store__Strategy        import Enum__Cache__Store__Strategy
 from mgraph_ai_service_cache_client.schemas.cache.file.Schema__Cache__File__Refs            import Schema__Cache__File__Refs
 from mgraph_db.mgraph.MGraph                                                                import MGraph
@@ -24,8 +24,8 @@ class Graph__Cache__Client(Type_Safe):                                   # Wrapp
                     mgraph     : MGraph                     ,                                               # MGraph instance to store
                     namespace : Safe_Str__Id                                                                # Cache namespace for organization
                     ) -> Schema__Cache__Store__Response:                                                    # return details from stored cache entry
-        graph_id = mgraph.graph.graph_id()
-        graph_json = mgraph.json()                                                                          # Serialize graph to JSON using Type_Safe serialisation capabilities
+        graph_id   = mgraph.graph.graph_id()
+        graph_json = mgraph.json__compress()                                                                # Serialize graph to JSON using Type_Safe serialisation capabilities (using the compress mode)
         strategy = Enum__Cache__Store__Strategy.KEY_BASED                                                   # todo: refactor these values to a config value (or look at using the Cache_Decorator here)
         cache_key       = f'graphs/{graph_id}'
         file_id         = 'mgraph'
@@ -53,7 +53,7 @@ class Graph__Cache__Client(Type_Safe):                                   # Wrapp
             mgraph_json = self.cache_client.retrieve().retrieve__hash__cache_hash__json(cache_hash  = cache_hash,
                                                                                         namespace = namespace)
         if mgraph_json:
-             return MGraph.from_json(mgraph_json)
+             return MGraph.from_json__compressed(mgraph_json)
         return None
 
 
@@ -104,7 +104,7 @@ class Graph__Cache__Client(Type_Safe):                                   # Wrapp
                      cache_id  : Random_Guid   ,                                            # Existing cache entry ID
                      namespace : Safe_Str__Id                                               # Cache namespace
                     ) -> Schema__Cache__Update__Response:                                   # Return update response with cache_id
-        graph_json = mgraph.json()                                                          # Serialize graph to JSON
+        graph_json = mgraph.json__compress()                                                # Serialize graph to JSON (using compressed mode)
         result = self.cache_client.update().update__json(cache_id  = cache_id ,
                                                          namespace = namespace,
                                                          body      = graph_json)

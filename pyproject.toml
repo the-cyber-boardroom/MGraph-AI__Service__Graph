@@ -13,9 +13,9 @@ python                         = "^3.12"
 osbot-fast-api-serverless      = "*"
 mgraph-db                      = "*"
 mgraph-ai-service-cache-client = "*"
+httpx                          = "^0.28.1"
 
-[tool.poetry.group.dev.dependencies]
-httpx = "^0.28.1"
+
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
