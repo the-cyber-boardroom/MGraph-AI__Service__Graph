@@ -4,6 +4,6 @@ SERVICE_NAME                             = package_name
 FAST_API__TITLE                          = "MGraph-AI Service Graph"
 FAST_API__DESCRIPTION                    = "Base template for MGraph-AI microservices"
 LAMBDA_DEPENDENCIES__GRAPH_SERVICE      = ['httpx==0.28.1',
-                                           'mgraph-ai-service-cache-client==v0.17.0',
+                                           'mgraph-ai-service-cache-client==v0.20.0',
                                            'mgraph-db==v1.3.0'                      ,
                                            'osbot-fast-api-serverless==v1.29.0'     ]
