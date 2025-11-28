@@ -28,11 +28,12 @@ class Graph__Service(Type_Safe):                                            # Ma
         return mgraph
 
     def get_or_create_graph(self,                                           # Retrieve existing graph from cache or create new one if not found
-                            graph_id  : Obj_Id             ,               # Unique identifier for graph
-                            namespace : Safe_Str__Id = "graphs"      # Cache namespace to search
+                            cache_id  : Random_Guid  = None ,
+                            graph_id  : Obj_Id       = None ,               # Unique identifier for graph
+                            namespace : Safe_Str__Id = None                 # Cache namespace to search
                        ) -> MGraph:                                         # Existing graph from cache, or new empty graph
 
-        mgraph = self.graph_cache_client.retrieve_graph(graph_id, namespace)
+        mgraph = self.graph_cache_client.retrieve_graph(graph_id=graph_id, cache_id=cache_id ,namespace=namespace)
         if mgraph is None:
             mgraph = self.create_new_graph()
 

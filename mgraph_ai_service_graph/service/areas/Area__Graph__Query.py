@@ -7,6 +7,7 @@ from mgraph_ai_service_graph.schemas.graph_query.Schema__Graph__Find_Nodes__Resp
 from mgraph_ai_service_graph.service.graph.Graph__Service                                   import Graph__Service
 
 
+# todo this section has quite a number of bugs in how to access the graph data and it is also not using the cache_id when needed
 class Area__Graph__Query(Type_Safe):                                        # Graph query operations area - handles searching and exploration
                                                                             # This area provides read-only query operations on graphs using
                                                                             # MGraph's powerful query system.
@@ -18,7 +19,8 @@ class Area__Graph__Query(Type_Safe):                                        # Gr
                           ) -> Schema__Graph__Find_Nodes__Response:        # Response with list of node_ids and pagination info
 
 
-        graph = self.graph_service.get_or_create_graph(graph_id  = str(request.graph_id),           # Retrieve graph
+        graph = self.graph_service.get_or_create_graph(cache_id = request.cache_id,
+                                                       graph_id  = str(request.graph_id),           # Retrieve graph
                                                        namespace = "graphs")
 
         query_result = graph.query().by_type(str(request.node_type))                                # Query nodes by type using MGraph's query API
@@ -35,7 +37,8 @@ class Area__Graph__Query(Type_Safe):                                        # Gr
         total_found = Safe_UInt(len(all_node_ids))                                                  # Calculate pagination info
         has_more    = (offset + limit) < len(all_node_ids)
 
-        return Schema__Graph__Find_Nodes__Response(graph_id    = request.graph_id,
+        return Schema__Graph__Find_Nodes__Response(cache_id    = request.cache_id,
+                                                   graph_id    = request.graph_id,
                                                    node_ids    = node_ids_typed   ,
                                                    total_found = total_found      ,
                                                    has_more    = has_more         )
@@ -47,7 +50,7 @@ class Area__Graph__Query(Type_Safe):                                        # Gr
 
         graph = self.graph_service.get_or_create_graph(graph_id, "graphs")
 
-        node = graph.query().node(node_id)                                                      # Use MGraph's query API
+        node = graph.query().mgraph_data.node(node_id)                                                      # Use MGraph's query API
 
         if node is None:
             raise KeyError(f"Node {node_id} not found in graph {graph_id}")

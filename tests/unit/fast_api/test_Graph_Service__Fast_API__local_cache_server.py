@@ -1,8 +1,8 @@
 from unittest                                                                                                   import TestCase
 from fastapi                                                                                                    import FastAPI
-from osbot_utils.testing.Pytest import skip_if_in_github_action
-
-from mgraph_ai_service_graph.fast_api.routes.Routes__Graph__Server import Routes__Graph__Server
+from osbot_utils.testing.Pytest                                                                                 import skip_if_in_github_action
+from osbot_utils.testing.__helpers                                                                              import obj
+from mgraph_ai_service_graph.fast_api.routes.Routes__Graph__Server                                              import Routes__Graph__Server
 from mgraph_db.mgraph.MGraph                                                                                    import MGraph
 from starlette.testclient                                                                                       import TestClient
 from mgraph_ai_service_cache_client.utils.Version                                                               import version__mgraph_ai_service_cache_client
@@ -162,18 +162,19 @@ class test_Graph_Service__Fast_API__local_cache_server(TestCase):
             retrieve                                 = _.retrieve().retrieve__cache_id(cache_id= cache_id, namespace= namespace)
             default_mgraph                           = MGraph()
             default_mgraph.graph.model.data.graph_id = Obj_Id(graph_id)
-            expected_retrieve_data                   = __( data    = default_mgraph.obj(),
-                                                                 metadata = __(cache_id         = cache_id,
-                                                                               cache_hash       = __SKIP__,
-                                                                               cache_key        = __SKIP__,
-                                                                               file_id          = 'mgraph',
-                                                                               namespace        = namespace,
-                                                                               strategy         = 'key_based',
-                                                                               stored_at        = __SKIP__,
-                                                                               file_type        = 'json',
-                                                                               content_encoding = None,
-                                                                               content_size     = 0),
-                                                                 data_type='json')
+            default_mgraph_data                      = obj(default_mgraph.json__compress())     # we need to use the compressed version of the .json serialisation (since that is how the graphs are stored)
+            expected_retrieve_data                   = __( data     = default_mgraph_data,
+                                                           metadata = __(cache_id         = cache_id,
+                                                                         cache_hash       = __SKIP__,
+                                                                         cache_key        = __SKIP__,
+                                                                         file_id          = 'mgraph',
+                                                                         namespace        = namespace,
+                                                                         strategy         = 'key_based',
+                                                                         stored_at        = __SKIP__,
+                                                                         file_type        = 'json',
+                                                                         content_encoding = None,
+                                                                         content_size     = 0),
+                                                           data_type='json')
             assert type(retrieve)       is Schema__Cache__Retrieve__Success
             assert retrieve.obj()       == expected_retrieve_data
 

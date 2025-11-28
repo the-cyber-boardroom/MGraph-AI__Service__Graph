@@ -86,12 +86,10 @@ class Graph__Edit__Add_Edge(Type_Safe):
               ) -> tuple[MGraph, Safe_Str__Id]:                                 # should just return MGraph or a new schema (which has for example the cache_id and graph_id
         namespace = request.namespace or DEFAULT_NAMESPACE                      # todo: fix namespace pattern (should just return MGraph)
 
-        if request.cache_id:
-            graph = self.graph_service.get_graph(cache_id  = request.cache_id,
-                                                 namespace = namespace       )
-        else:
-            graph = self.graph_service.get_or_create_graph(graph_id  = request.graph_id,
-                                                           namespace = namespace       )
+
+        graph = self.graph_service.get_or_create_graph(cache_id = request.cache_id,
+                                                       graph_id  = request.graph_id,
+                                                       namespace = namespace       )
         return graph, namespace
 
     def _create_response(self,

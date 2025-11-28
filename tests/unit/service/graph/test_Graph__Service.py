@@ -1,9 +1,6 @@
 import inspect
 from unittest                                                                               import TestCase
-
-from osbot_utils.testing.__helpers import obj
-from osbot_utils.utils.Dev import pprint
-
+from osbot_utils.testing.__helpers                                                          import obj
 from mgraph_db.mgraph.MGraph                                                                import MGraph
 from osbot_utils.testing.__                                                                 import __, __SKIP__
 from osbot_utils.type_safe.Type_Safe                                                        import Type_Safe
@@ -86,10 +83,11 @@ class test_Graph__Service(TestCase):
             sig    = inspect.signature(_.get_or_create_graph)
             params = list(sig.parameters.values())
 
-            assert len(params)          == 2
-            assert params[0].name       == 'graph_id'
-            assert params[1].name       == 'namespace'
-            assert params[1].default    == 'graphs'                                         # Default namespace
+            assert len(params)          == 3
+            assert params[0].name       == 'cache_id'
+            assert params[1].name       == 'graph_id'
+            assert params[2].name       == 'namespace'
+            assert params[1].default    == None                                             # Default namespace
             assert sig.return_annotation == MGraph
 
     def test__save_graph__method_signature(self):                                           # Test save_graph signature
@@ -255,7 +253,7 @@ class test_Graph__Service(TestCase):
             retrieved = _.get_graph(cache_id  = cache_id           ,                        # Verify saved correctly
                                     namespace = self.test_namespace)
 
-            assert len(retrieved.nodes()) == 2                                              # Both nodes saved
+            assert len(retrieved.graph.nodes()) == 2                                              # Both nodes saved
 
             assert _.delete_graph(cache_id  = cache_id           ,                          # Cleanup
                                   namespace = self.test_namespace)
@@ -274,8 +272,8 @@ class test_Graph__Service(TestCase):
             retrieved = _.get_graph(cache_id  = cache_id           ,
                                     namespace = self.test_namespace)
 
-            assert len(retrieved.nodes()) == 2
-            assert len(retrieved.edges()) == 1
+            assert len(retrieved.graph.nodes()) == 2
+            assert len(retrieved.graph.edges()) == 1
 
             assert _.delete_graph(cache_id  = cache_id           ,
                                   namespace = self.test_namespace)
@@ -297,7 +295,7 @@ class test_Graph__Service(TestCase):
             retrieved = _.get_graph(cache_id  = cache_id           ,
                                     namespace = self.test_namespace)
 
-            assert len(retrieved.nodes()) == 1                                              # Node was added
+            assert len(retrieved.graph.nodes()) == 1                                              # Node was added
 
             assert _.delete_graph(cache_id  = cache_id           ,
                                   namespace = self.test_namespace)
@@ -349,30 +347,30 @@ class test_Graph__Service(TestCase):
 
     def test_get_graph__preserves_structure(self):                                          # Test graph structure is preserved
         with self.graph_service as _:
-            graph    = _.create_new_graph()
-            node1    = graph.edit().new_node()
-            node2    = graph.edit().new_node()
-            node3    = graph.edit().new_node()
-            edge1    = graph.edit().new_edge(from_node_id = node1.node_id,
+            mgraph    = _.create_new_graph()
+            node1    = mgraph.edit().new_node()
+            node2    = mgraph.edit().new_node()
+            node3    = mgraph.edit().new_node()
+            edge1    = mgraph.edit().new_edge(from_node_id = node1.node_id,
                                              to_node_id   = node2.node_id)
-            edge2    = graph.edit().new_edge(from_node_id = node2.node_id,
+            edge2    = mgraph.edit().new_edge(from_node_id = node2.node_id,
                                              to_node_id   = node3.node_id)
 
-            cache_id = _.save_graph(mgraph    = graph               ,
+            cache_id = _.save_graph(mgraph    = mgraph               ,
                                     namespace = self.test_namespace )
 
             retrieved = _.get_graph(cache_id  = cache_id           ,
                                     namespace = self.test_namespace)
 
-            assert len(retrieved.nodes()) == 3
-            assert len(retrieved.edges()) == 2
+            assert len(retrieved.graph.nodes()) == 3
+            assert len(retrieved.graph.edges()) == 2
 
-            original_node_ids  = {str(n.node_id) for n in graph.nodes()}                    # Verify same node ids
-            retrieved_node_ids = {str(n.node_id) for n in retrieved.nodes()}
+            original_node_ids  = {str(n.node_id) for n in mgraph.graph.nodes()}                    # Verify same node ids
+            retrieved_node_ids = {str(n.node_id) for n in retrieved.graph.nodes()}
             assert original_node_ids == retrieved_node_ids
 
-            original_edge_ids  = {str(e.edge_id) for e in graph.edges()}                    # Verify same edge ids
-            retrieved_edge_ids = {str(e.edge_id) for e in retrieved.edges()}
+            original_edge_ids  = {str(e.edge_id) for e in mgraph.graph.edges()}                    # Verify same edge ids
+            retrieved_edge_ids = {str(e.edge_id) for e in retrieved.graph.edges()}
             assert original_edge_ids == retrieved_edge_ids
 
             assert _.delete_graph(cache_id  = cache_id           ,
@@ -391,8 +389,8 @@ class test_Graph__Service(TestCase):
 
             assert graph            is not None
             assert type(graph)      is MGraph
-            assert len(graph.nodes()) == 0                                                  # Empty new graph
-            assert len(graph.edges()) == 0
+            assert len(graph.graph.nodes()) == 0                                                  # Empty new graph
+            assert len(graph.graph.edges()) == 0
 
     def test_get_or_create_graph__returns_existing(self):                                   # Test returns existing graph
         with self.graph_service as _:
@@ -407,7 +405,7 @@ class test_Graph__Service(TestCase):
 
             assert type(retrieved)                 is MGraph
             assert retrieved.graph.graph_id()      == graph_id
-            assert len(retrieved.nodes())          == 1                                     # Has the node we added
+            assert len(retrieved.graph.nodes())    == 1                                     # Has the node we added
 
             assert _.delete_graph(cache_id  = cache_id           ,
                                   namespace = self.test_namespace)
@@ -417,7 +415,7 @@ class test_Graph__Service(TestCase):
             sig    = inspect.signature(_.get_or_create_graph)
             params = sig.parameters
 
-            assert params['namespace'].default == 'graphs'                                  # Default is 'graphs'
+            assert params['namespace'].default == None
 
     # ═══════════════════════════════════════════════════════════════════════════════
     # delete_graph Tests
@@ -463,21 +461,33 @@ class test_Graph__Service(TestCase):
             result = _.delete_graph(graph_id  = fake_graph_id      ,
                                     namespace = self.test_namespace)
 
-            assert result is False or result is None                                        # Returns False/None when not found
+            assert result  is None
 
     def test_delete_graph__idempotent(self):                                                # Test deleting twice doesn't error
         with self.graph_service as _:
             graph    = _.create_new_graph()
             cache_id = _.save_graph(mgraph    = graph               ,
                                     namespace = self.test_namespace )
+            mgraph   = _.get_or_create_graph(graph_id = cache_id ,namespace=self.test_namespace)
+            graph_id = mgraph.graph.graph_id()
 
+            result_0 = _.delete_graph(cache_id = cache_id )                                 # fails because no namespace was provided
             result_1 = _.delete_graph(cache_id  = cache_id           ,
-                                      namespace = self.test_namespace)
+                                      namespace = self.test_namespace)                      # works
             result_2 = _.delete_graph(cache_id  = cache_id           ,
-                                      namespace = self.test_namespace)
+                                      namespace = self.test_namespace)                      # fails because graph has been deleted already
+            assert obj(result_0) == __(status='not_found',
+                                       message=f'Cache ID {cache_id} not found')            # BUG fail delete return value should be consistent with the success delete (same Type_Safe class)
+            assert obj(result_1) == __(status='success',
+                                       cache_id=cache_id,
+                                       deleted_count=5,
+                                       failed_count=0,
+                                       deleted_paths=__SKIP__,
+                                       failed_paths=[])
+            assert obj(result_2) == __(status='not_found',
+                                       message=f'Cache ID {cache_id} not found')            # BUG fail delete return value should be consistent with the success delete (same Type_Safe class)
 
-            assert result_1 is not None                                                     # First delete succeeds
-            assert result_2 is False or result_2 is None                                    # Second delete fails gracefully
+
 
     # ═══════════════════════════════════════════════════════════════════════════════
     # graph_exists Tests
@@ -636,7 +646,7 @@ class test_Graph__Service(TestCase):
             retrieved = _.get_graph(cache_id  = cache_id           ,
                                     namespace = self.test_namespace)
 
-            assert len(retrieved.nodes()) == 5                                              # All nodes saved
+            assert len(retrieved.graph.nodes()) == 5                                              # All nodes saved
 
             _.delete_graph(cache_id  = cache_id           ,
                            namespace = self.test_namespace)

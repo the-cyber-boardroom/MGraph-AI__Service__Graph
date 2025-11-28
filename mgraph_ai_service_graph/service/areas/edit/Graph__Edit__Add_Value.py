@@ -62,12 +62,10 @@ class Graph__Edit__Add_Value(Type_Safe):
 
         namespace = request.namespace or DEFAULT_NAMESPACE
 
-        if request.cache_id:                                            # Retrieve from cache if cache_id provided
-            graph = self.graph_service.get_graph(cache_id  = request.cache_id,
-                                                 namespace = namespace       )
-        else:                                                           # Otherwise get or create by graph_id
-            graph = self.graph_service.get_or_create_graph(graph_id  = request.graph_id,
-                                                           namespace = namespace       )
+
+        graph = self.graph_service.get_or_create_graph(cache_id  = request.cache_id,
+                                                       graph_id  = request.graph_id,
+                                                       namespace = namespace       )
         return graph, namespace
 
     def _create_response(self,

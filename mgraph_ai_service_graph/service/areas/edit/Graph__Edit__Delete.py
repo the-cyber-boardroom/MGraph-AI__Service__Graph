@@ -62,9 +62,9 @@ class Graph__Edit__Delete(Type_Safe):
     # ═══════════════════════════════════════════════════════════════════════════════
 
     def _get_graph(self,
-                   graph_id  : Obj_Id       ,
-                   cache_id  : Random_Guid  ,
-                   namespace : Safe_Str__Id ):
+                   graph_id  : Obj_Id       = None,
+                   cache_id  : Random_Guid  = None,
+                   namespace : Safe_Str__Id = None):
 
         if cache_id:                                                    # Retrieve from cache if cache_id provided
             return self.graph_service.get_graph(cache_id  = cache_id ,

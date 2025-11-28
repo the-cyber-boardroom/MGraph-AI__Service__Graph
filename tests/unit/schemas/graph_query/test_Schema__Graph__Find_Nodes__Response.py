@@ -1,9 +1,9 @@
 from unittest                                                                            import TestCase
+from osbot_utils.helpers.sqlite.models.Sqlite__Field__Type                               import NoneType
 from osbot_utils.testing.__                                                              import __
 from osbot_utils.type_safe.Type_Safe                                                     import Type_Safe
 from osbot_utils.type_safe.type_safe_core.collections.Type_Safe__List                    import Type_Safe__List
 from osbot_utils.type_safe.primitives.core.Safe_UInt                                     import Safe_UInt
-from osbot_utils.type_safe.primitives.domains.identifiers.Random_Guid                    import Random_Guid
 from osbot_utils.type_safe.primitives.domains.identifiers.Obj_Id                         import Obj_Id
 from osbot_utils.utils.Objects                                                           import base_classes
 from mgraph_ai_service_graph.schemas.graph_query.Schema__Graph__Find_Nodes__Response     import Schema__Graph__Find_Nodes__Response
@@ -15,8 +15,8 @@ class test_Schema__Graph__Find_Nodes__Response(TestCase):
         with Schema__Graph__Find_Nodes__Response() as _:
             assert type(_)             is Schema__Graph__Find_Nodes__Response
             assert base_classes(_)     == [Type_Safe, object]
-            assert type(_.graph_id)    is Obj_Id
-            assert type(_.node_ids)    is Type_Safe__List                                # Type_Safe__List not raw list
+            assert type(_.graph_id)    is NoneType
+            assert type(_.node_ids)    is Type_Safe__List                               # Type_Safe__List not raw list
             assert type(_.total_found) is Safe_UInt
             assert type(_.has_more)    is bool
             assert _.has_more          is False
@@ -65,7 +65,7 @@ class test_Schema__Graph__Find_Nodes__Response(TestCase):
             json_data = original.json()
 
             with Schema__Graph__Find_Nodes__Response.from_json(json_data) as restored:
-                assert type(restored.graph_id)    is Obj_Id
+                assert type(restored.graph_id)    is NoneType
                 assert type(restored.total_found) is Safe_UInt
                 assert restored.total_found       == 25
                 assert restored.has_more          is True
