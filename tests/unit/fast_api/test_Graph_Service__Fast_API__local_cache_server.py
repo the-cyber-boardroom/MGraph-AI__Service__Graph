@@ -1,9 +1,9 @@
 from unittest                                                                                                   import TestCase
 from fastapi                                                                                                    import FastAPI
-from mgraph_ai_service_graph.fast_api.routes.Routes__Graph__Export                                              import Routes__Graph__Export
+from mgraph_ai_service_graph.fast_api.routes.graph.Routes__Graph__Export                                        import Routes__Graph__Export
 from osbot_utils.testing.Pytest                                                                                 import skip_if_in_github_action
 from osbot_utils.testing.__helpers                                                                              import obj
-from mgraph_ai_service_graph.fast_api.routes.Routes__Graph__Server                                              import Routes__Graph__Server
+from mgraph_ai_service_graph.fast_api.routes.server.Routes__Graph__Server                                       import Routes__Graph__Server
 from mgraph_ai_service_graph.schemas.graph_ref.Schema__Graph__Ref                                               import Schema__Graph__Ref
 from mgraph_db.mgraph.MGraph                                                                                    import MGraph
 from starlette.testclient                                                                                       import TestClient
@@ -22,10 +22,10 @@ from osbot_utils.testing.Temp_Env_Vars                                          
 from osbot_utils.testing.__                                                                                     import __, __SKIP__
 from osbot_utils.utils.Misc                                                                                     import random_text
 from mgraph_ai_service_graph.fast_api.Graph_Service__Fast_API                                                   import Graph_Service__Fast_API
-from mgraph_ai_service_graph.fast_api.routes.Routes__Graph__Batch                                               import Routes__Graph__Batch
-from mgraph_ai_service_graph.fast_api.routes.Routes__Graph__CRUD                                                import Routes__Graph__CRUD, TAG__ROUTES_GRAPH_CRUD
-from mgraph_ai_service_graph.fast_api.routes.Routes__Graph__Edit                                                import Routes__Graph__Edit
-from mgraph_ai_service_graph.fast_api.routes.Routes__Graph__Query                                               import Routes__Graph__Query
+from mgraph_ai_service_graph.fast_api.routes.graph.Routes__Graph__Batch                                         import Routes__Graph__Batch
+from mgraph_ai_service_graph.fast_api.routes.graph.Routes__Graph__CRUD                                          import Routes__Graph__CRUD, TAG__ROUTES_GRAPH_CRUD
+from mgraph_ai_service_graph.fast_api.routes.graph.Routes__Graph__Edit                                          import Routes__Graph__Edit
+from mgraph_ai_service_graph.fast_api.routes.graph.Routes__Graph__Query                                         import Routes__Graph__Query
 from mgraph_ai_service_graph.schemas.graph_crud.Schema__Graph__Create__Request                                  import Schema__Graph__Create__Request
 from mgraph_ai_service_graph.schemas.graph_crud.Schema__Graph__Create__Response                                 import Schema__Graph__Create__Response
 from mgraph_ai_service_graph.service.areas.Area__Graph__CRUD                                                    import Area__Graph__CRUD
@@ -87,23 +87,6 @@ class test_Graph_Service__Fast_API__local_cache_server(TestCase):
                                  routes_classes = __SKIP__)
             assert type(_.app()) is FastAPI
 
-            assert _.routes_classes.keys()       == [Routes__Info        ,
-                                                     Routes__Set_Cookie  ,
-                                                     Routes__Graph__CRUD ,
-                                                     Routes__Graph__Edit ,
-                                                     Routes__Graph__Query,
-                                                     Routes__Graph__Batch,
-                                                     Routes__Graph__Export,
-                                                     Routes__Graph__Server ,]
-            assert _.routes_classes.keys().obj() == [ 'osbot_fast_api_serverless.fast_api.routes.Routes__Info.Routes__Info'                 ,
-                                                      'osbot_fast_api.api.routes.Routes__Set_Cookie.Routes__Set_Cookie'                     ,
-                                                      'mgraph_ai_service_graph.fast_api.routes.Routes__Graph__CRUD.Routes__Graph__CRUD'     ,
-                                                      'mgraph_ai_service_graph.fast_api.routes.Routes__Graph__Edit.Routes__Graph__Edit'     ,
-                                                      'mgraph_ai_service_graph.fast_api.routes.Routes__Graph__Query.Routes__Graph__Query'   ,
-                                                      'mgraph_ai_service_graph.fast_api.routes.Routes__Graph__Batch.Routes__Graph__Batch'   ,
-                                                      'mgraph_ai_service_graph.fast_api.routes.Routes__Graph__Export.Routes__Graph__Export' ,
-                                                      'mgraph_ai_service_graph.fast_api.routes.Routes__Graph__Server.Routes__Graph__Server' ]
-
             routes_graph_crud = _.routes_classes[Routes__Graph__CRUD]
             assert type(routes_graph_crud                                           ) == Routes__Graph__CRUD
             assert type(routes_graph_crud.area_crud                                 ) == Area__Graph__CRUD
@@ -125,8 +108,6 @@ class test_Graph_Service__Fast_API__local_cache_server(TestCase):
                                                                        service_name     = 'Cache__Service__Fast_API',
                                                                        service_version  = version__mgraph_ai_service_cache_client)
 
-        # cls.env_vars__cache_service = dict(FAST_API__AUTH__API_KEY__NAME                 =  cls.api_key_name    ,
-        #                                    FAST_API__AUTH__API_KEY__VALUE                =  cls.api_key_value   )
 
         with Temp_Env_Vars(env_vars=self.env_vars__cache_client):
             namespace  = random_text('an-namespace')

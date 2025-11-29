@@ -1,5 +1,6 @@
 from typing                                                                                 import Dict, Type
-from mgraph_ai_service_graph.fast_api.routes.Routes__Graph__Export                          import Routes__Graph__Export
+
+from mgraph_ai_service_graph.fast_api.routes.server.Routes__Graph__Cache import Routes__Graph__Cache
 from osbot_fast_api.api.routes.Fast_API__Routes                                             import Fast_API__Routes
 from osbot_fast_api.api.routes.Routes__Set_Cookie                                           import Routes__Set_Cookie
 from osbot_fast_api_serverless.fast_api.Serverless__Fast_API                                import Serverless__Fast_API
@@ -9,12 +10,13 @@ from fastapi.responses                                                          
 from mgraph_ai_service_graph.exceptions.Graph__Service__Error                               import Graph__Service__Error
 from mgraph_ai_service_graph.schemas.error.Schema__Error__Response                          import Schema__Error__Response
 from mgraph_ai_service_graph.config                                                         import FAST_API__TITLE
-from mgraph_ai_service_graph.fast_api.routes.Routes__Graph__Server                          import Routes__Graph__Server
 from mgraph_ai_service_graph.utils.Version                                                  import version__mgraph_ai_service_graph
-from mgraph_ai_service_graph.fast_api.routes.Routes__Graph__CRUD                            import Routes__Graph__CRUD
-from mgraph_ai_service_graph.fast_api.routes.Routes__Graph__Edit                            import Routes__Graph__Edit
-from mgraph_ai_service_graph.fast_api.routes.Routes__Graph__Query                           import Routes__Graph__Query
-from mgraph_ai_service_graph.fast_api.routes.Routes__Graph__Batch                           import Routes__Graph__Batch
+from mgraph_ai_service_graph.fast_api.routes.server.Routes__Graph__Server                   import Routes__Graph__Server
+from mgraph_ai_service_graph.fast_api.routes.graph.Routes__Graph__Export                    import Routes__Graph__Export
+from mgraph_ai_service_graph.fast_api.routes.graph.Routes__Graph__CRUD                      import Routes__Graph__CRUD
+from mgraph_ai_service_graph.fast_api.routes.graph.Routes__Graph__Edit                      import Routes__Graph__Edit
+from mgraph_ai_service_graph.fast_api.routes.graph.Routes__Graph__Query                     import Routes__Graph__Query
+from mgraph_ai_service_graph.fast_api.routes.graph.Routes__Graph__Batch                     import Routes__Graph__Batch
 
 
 class Graph_Service__Fast_API(Serverless__Fast_API):                                        # FastAPI application for Graph Service
@@ -35,6 +37,7 @@ class Graph_Service__Fast_API(Serverless__Fast_API):                            
         self.add_routes(Routes__Graph__Query )                                              # Graph query operations
         self.add_routes(Routes__Graph__Batch )                                              # Batch execution
         self.add_routes(Routes__Graph__Export)                                              # Graph export
+        self.add_routes(Routes__Graph__Cache )
         self.add_routes(Routes__Graph__Server)                                              # Server details and stats
 
     def setup_exception_handlers(self):                                             # Register global exception handlers

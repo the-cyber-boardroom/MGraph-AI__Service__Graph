@@ -3,17 +3,14 @@ from osbot_utils.type_safe.Type_Safe                                            
 from osbot_utils.type_safe.primitives.domains.identifiers.Obj_Id                            import is_obj_id
 from osbot_utils.utils.Misc                                                                 import is_guid
 from osbot_utils.utils.Objects                                                              import base_classes
-from mgraph_db.mgraph.MGraph                                                                import MGraph
 from mgraph_ai_service_graph.schemas.graph_ref.Schema__Graph__Ref                           import Schema__Graph__Ref
 from mgraph_ai_service_graph.service.areas.Area__Graph__CRUD                                import Area__Graph__CRUD
 from mgraph_ai_service_graph.service.areas.Area__Graph__Edit                                import Area__Graph__Edit
 from mgraph_ai_service_graph.service.areas.Area__Graph__Query                               import Area__Graph__Query
-from mgraph_ai_service_graph.service.caching.Graph__Cache__Client                           import Graph__Cache__Client
-from mgraph_ai_service_graph.service.graph.Graph__Service                                   import Graph__Service
 from mgraph_ai_service_graph.schemas.graph_crud.Schema__Graph__Create__Response             import Schema__Graph__Create__Response
 from mgraph_ai_service_graph.schemas.graph_edit.nodes.Schema__Graph__Add_Node__Response     import Schema__Graph__Add_Node__Response
 from mgraph_ai_service_graph.schemas.graph_edit.edges.Schema__Graph__Add_Edge__Response     import Schema__Graph__Add_Edge__Response
-from mgraph_ai_service_graph.utils.testing.Graph_Test_Helpers                               import Graph_Test_Helpers, DEFAULT_NAMESPACE
+from mgraph_ai_service_graph.utils.testing.Graph_Test_Helpers                               import Graph_Test_Helpers, NAMESPACE__GRAPH_TEST_HELPERS
 from tests.unit.Graph__Service__Fast_API__Test_Objs                                         import client_cache_service
 
 
@@ -22,35 +19,20 @@ class test_Graph_Test_Helpers(TestCase):
     @classmethod
     def setUpClass(cls):                                                                    # Setup shared test infrastructure
         cls.cache_client, cls.cache_service = client_cache_service()
-        cls.graph_cache_client = Graph__Cache__Client(cache_client       = cls.cache_client       )
-        cls.graph_service      = Graph__Service      (graph_cache_client = cls.graph_cache_client )
-        cls.area_crud          = Area__Graph__CRUD   (graph_service      = cls.graph_service      )
-        cls.area_edit          = Area__Graph__Edit   (graph_service      = cls.graph_service      )
-        cls.area_query         = Area__Graph__Query  (graph_service      = cls.graph_service      )
-        cls.helpers            = Graph_Test_Helpers  (area_crud          = cls.area_crud          ,
-                                                      area_edit          = cls.area_edit          ,
-                                                      area_query         = cls.area_query         )
+        cls.helpers            = Graph_Test_Helpers  (cache_client = cls.cache_client      )
 
     # ═══════════════════════════════════════════════════════════════════════════════
     # Initialization Tests
     # ═══════════════════════════════════════════════════════════════════════════════
 
-    def test__init__(self):                                                                 # Test helper class initialization
+    def test__init__and__area_methods(self):                                                # Test helper class initialization
         with self.helpers as _:
-            assert type(_)            is Graph_Test_Helpers
-            assert base_classes(_)    == [Type_Safe, object]
-            assert type(_.area_crud)  is Area__Graph__CRUD
-            assert type(_.area_edit)  is Area__Graph__Edit
-            assert type(_.area_query) is Area__Graph__Query
+            assert type(_)              is Graph_Test_Helpers
+            assert base_classes(_)      == [Type_Safe, object]
+            assert type(_.area_crud())  is Area__Graph__CRUD
+            assert type(_.area_edit())  is Area__Graph__Edit
+            assert type(_.area_query()) is Area__Graph__Query
 
-    def test__init__creates_new_instance(self):                                             # Test creating new helper instance
-        new_helpers = Graph_Test_Helpers(area_crud  = self.area_crud ,
-                                         area_edit  = self.area_edit ,
-                                         area_query = self.area_query)
-
-        assert new_helpers            is not None
-        assert type(new_helpers)      is Graph_Test_Helpers
-        assert new_helpers            is not self.helpers                                   # Different instance
 
     # ═══════════════════════════════════════════════════════════════════════════════
     # Empty Graph Creation Tests
@@ -64,10 +46,10 @@ class test_Graph_Test_Helpers(TestCase):
         assert is_obj_id(result.graph_ref.graph_id) is True
         assert is_guid(result.graph_ref.cache_id)  is True
         assert result.cached                       is True
-        assert result.graph_ref.namespace          == DEFAULT_NAMESPACE
+        assert result.graph_ref.namespace == NAMESPACE__GRAPH_TEST_HELPERS
 
-        assert self.helpers.delete_graph(graph_id  = result.graph_ref.graph_id,             # Cleanup
-                                         namespace = DEFAULT_NAMESPACE        ) is True
+        assert self.helpers.delete_graph(graph_id  = result.graph_ref.graph_id,  # Cleanup
+                                         namespace = NAMESPACE__GRAPH_TEST_HELPERS) is True
 
     def test__create_empty_graph__custom_namespace(self):                                   # Test creating empty graph with custom namespace
         namespace = 'test-helpers-custom'
@@ -146,8 +128,7 @@ class test_Graph_Test_Helpers(TestCase):
 
     def test__create_complete_graph(self):                                                  # Test creating fully connected graph
         node_count = 4
-        create_response, node_responses, edge_responses = self.helpers.create_complete_graph(
-            node_count=node_count)
+        create_response, node_responses, edge_responses = self.helpers.create_complete_graph(node_count=node_count)
 
         expected_edges = (node_count * (node_count - 1)) // 2                               # Complete graph: n*(n-1)/2 edges
         assert len(node_responses) == node_count

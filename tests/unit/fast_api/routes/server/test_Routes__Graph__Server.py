@@ -1,9 +1,9 @@
-from unittest                                                       import TestCase
-from fastapi                                                        import FastAPI
-from mgraph_ai_service_cache_client.utils.Version                   import version__mgraph_ai_service_cache_client
-from osbot_utils.testing.__                                         import __
-from mgraph_ai_service_graph.fast_api.routes.Routes__Graph__Server  import Routes__Graph__Server, Schema__Graph__Server__Config__Response
-from mgraph_ai_service_graph.utils.Version                          import version__mgraph_ai_service_graph
+from unittest                                                              import TestCase
+from fastapi                                                               import FastAPI
+from mgraph_ai_service_cache_client.utils.Version                          import version__mgraph_ai_service_cache_client
+from osbot_utils.testing.__                                                import __
+from mgraph_ai_service_graph.fast_api.routes.server.Routes__Graph__Server  import Routes__Graph__Server, Schema__Graph__Server__Config__Response
+from mgraph_ai_service_graph.utils.Version                                 import version__mgraph_ai_service_graph
 
 
 class test_Routes__Graph__Server(TestCase):

@@ -2,9 +2,9 @@ from unittest                                                                   
 from osbot_utils.type_safe.Type_Safe                                                        import Type_Safe
 from osbot_utils.utils.Objects                                                              import base_classes
 from osbot_fast_api.api.routes.Fast_API__Routes                                             import Fast_API__Routes
-from mgraph_ai_service_graph.fast_api.routes.Routes__Graph__Query                           import Routes__Graph__Query
-from mgraph_ai_service_graph.fast_api.routes.Routes__Graph__Query                           import TAG__ROUTES_GRAPH_QUERY
-from mgraph_ai_service_graph.fast_api.routes.Routes__Graph__Query                           import ROUTES_PATHS__GRAPH_QUERY
+from mgraph_ai_service_graph.fast_api.routes.graph.Routes__Graph__Query                     import Routes__Graph__Query
+from mgraph_ai_service_graph.fast_api.routes.graph.Routes__Graph__Query                     import TAG__ROUTES_GRAPH_QUERY
+from mgraph_ai_service_graph.fast_api.routes.graph.Routes__Graph__Query                     import ROUTES_PATHS__GRAPH_QUERY
 from mgraph_ai_service_graph.schemas.graph_query.Schema__Graph__Find_Nodes__Request         import Schema__Graph__Find_Nodes__Request
 from mgraph_ai_service_graph.schemas.graph_query.Schema__Graph__Find_Nodes__Response        import Schema__Graph__Find_Nodes__Response
 from mgraph_ai_service_graph.service.areas.Area__Graph__Query                               import Area__Graph__Query

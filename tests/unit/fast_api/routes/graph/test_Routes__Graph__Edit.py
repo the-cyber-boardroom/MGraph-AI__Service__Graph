@@ -3,8 +3,8 @@ from osbot_utils.type_safe.Type_Safe                                            
 from osbot_utils.type_safe.primitives.domains.identifiers.safe_str.Safe_Str__Id                     import Safe_Str__Id
 from osbot_utils.utils.Objects                                                                      import base_classes
 from osbot_fast_api.api.routes.Fast_API__Routes                                                     import Fast_API__Routes
-from mgraph_ai_service_graph.fast_api.routes.Routes__Graph__Edit                                    import Routes__Graph__Edit
-from mgraph_ai_service_graph.fast_api.routes.Routes__Graph__Edit                                    import TAG__ROUTES_GRAPH_EDIT
+from mgraph_ai_service_graph.fast_api.routes.graph.Routes__Graph__Edit                              import Routes__Graph__Edit
+from mgraph_ai_service_graph.fast_api.routes.graph.Routes__Graph__Edit                              import TAG__ROUTES_GRAPH_EDIT
 from mgraph_ai_service_graph.schemas.graph_edit.nodes.Schema__Graph__Add_Node__Request              import Schema__Graph__Add_Node__Request
 from mgraph_ai_service_graph.schemas.graph_edit.nodes.Schema__Graph__Add_Node__Response             import Schema__Graph__Add_Node__Response
 from mgraph_ai_service_graph.schemas.graph_edit.nodes.Schema__Graph__Add_Node__Typed__Request       import Schema__Graph__Add_Node__Typed__Request

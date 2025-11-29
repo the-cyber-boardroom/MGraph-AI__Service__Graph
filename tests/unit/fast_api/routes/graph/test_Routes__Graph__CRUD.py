@@ -1,18 +1,15 @@
 from unittest                                                                               import TestCase
+from mgraph_ai_service_graph.fast_api.routes.graph.Routes__Graph__CRUD                      import Routes__Graph__CRUD, TAG__ROUTES_GRAPH_CRUD, ROUTES_PATHS__GRAPH_CRUD
 from mgraph_ai_service_graph.schemas.graph_ref.Graph_Id                                     import Graph_Id
 from osbot_utils.testing.Pytest                                                             import skip_if_in_github_action
 from mgraph_ai_service_cache_client.schemas.cache.Cache_Id                                  import Cache_Id
 from mgraph_ai_service_graph.schemas.graph_ref.Schema__Graph__Ref                           import Schema__Graph__Ref
-from mgraph_db.mgraph.MGraph                                                                import MGraph
 from osbot_fast_api.api.routes.Fast_API__Routes                                             import Fast_API__Routes
 from osbot_utils.type_safe.Type_Safe                                                        import Type_Safe
 from osbot_utils.type_safe.primitives.domains.identifiers.Obj_Id                            import Obj_Id
 from osbot_utils.type_safe.primitives.domains.identifiers.Random_Guid                       import Random_Guid
 from osbot_utils.type_safe.primitives.domains.identifiers.safe_str.Safe_Str__Id             import Safe_Str__Id
 from osbot_utils.utils.Objects                                                              import base_classes
-from mgraph_ai_service_graph.fast_api.routes.Routes__Graph__CRUD                            import Routes__Graph__CRUD
-from mgraph_ai_service_graph.fast_api.routes.Routes__Graph__CRUD                            import TAG__ROUTES_GRAPH_CRUD
-from mgraph_ai_service_graph.fast_api.routes.Routes__Graph__CRUD                            import ROUTES_PATHS__GRAPH_CRUD
 from mgraph_ai_service_graph.schemas.graph_crud.Schema__Graph__Create__Request              import Schema__Graph__Create__Request
 from mgraph_ai_service_graph.schemas.graph_crud.Schema__Graph__Create__Response             import Schema__Graph__Create__Response
 from mgraph_ai_service_graph.schemas.graph_crud.Schema__Graph__Get__Request                 import Schema__Graph__Get__Request
@@ -20,10 +17,7 @@ from mgraph_ai_service_graph.schemas.graph_crud.Schema__Graph__Get__Response    
 from mgraph_ai_service_graph.schemas.graph_crud.Schema__Graph__Delete__Response             import Schema__Graph__Delete__Response
 from mgraph_ai_service_graph.schemas.graph_crud.Schema__Graph__Exists__Response             import Schema__Graph__Exists__Response
 from mgraph_ai_service_graph.service.areas.Area__Graph__CRUD                                import Area__Graph__CRUD
-from mgraph_ai_service_graph.service.areas.Area__Graph__Edit                                import Area__Graph__Edit
-from mgraph_ai_service_graph.service.areas.Area__Graph__Query                               import Area__Graph__Query
 from mgraph_ai_service_graph.service.caching.Graph__Cache__Client                           import Graph__Cache__Client
-from mgraph_ai_service_graph.service.graph.Graph__Service                                   import Graph__Service
 from mgraph_ai_service_graph.utils.testing.Graph_Test_Helpers                               import Graph_Test_Helpers
 from tests.unit.Graph__Service__Fast_API__Test_Objs                                         import client_cache_service
 
@@ -34,16 +28,16 @@ class test_Routes__Graph__CRUD(TestCase):
     def setUpClass(cls):
         cls.cache_client, cls.cache_service = client_cache_service()                        # Create in-memory cache service
         cls.graph_cache_client              = Graph__Cache__Client(cache_client=cls.cache_client)
-        cls.graph_service                   = Graph__Service(graph_cache_client=cls.graph_cache_client)
+        cls.helpers                         = Graph_Test_Helpers  (cache_client=cls.cache_client )      # Create helpers
 
-        cls.area_crud                       = Area__Graph__CRUD (graph_service=cls.graph_service)    # Create areas
-        cls.area_edit                       = Area__Graph__Edit (graph_service=cls.graph_service)
-        cls.area_query                      = Area__Graph__Query(graph_service=cls.graph_service)
-
+        # cls.graph_service                   = Graph__Service(graph_cache_client=cls.graph_cache_client)
+        #
+        # cls.area_crud                       = Area__Graph__CRUD (graph_service=cls.graph_service)    # Create areas
+        # cls.area_edit                       = Area__Graph__Edit (graph_service=cls.graph_service)
+        # cls.area_query                      = Area__Graph__Query(graph_service=cls.graph_service)
+        cls.area_crud                       = cls.helpers.area_crud ()
         cls.routes                          = Routes__Graph__CRUD(area_crud=cls.area_crud)           # Create routes
-        cls.helpers                         = Graph_Test_Helpers(area_crud  = cls.area_crud  ,       # Create helpers
-                                                                 area_edit  = cls.area_edit  ,
-                                                                 area_query = cls.area_query )
+
         cls.test_namespace                  = Safe_Str__Id('test-routes-crud')                       # Test namespace
 
     # ═══════════════════════════════════════════════════════════════════════════════

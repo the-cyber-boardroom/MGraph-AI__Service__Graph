@@ -3,7 +3,7 @@ from osbot_utils.testing.__                                                     
 from osbot_utils.type_safe.Type_Safe                                                     import Type_Safe
 from osbot_utils.utils.Objects                                                           import base_classes
 from osbot_fast_api.api.routes.Fast_API__Routes                                          import Fast_API__Routes
-from mgraph_ai_service_graph.fast_api.routes.Routes__Graph__Batch                        import Routes__Graph__Batch
+from mgraph_ai_service_graph.fast_api.routes.graph.Routes__Graph__Batch                  import Routes__Graph__Batch
 from mgraph_ai_service_graph.schemas.batch_execution.Schema__Graph__Batch__Request       import Schema__Graph__Batch__Request
 from mgraph_ai_service_graph.schemas.batch_execution.Schema__Graph__Batch__Response      import Schema__Graph__Batch__Response
 from mgraph_ai_service_graph.service.batch_execution.Graph__Batch__Executor              import Graph__Batch__Executor
