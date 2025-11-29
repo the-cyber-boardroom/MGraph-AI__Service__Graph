@@ -6,15 +6,13 @@ from mgraph_ai_service_graph.schemas.graph_query.Schema__Graph__Find_Nodes__Requ
 from mgraph_ai_service_graph.schemas.graph_query.Schema__Graph__Find_Nodes__Response        import Schema__Graph__Find_Nodes__Response
 from mgraph_ai_service_graph.schemas.graph_query.Schema__Graph__Find_Node__Response         import Schema__Graph__Find_Node__Response
 from mgraph_ai_service_graph.schemas.graph_query.Schema__Graph__Find_Edges__Response        import Schema__Graph__Find_Edges__Response
-from mgraph_ai_service_graph.schemas.graph_query.Schema__Graph__Neighbors__Response         import Schema__Graph__Neighbors__Response
 from mgraph_ai_service_graph.service.areas.Area__Graph__Query                               import Area__Graph__Query
 
 
 TAG__ROUTES_GRAPH_QUERY   = 'graph-query'
 ROUTES_PATHS__GRAPH_QUERY = [ '/graph-query/find/nodes'    ,
                               '/graph-query/find/node'     ,
-                              '/graph-query/find/edges'    ,
-                              '/graph-query/neighbors'     ]
+                              '/graph-query/find/edges'    ]
 
 
 class Routes__Graph__Query(Fast_API__Routes):                                               # Graph query routes
@@ -40,16 +38,8 @@ class Routes__Graph__Query(Fast_API__Routes):                                   
         return self.area_query.find_edges_by_type(graph_ref = graph_ref,
                                                   edge_type = str(edge_type))
 
-    def neighbors(self,                                                                     # Get neighboring nodes
-                  graph_ref : Schema__Graph__Ref,
-                  node_id   : Obj_Id
-                 ) -> Schema__Graph__Neighbors__Response:
-        return self.area_query.get_neighbors(graph_ref = graph_ref,
-                                             node_id   = node_id  )
-
     def setup_routes(self):
         self.add_route_post(self.find__nodes)
         self.add_route_post(self.find__node )
         self.add_route_post(self.find__edges)
-        self.add_route_post(self.neighbors  )
         return self

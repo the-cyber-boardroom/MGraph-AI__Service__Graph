@@ -57,7 +57,7 @@ class test_Graph_Service__Fast_API__client(TestCase):
     def test__config_fast_api_routes(self):                                              # Test routes are configured correctly
         expected_routes = sorted(ROUTES_PATHS__INFO          +
                                  EXPECTED_ROUTES__SET_COOKIE +                           # todo: fix this variable name in osbot_fast_api
-                                 ROUTES_PATHS__GRAPH_BATCH    +
+                                 ROUTES_PATHS__GRAPH_BATCH   +
                                  ROUTES_PATHS__GRAPH_CRUD    +
                                  ROUTES_PATHS__GRAPH_EDIT    +
                                  ROUTES_PATHS__GRAPH_QUERY   +

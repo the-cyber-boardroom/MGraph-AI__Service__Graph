@@ -1,5 +1,7 @@
 from unittest                                                                               import TestCase
 from mgraph_ai_service_graph.schemas.graph_edit.nodes.Schema__Graph__Delete_Node__Response  import Schema__Graph__Delete_Node__Response
+from mgraph_ai_service_graph.schemas.graph_ref.Edge_Id                                      import Edge_Id
+from mgraph_ai_service_graph.schemas.graph_ref.Node_Id                                      import Node_Id
 from osbot_utils.testing.__                                                                 import __
 from osbot_utils.type_safe.Type_Safe                                                        import Type_Safe
 from osbot_utils.type_safe.primitives.domains.identifiers.Obj_Id                            import Obj_Id
@@ -116,7 +118,7 @@ class test_Area__Graph__Edit(TestCase):
             response = _.add_node.add_node(request)
 
             assert type(response)                   is Schema__Graph__Add_Node__Response
-            assert type(response.node_id)           is Obj_Id
+            assert type(response.node_id)           is Node_Id
             assert type(response.graph_ref)         is Schema__Graph__Ref
             assert type(response.graph_ref.graph_id) is Graph_Id
             assert response.success                 is True
@@ -211,7 +213,7 @@ class test_Area__Graph__Edit(TestCase):
             response = _.add_value.add_value(request)
 
             assert type(response)                    is Schema__Graph__Add_Value__Response
-            assert type(response.node_id)            is Obj_Id
+            assert type(response.node_id)            is Node_Id
             assert type(response.graph_ref)          is Schema__Graph__Ref
             assert type(response.graph_ref.graph_id) is Graph_Id
             assert response.value                    == 'test-value'
@@ -297,11 +299,11 @@ class test_Area__Graph__Edit(TestCase):
             edge_response = _.add_edge.add_edge(edge_request)
 
             assert type(edge_response)                    is Schema__Graph__Add_Edge__Response
-            assert type(edge_response.edge_id)            is Obj_Id
+            assert type(edge_response.edge_id)            is Edge_Id
             assert type(edge_response.graph_ref)          is Schema__Graph__Ref
             assert type(edge_response.graph_ref.graph_id) is Graph_Id
-            assert type(edge_response.from_node_id)       is Obj_Id
-            assert type(edge_response.to_node_id)         is Obj_Id
+            assert type(edge_response.from_node_id)       is Node_Id
+            assert type(edge_response.to_node_id)         is Node_Id
             assert edge_response.from_node_id             == from_node_id
             assert edge_response.to_node_id               == to_node_id
             assert edge_response.success                  is True
@@ -508,7 +510,7 @@ class test_Area__Graph__Edit(TestCase):
         create_response = self._create_empty_graph()
         graph_ref       = create_response.graph_ref
         graph_id        = graph_ref.graph_id
-        fake_edge_id    = Obj_Id()
+        fake_edge_id    = Edge_Id(Obj_Id())
 
         with self.area_edit as _:
             delete_graph_ref = Schema__Graph__Ref(graph_id=graph_id, namespace=self.test_namespace)
@@ -656,7 +658,7 @@ class test_Area__Graph__Edit(TestCase):
             response = _.add_node.add_node(request)
 
             assert type(response)                     is Schema__Graph__Add_Node__Response
-            assert type(response.node_id)             is Obj_Id
+            assert type(response.node_id)             is Node_Id
             assert type(response.graph_ref)           is Schema__Graph__Ref
             assert type(response.graph_ref.graph_id)  is Graph_Id
             assert type(response.graph_ref.cache_id)  is Cache_Id
@@ -693,12 +695,12 @@ class test_Area__Graph__Edit(TestCase):
             edge_response = _.add_edge.add_edge(edge_request)
 
             assert type(edge_response)                     is Schema__Graph__Add_Edge__Response
-            assert type(edge_response.edge_id)             is Obj_Id
+            assert type(edge_response.edge_id)             is Edge_Id
             assert type(edge_response.graph_ref)           is Schema__Graph__Ref
             assert type(edge_response.graph_ref.graph_id)  is Graph_Id
             assert type(edge_response.graph_ref.cache_id)  is Cache_Id
-            assert type(edge_response.from_node_id)        is Obj_Id
-            assert type(edge_response.to_node_id)          is Obj_Id
+            assert type(edge_response.from_node_id)        is Node_Id
+            assert type(edge_response.to_node_id)          is Node_Id
             assert type(edge_response.success)             is bool
             assert type(edge_response.cached)              is bool
 
@@ -719,7 +721,7 @@ class test_Area__Graph__Edit(TestCase):
             response = _.add_value.add_value(request)
 
             assert type(response)                     is Schema__Graph__Add_Value__Response
-            assert type(response.node_id)             is Obj_Id
+            assert type(response.node_id)             is Node_Id
             assert type(response.graph_ref)           is Schema__Graph__Ref
             assert type(response.graph_ref.graph_id)  is Graph_Id
             assert type(response.graph_ref.cache_id)  is Cache_Id

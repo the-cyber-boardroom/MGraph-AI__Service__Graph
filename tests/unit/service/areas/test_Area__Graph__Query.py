@@ -1,8 +1,7 @@
 import inspect
 from unittest                                                                               import TestCase
-
-import pytest
-from osbot_utils.testing.__                                                                 import __, __SKIP__
+from mgraph_ai_service_graph.schemas.graph_ref.Node_Id                                      import Node_Id
+from osbot_utils.testing.__                                                                 import __
 from osbot_utils.type_safe.Type_Safe                                                        import Type_Safe
 from osbot_utils.type_safe.type_safe_core.collections.Type_Safe__List                       import Type_Safe__List
 from osbot_utils.type_safe.primitives.core.Safe_UInt                                        import Safe_UInt
@@ -16,7 +15,6 @@ from mgraph_ai_service_graph.schemas.graph_crud.Schema__Graph__Create__Request  
 from mgraph_ai_service_graph.schemas.graph_query.Schema__Graph__Find_Nodes__Request         import Schema__Graph__Find_Nodes__Request
 from mgraph_ai_service_graph.schemas.graph_query.Schema__Graph__Find_Nodes__Response        import Schema__Graph__Find_Nodes__Response
 from mgraph_ai_service_graph.schemas.graph_query.Schema__Graph__Find_Node__Response         import Schema__Graph__Find_Node__Response
-from mgraph_ai_service_graph.schemas.graph_query.Schema__Graph__Neighbors__Response         import Schema__Graph__Neighbors__Response
 from mgraph_ai_service_graph.schemas.graph_query.Schema__Graph__Find_Edges__Response        import Schema__Graph__Find_Edges__Response
 from mgraph_ai_service_graph.schemas.graph_edit.nodes.Schema__Graph__Add_Node__Request      import Schema__Graph__Add_Node__Request
 from mgraph_ai_service_graph.schemas.graph_edit.edges.Schema__Graph__Add_Edge__Request      import Schema__Graph__Add_Edge__Request
@@ -32,7 +30,6 @@ class test_Area__Graph__Query(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        pytest.skip("tests need fixing")
         cls.cache_client, cls.cache_service = client_cache_service()
         cls.graph_cache_client              = Graph__Cache__Client(cache_client=cls.cache_client)
         cls.graph_service                   = Graph__Service(graph_cache_client=cls.graph_cache_client)
@@ -63,12 +60,10 @@ class test_Area__Graph__Query(TestCase):
         with Area__Graph__Query() as _:
             assert hasattr(_, 'find_nodes_by_type')
             assert hasattr(_, 'find_node_by_id')
-            assert hasattr(_, 'get_neighbors')
             assert hasattr(_, 'find_edges_by_type')
 
             assert callable(_.find_nodes_by_type)
             assert callable(_.find_node_by_id)
-            assert callable(_.get_neighbors)
             assert callable(_.find_edges_by_type)
 
     # ═══════════════════════════════════════════════════════════════════════════════
@@ -88,14 +83,6 @@ class test_Area__Graph__Query(TestCase):
     def test__find_node_by_id__method_signature(self):                                      # Test find_node_by_id signature
         with Area__Graph__Query() as _:
             sig    = inspect.signature(_.find_node_by_id)
-            params = list(sig.parameters.keys())
-
-            assert 'graph_ref' in params
-            assert 'node_id'   in params
-
-    def test__get_neighbors__method_signature(self):                                        # Test get_neighbors signature
-        with Area__Graph__Query() as _:
-            sig    = inspect.signature(_.get_neighbors)
             params = list(sig.parameters.keys())
 
             assert 'graph_ref' in params
@@ -249,6 +236,9 @@ class test_Area__Graph__Query(TestCase):
         graph_ref = test_data['graph_ref']
         node_id   = test_data['node_ids'][0]
 
+        assert type(graph_ref) is Schema__Graph__Ref
+        assert type(node_id  ) is Node_Id
+
         with self.area_query as _:
             response = _.find_node_by_id(graph_ref = graph_ref,
                                          node_id   = node_id  )
@@ -257,12 +247,18 @@ class test_Area__Graph__Query(TestCase):
             assert type(response.graph_ref) is Schema__Graph__Ref
             assert response.found           is True
             assert response.node_id         == node_id
+            assert response.obj()           == __( graph_ref  = graph_ref.obj(),
+                                                   node_id   = node_id,
+                                                   found     = True,
+                                                   node_data = __(node_data = __()              ,
+                                                                  node_id   = Obj_Id(node_id)   ,
+                                                                  node_type = 'mgraph_db.mgraph.schemas.Schema__MGraph__Node.Schema__MGraph__Node'))
 
         self._delete_graph(graph_ref)
 
     def test_find_node_by_id__not_found(self):                                              # Test finding non-existent node
         graph_ref    = self._create_test_graph()
-        fake_node_id = Obj_Id()
+        fake_node_id = Node_Id(Obj_Id())
 
         with self.area_query as _:
             response = _.find_node_by_id(graph_ref = graph_ref   ,
@@ -285,68 +281,8 @@ class test_Area__Graph__Query(TestCase):
             assert type(response.graph_ref)           is Schema__Graph__Ref
             assert type(response.graph_ref.graph_id)  is Graph_Id
             assert type(response.graph_ref.cache_id)  is Cache_Id
-            assert type(response.node_id)             is Obj_Id
+            assert type(response.node_id)             is Node_Id
             assert type(response.found)               is bool
-
-        self._delete_graph(graph_ref)
-
-    # ═══════════════════════════════════════════════════════════════════════════════
-    # get_neighbors Tests
-    # ═══════════════════════════════════════════════════════════════════════════════
-
-    def test_get_neighbors__with_edges(self):                                               # Test getting neighbors of connected node
-        test_data = self._create_graph_with_nodes_and_edges()
-        graph_ref = test_data['graph_ref']
-        node_id_2 = test_data['node_ids'][1]                                                # Middle node (has both incoming and outgoing)
-
-        with self.area_query as _:
-            response = _.get_neighbors(graph_ref = graph_ref,
-                                       node_id   = node_id_2)
-
-            assert type(response)             is Schema__Graph__Neighbors__Response
-            assert type(response.graph_ref)   is Schema__Graph__Ref
-            assert type(response.neighbor_ids) is list
-            assert type(response.total_found) is Safe_UInt
-            assert response.node_id           == node_id_2
-
-            # Node 2 should have node 1 and node 3 as neighbors
-            assert len(response.neighbor_ids) == 2
-            assert response.total_found       == 2
-
-        self._delete_graph(graph_ref)
-
-    def test_get_neighbors__isolated_node(self):                                            # Test getting neighbors of isolated node
-        graph_ref = self._create_test_graph()
-
-        # Add single node with no edges
-        node_response = self._add_node(graph_ref)
-        graph_ref     = node_response.graph_ref
-        node_id       = node_response.node_id
-
-        with self.area_query as _:
-            response = _.get_neighbors(graph_ref = graph_ref,
-                                       node_id   = node_id  )
-
-            assert type(response)         is Schema__Graph__Neighbors__Response
-            assert len(response.neighbor_ids) == 0
-            assert response.total_found   == 0
-
-        self._delete_graph(graph_ref)
-
-    def test_get_neighbors__response_types(self):                                           # Test response field types
-        test_data = self._create_graph_with_nodes_and_edges()
-        graph_ref = test_data['graph_ref']
-        node_id   = test_data['node_ids'][0]
-
-        with self.area_query as _:
-            response = _.get_neighbors(graph_ref=graph_ref, node_id=node_id)
-
-            assert type(response.graph_ref)           is Schema__Graph__Ref
-            assert type(response.graph_ref.graph_id)  is Graph_Id
-            assert type(response.graph_ref.cache_id)  is Cache_Id
-            assert type(response.node_id)             is Obj_Id
-            assert type(response.neighbor_ids)        is list
-            assert type(response.total_found)         is Safe_UInt
 
         self._delete_graph(graph_ref)
 

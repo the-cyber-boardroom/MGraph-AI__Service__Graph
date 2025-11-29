@@ -1,6 +1,7 @@
 from types                                                                                  import NoneType
 from unittest                                                                               import TestCase
-from osbot_utils.testing.__                                                                 import __, __SKIP__
+from mgraph_ai_service_graph.schemas.graph_ref.Node_Id                                      import Node_Id
+from osbot_utils.testing.__                                                                 import __
 from osbot_utils.type_safe.Type_Safe                                                        import Type_Safe
 from osbot_utils.type_safe.primitives.domains.identifiers.Obj_Id                            import Obj_Id
 from osbot_utils.type_safe.primitives.domains.identifiers.Random_Guid                       import Random_Guid
@@ -47,8 +48,8 @@ class test_Schema__Graph__Add_Edge__Request(TestCase):
 
     def test__with_graph_ref__graph_id(self):                                               # Test with graph_ref containing graph_id
         graph_id     = Graph_Id(Obj_Id())
-        from_node_id = Obj_Id()
-        to_node_id   = Obj_Id()
+        from_node_id = Node_Id(Obj_Id())
+        to_node_id   = Node_Id(Obj_Id())
         graph_ref    = Schema__Graph__Ref(graph_id  = graph_id       ,
                                           namespace = 'test-namespace')
 
@@ -65,8 +66,8 @@ class test_Schema__Graph__Add_Edge__Request(TestCase):
 
     def test__with_graph_ref__cache_id(self):                                               # Test with graph_ref containing cache_id
         cache_id     = Cache_Id(Random_Guid())
-        from_node_id = Obj_Id()
-        to_node_id   = Obj_Id()
+        from_node_id = Node_Id(Obj_Id())
+        to_node_id   = Node_Id(Obj_Id())
         graph_ref    = Schema__Graph__Ref(cache_id  = cache_id ,
                                           namespace = 'cache-ns')
 
@@ -81,8 +82,8 @@ class test_Schema__Graph__Add_Edge__Request(TestCase):
     def test__with_graph_ref__both_ids(self):                                               # Test with graph_ref containing both IDs
         graph_id     = Graph_Id(Obj_Id())
         cache_id     = Cache_Id(Random_Guid())
-        from_node_id = Obj_Id()
-        to_node_id   = Obj_Id()
+        from_node_id = Node_Id(Obj_Id())
+        to_node_id   = Node_Id(Obj_Id())
         graph_ref    = Schema__Graph__Ref(graph_id  = graph_id ,
                                           cache_id  = cache_id ,
                                           namespace = 'both-ns')
@@ -97,8 +98,8 @@ class test_Schema__Graph__Add_Edge__Request(TestCase):
 
     def test__with_auto_cache_false(self):                                                  # Test disabling auto_cache
         graph_ref    = Schema__Graph__Ref(graph_id = Graph_Id(Obj_Id()))
-        from_node_id = Obj_Id()
-        to_node_id   = Obj_Id()
+        from_node_id = Node_Id(Obj_Id())
+        to_node_id   = Node_Id(Obj_Id())
 
         with Schema__Graph__Add_Edge__Request(graph_ref    = graph_ref   ,
                                               from_node_id = from_node_id,
@@ -135,8 +136,8 @@ class test_Schema__Graph__Add_Edge__Request(TestCase):
             assert type(_.graph_ref.graph_id)  is Graph_Id
             assert type(_.graph_ref.cache_id)  is Cache_Id
             assert type(_.graph_ref.namespace) is Safe_Str__Id
-            assert type(_.from_node_id)        is Obj_Id
-            assert type(_.to_node_id)          is Obj_Id
+            assert type(_.from_node_id)        is Node_Id
+            assert type(_.to_node_id)          is Node_Id
             assert type(_.auto_cache)          is bool
 
     # ═══════════════════════════════════════════════════════════════════════════════
@@ -189,8 +190,8 @@ class test_Schema__Graph__Add_Edge__Request(TestCase):
                 assert type(restored.graph_ref)           is Schema__Graph__Ref
                 assert type(restored.graph_ref.graph_id)  is Graph_Id
                 assert type(restored.graph_ref.namespace) is Safe_Str__Id
-                assert type(restored.from_node_id)        is Obj_Id
-                assert type(restored.to_node_id)          is Obj_Id
+                assert type(restored.from_node_id)        is Node_Id
+                assert type(restored.to_node_id)          is Node_Id
 
     # ═══════════════════════════════════════════════════════════════════════════════
     # Edge Cases
@@ -203,8 +204,8 @@ class test_Schema__Graph__Add_Edge__Request(TestCase):
             assert _.graph_ref.namespace == GRAPH_REF__DEFAULT_NAMESPACE
 
     def test__none_graph_ref_with_node_ids(self):                                           # Test with None graph_ref but valid node IDs
-        from_node_id = Obj_Id()
-        to_node_id   = Obj_Id()
+        from_node_id = Node_Id(Obj_Id())
+        to_node_id   = Node_Id(Obj_Id())
 
         with Schema__Graph__Add_Edge__Request(graph_ref    = None        ,
                                               from_node_id = from_node_id,

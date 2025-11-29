@@ -1,13 +1,12 @@
 from types                                                                                  import NoneType
 from unittest                                                                               import TestCase
 from mgraph_ai_service_graph.schemas.graph_ref.Node_Id                                      import Node_Id
+from mgraph_db.mgraph.schemas.Schema__MGraph__Node                                          import Schema__MGraph__Node
 from osbot_utils.testing.__                                                                 import __
 from osbot_utils.type_safe.Type_Safe                                                        import Type_Safe
-from osbot_utils.type_safe.type_safe_core.collections.Type_Safe__Dict                       import Type_Safe__Dict
 from osbot_utils.type_safe.primitives.domains.identifiers.Obj_Id                            import Obj_Id
 from osbot_utils.type_safe.primitives.domains.identifiers.Random_Guid                       import Random_Guid
 from osbot_utils.type_safe.primitives.domains.identifiers.safe_str.Safe_Str__Id             import Safe_Str__Id
-from osbot_utils.type_safe.primitives.domains.identifiers.safe_str.Safe_Str__Key            import Safe_Str__Key
 from osbot_utils.utils.Objects                                                              import base_classes
 from mgraph_ai_service_cache_client.schemas.cache.Cache_Id                                  import Cache_Id
 from mgraph_ai_service_graph.schemas.graph_ref.Graph_Id                                     import Graph_Id
@@ -27,24 +26,21 @@ class test_Schema__Graph__Find_Node__Response(TestCase):
             assert base_classes(_)   == [Type_Safe, object]
             assert _.graph_ref       is None                                                # Optional graph_ref
             assert _.node_id         is None                                                # Node that was searched
-            assert type(_.node_type) is NoneType                                            # Node type
-            assert type(_.node_data) is Type_Safe__Dict                                     # Node data
+            assert _.node_data       is None                                                # Node data
             assert _.found           is False                                               # Default not found
 
     def test__init__field_types(self):                                                      # Test field types at initialization
         with Schema__Graph__Find_Node__Response() as _:
             assert type(_.graph_ref) is NoneType
             assert type(_.node_id)   is NoneType
-            assert type(_.node_type) is NoneType
-            assert type(_.node_data) is Type_Safe__Dict
+            assert type(_.node_data) is NoneType
             assert type(_.found)     is bool
 
     def test__init__obj_comparison(self):                                                   # Test .obj() with default values
         with Schema__Graph__Find_Node__Response() as _:
             assert _.obj() == __(graph_ref = None       ,
                                  node_id   = None       ,
-                                 node_type = _.node_type,
-                                 node_data = __()       ,
+                                 node_data = None       ,
                                  found     = False      )
 
     # ═══════════════════════════════════════════════════════════════════════════════
@@ -55,22 +51,19 @@ class test_Schema__Graph__Find_Node__Response(TestCase):
         graph_id  = Graph_Id(Obj_Id())
         cache_id  = Cache_Id(Random_Guid())
         node_id   = Node_Id()
-        node_type = Safe_Str__Id('Person')
-        node_data = {Safe_Str__Key('name'):'Alice'}
+        node_data = Schema__MGraph__Node()
         graph_ref = Schema__Graph__Ref(graph_id  = graph_id       ,
                                        cache_id  = cache_id       ,
                                        namespace = 'test-namespace')
 
         with Schema__Graph__Find_Node__Response(graph_ref = graph_ref,
                                                 node_id   = node_id  ,
-                                                node_type = node_type,
                                                 node_data = node_data,
                                                 found     = True     ) as _:
             assert _.graph_ref.graph_id  == graph_id
             assert _.graph_ref.cache_id  == cache_id
             assert _.graph_ref.namespace == 'test-namespace'
             assert _.node_id             == node_id
-            assert _.node_type           == node_type
             assert _.found               is True
 
     def test__with_graph_ref__not_found(self):                                              # Test node not found
@@ -85,41 +78,23 @@ class test_Schema__Graph__Find_Node__Response(TestCase):
             assert _.graph_ref.graph_id == graph_id
             assert _.node_id            == node_id
             assert _.found              is False
-            assert len(_.node_data)     == 0                                                # Empty when not found
+            assert _.node_data          is None
 
     def test__with_cache_id_lookup(self):                                                   # Test response when graph was found by cache_id
         cache_id  = Cache_Id(Random_Guid())
         graph_id  = Graph_Id(Obj_Id())
         node_id   = Node_Id()
-        node_type = Safe_Str__Id('Entity')
         graph_ref = Schema__Graph__Ref(cache_id  = cache_id ,
                                        graph_id  = graph_id ,                               # Resolved after lookup
                                        namespace = 'cache-ns')
 
         with Schema__Graph__Find_Node__Response(graph_ref = graph_ref,
                                                 node_id   = node_id  ,
-                                                node_type = node_type,
                                                 found     = True     ) as _:
             assert _.graph_ref.cache_id == cache_id
             assert _.graph_ref.graph_id == graph_id
             assert _.node_id            == node_id
             assert _.found              is True
-
-    def test__with_multiple_data_fields(self):                                              # Test node with multiple data fields
-        graph_ref = Schema__Graph__Ref(graph_id = Graph_Id(Obj_Id()))
-        node_id   = Obj_Id()
-        node_type = Safe_Str__Id('User')
-        node_data = {Safe_Str__Key('name')  : 'Bob'           ,
-                     Safe_Str__Key('email') : 'bob@test.com'  ,
-                     Safe_Str__Key('role')  : 'admin'         }
-
-        with Schema__Graph__Find_Node__Response(graph_ref = graph_ref,
-                                                node_id   = node_id  ,
-                                                node_type = node_type,
-                                                node_data = node_data,
-                                                found     = True     ) as _:
-            assert len(_.node_data) == 3
-            assert _.found          is True
 
     # ═══════════════════════════════════════════════════════════════════════════════
     # Type Validation Tests
@@ -128,23 +103,20 @@ class test_Schema__Graph__Find_Node__Response(TestCase):
     def test__graph_ref_field_types(self):                                                  # Test types within graph_ref
         graph_id  = Graph_Id(Obj_Id())
         cache_id  = Cache_Id(Random_Guid())
-        node_id   = Obj_Id()
-        node_type = Safe_Str__Id('Thing')
+        node_id   = Node_Id(Obj_Id())
         graph_ref = Schema__Graph__Ref(graph_id  = graph_id ,
                                        cache_id  = cache_id ,
                                        namespace = 'type-ns')
 
         with Schema__Graph__Find_Node__Response(graph_ref = graph_ref,
                                                 node_id   = node_id  ,
-                                                node_type = node_type,
                                                 found     = True     ) as _:
             assert type(_.graph_ref)           is Schema__Graph__Ref
             assert type(_.graph_ref.graph_id)  is Graph_Id
             assert type(_.graph_ref.cache_id)  is Cache_Id
             assert type(_.graph_ref.namespace) is Safe_Str__Id
             assert type(_.node_id)             is Node_Id
-            assert type(_.node_type)           is Safe_Str__Id
-            assert type(_.node_data)           is Type_Safe__Dict
+            assert type(_.node_data)           is NoneType
             assert type(_.found)               is bool
 
     # ═══════════════════════════════════════════════════════════════════════════════
@@ -164,13 +136,12 @@ class test_Schema__Graph__Find_Node__Response(TestCase):
         graph_ref = Schema__Graph__Ref(graph_id  = Graph_Id(Obj_Id())    ,
                                        cache_id  = Cache_Id(Random_Guid()),
                                        namespace = 'serial-ns'           )
-        node_id   = Obj_Id()
+        node_id   = Node_Id(Obj_Id())
         node_type = Safe_Str__Id('Document')
-        node_data = {Safe_Str__Key('title'): 'Test Doc'}
+        node_data = Schema__MGraph__Node()
 
         with Schema__Graph__Find_Node__Response(graph_ref = graph_ref,
                                                 node_id   = node_id  ,
-                                                node_type = node_type,
                                                 node_data = node_data,
                                                 found     = True     ) as original:
             json_data = original.json()
@@ -180,28 +151,8 @@ class test_Schema__Graph__Find_Node__Response(TestCase):
                 assert restored.graph_ref.cache_id  == original.graph_ref.cache_id
                 assert restored.graph_ref.namespace == original.graph_ref.namespace
                 assert restored.node_id             == original.node_id
-                assert restored.node_type           == original.node_type
+                assert restored.node_data.obj()     == original.node_data.obj()
                 assert restored.found               == original.found
-
-    def test__serialization_preserves_types(self):                                          # Test that types are preserved
-        graph_ref = Schema__Graph__Ref(graph_id  = Graph_Id(Obj_Id()),
-                                       namespace = 'type-test'       )
-        node_id   = Obj_Id()
-        node_type = Safe_Str__Id('Item')
-
-        with Schema__Graph__Find_Node__Response(graph_ref = graph_ref,
-                                                node_id   = node_id  ,
-                                                node_type = node_type,
-                                                found     = True     ) as original:
-            json_data = original.json()
-
-            with Schema__Graph__Find_Node__Response.from_json(json_data) as restored:
-                assert type(restored.graph_ref)           is Schema__Graph__Ref
-                assert type(restored.graph_ref.graph_id)  is Graph_Id
-                assert type(restored.graph_ref.namespace) is Safe_Str__Id
-                assert type(restored.node_id)             is Node_Id
-                assert type(restored.node_type)           is Safe_Str__Id
-                assert type(restored.node_data)           is Type_Safe__Dict
 
     # ═══════════════════════════════════════════════════════════════════════════════
     # Edge Cases
@@ -216,10 +167,9 @@ class test_Schema__Graph__Find_Node__Response(TestCase):
 
     def test__empty_node_data(self):                                                        # Test with empty node_data
         graph_ref = Schema__Graph__Ref(graph_id = Graph_Id(Obj_Id()))
-        node_id   = Obj_Id()
+        node_id   = Node_Id(Obj_Id())
 
         with Schema__Graph__Find_Node__Response(graph_ref = graph_ref,
                                                 node_id   = node_id  ,
                                                 found     = True     ) as _:
-            assert len(_.node_data) == 0
-            assert type(_.node_data) is Type_Safe__Dict
+            assert type(_.node_data) is NoneType

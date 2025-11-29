@@ -1,6 +1,7 @@
 from types                                                                                  import NoneType
 from unittest                                                                               import TestCase
-from osbot_utils.testing.__                                                                 import __, __SKIP__
+from mgraph_ai_service_graph.schemas.graph_ref.Node_Id                                      import Node_Id
+from osbot_utils.testing.__                                                                 import __
 from osbot_utils.type_safe.Type_Safe                                                        import Type_Safe
 from osbot_utils.type_safe.primitives.domains.identifiers.Obj_Id                            import Obj_Id
 from osbot_utils.type_safe.primitives.domains.identifiers.Random_Guid                       import Random_Guid
@@ -48,7 +49,7 @@ class test_Schema__Graph__Add_Node__Response(TestCase):
     def test__with_graph_ref__success(self):                                                # Test successful node creation
         graph_id  = Graph_Id(Obj_Id())
         cache_id  = Cache_Id(Random_Guid())
-        node_id   = Obj_Id()
+        node_id   = Node_Id(Obj_Id())
         graph_ref = Schema__Graph__Ref(graph_id  = graph_id       ,
                                        cache_id  = cache_id       ,
                                        namespace = 'test-namespace')
@@ -66,7 +67,7 @@ class test_Schema__Graph__Add_Node__Response(TestCase):
 
     def test__with_graph_ref__not_cached(self):                                             # Test node creation without caching
         graph_id  = Graph_Id(Obj_Id())
-        node_id   = Obj_Id()
+        node_id   = Node_Id(Obj_Id())
         graph_ref = Schema__Graph__Ref(graph_id  = graph_id,
                                        namespace = 'no-cache-ns')
 
@@ -83,7 +84,7 @@ class test_Schema__Graph__Add_Node__Response(TestCase):
     def test__with_cache_id_lookup(self):                                                   # Test response when graph was found by cache_id
         cache_id  = Cache_Id(Random_Guid())
         graph_id  = Graph_Id(Obj_Id())
-        node_id   = Obj_Id()
+        node_id   = Node_Id(Obj_Id())
         graph_ref = Schema__Graph__Ref(cache_id  = cache_id ,
                                        graph_id  = graph_id ,                               # Resolved after lookup
                                        namespace = 'cache-ns')
@@ -121,7 +122,7 @@ class test_Schema__Graph__Add_Node__Response(TestCase):
     def test__graph_ref_field_types(self):                                                  # Test types within graph_ref
         graph_id  = Graph_Id(Obj_Id())
         cache_id  = Cache_Id(Random_Guid())
-        node_id   = Obj_Id()
+        node_id   = Node_Id(Obj_Id())
         graph_ref = Schema__Graph__Ref(graph_id  = graph_id ,
                                        cache_id  = cache_id ,
                                        namespace = 'type-ns')
@@ -134,7 +135,7 @@ class test_Schema__Graph__Add_Node__Response(TestCase):
             assert type(_.graph_ref.graph_id)  is Graph_Id
             assert type(_.graph_ref.cache_id)  is Cache_Id
             assert type(_.graph_ref.namespace) is Safe_Str__Id
-            assert type(_.node_id)             is Obj_Id
+            assert type(_.node_id)             is Node_Id
             assert type(_.cached)              is bool
             assert type(_.success)             is bool
 
@@ -177,7 +178,7 @@ class test_Schema__Graph__Add_Node__Response(TestCase):
         graph_ref = Schema__Graph__Ref(graph_id  = Graph_Id(Obj_Id())    ,
                                        cache_id  = Cache_Id(Random_Guid()),
                                        namespace = 'type-test'           )
-        node_id   = Obj_Id()
+        node_id   = Node_Id(Obj_Id())
 
         with Schema__Graph__Add_Node__Response(graph_ref = graph_ref,
                                                node_id   = node_id  ,
@@ -190,7 +191,7 @@ class test_Schema__Graph__Add_Node__Response(TestCase):
                 assert type(restored.graph_ref.graph_id)  is Graph_Id
                 assert type(restored.graph_ref.cache_id)  is Cache_Id
                 assert type(restored.graph_ref.namespace) is Safe_Str__Id
-                assert type(restored.node_id)             is Obj_Id
+                assert type(restored.node_id)             is Node_Id
 
     # ═══════════════════════════════════════════════════════════════════════════════
     # Edge Cases

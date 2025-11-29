@@ -1,5 +1,6 @@
 from types                                                                                  import NoneType
 from unittest                                                                               import TestCase
+from mgraph_ai_service_graph.schemas.graph_ref.Edge_Id                                      import Edge_Id
 from osbot_utils.testing.__                                                                 import __, __SKIP__
 from osbot_utils.type_safe.Type_Safe                                                        import Type_Safe
 from osbot_utils.type_safe.primitives.domains.identifiers.Obj_Id                            import Obj_Id
@@ -45,7 +46,7 @@ class test_Schema__Graph__Delete_Edge__Response(TestCase):
     def test__with_graph_ref__deleted_true(self):                                           # Test successful edge deletion
         graph_id  = Graph_Id(Obj_Id())
         cache_id  = Cache_Id(Random_Guid())
-        edge_id   = Obj_Id()
+        edge_id   = Edge_Id(Obj_Id())
         graph_ref = Schema__Graph__Ref(graph_id  = graph_id       ,
                                        cache_id  = cache_id       ,
                                        namespace = 'test-namespace')
@@ -61,7 +62,7 @@ class test_Schema__Graph__Delete_Edge__Response(TestCase):
 
     def test__with_graph_ref__deleted_false(self):                                          # Test failed edge deletion (not found)
         graph_id  = Graph_Id(Obj_Id())
-        edge_id   = Obj_Id()
+        edge_id   = Edge_Id(Obj_Id())
         graph_ref = Schema__Graph__Ref(graph_id  = graph_id,
                                        namespace = 'fail-ns')
 
@@ -75,7 +76,7 @@ class test_Schema__Graph__Delete_Edge__Response(TestCase):
     def test__with_cache_id_lookup(self):                                                   # Test deletion when graph was found by cache_id
         cache_id  = Cache_Id(Random_Guid())
         graph_id  = Graph_Id(Obj_Id())
-        edge_id   = Obj_Id()
+        edge_id   = Edge_Id(Obj_Id())
         graph_ref = Schema__Graph__Ref(cache_id  = cache_id ,
                                        graph_id  = graph_id ,                               # Resolved after lookup
                                        namespace = 'cache-ns')
@@ -107,7 +108,7 @@ class test_Schema__Graph__Delete_Edge__Response(TestCase):
             assert type(_.graph_ref.graph_id)  is Graph_Id
             assert type(_.graph_ref.cache_id)  is Cache_Id
             assert type(_.graph_ref.namespace) is Safe_Str__Id
-            assert type(_.edge_id)             is Obj_Id
+            assert type(_.edge_id)             is Edge_Id
             assert type(_.deleted)             is bool
 
     # ═══════════════════════════════════════════════════════════════════════════════
@@ -157,7 +158,7 @@ class test_Schema__Graph__Delete_Edge__Response(TestCase):
                 assert type(restored.graph_ref.graph_id)  is Graph_Id
                 assert type(restored.graph_ref.cache_id)  is Cache_Id
                 assert type(restored.graph_ref.namespace) is Safe_Str__Id
-                assert type(restored.edge_id)             is Obj_Id
+                assert type(restored.edge_id)             is Edge_Id
 
     # ═══════════════════════════════════════════════════════════════════════════════
     # Edge Cases
@@ -180,7 +181,7 @@ class test_Schema__Graph__Delete_Edge__Response(TestCase):
             assert len(_.edge_id) == 8                                                      # Obj_id format
 
     def test__delete_nonexistent_edge(self):                                                # Test deleting an edge that doesn't exist
-        edge_id   = Obj_Id()
+        edge_id   = Edge_Id(Obj_Id())
         graph_ref = Schema__Graph__Ref(graph_id = Graph_Id(Obj_Id()))
 
         with Schema__Graph__Delete_Edge__Response(graph_ref = graph_ref,

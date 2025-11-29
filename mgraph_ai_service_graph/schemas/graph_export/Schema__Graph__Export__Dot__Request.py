@@ -7,4 +7,4 @@ class Schema__Graph__Export__Dot__Request(Type_Safe):                           
     include_node_ids  : bool                = False                             # Include node IDs in labels
     include_edge_ids  : bool                = False                             # Include edge IDs in labels
     show_value_nodes  : bool                = True                              # Show value node contents
-    rankdir           : str                 = 'TB'                              # Graph direction: TB, BT, LR, RL
+    # todo: review the params to use here, since there are quite an number of options and we should be using a config schema and variable

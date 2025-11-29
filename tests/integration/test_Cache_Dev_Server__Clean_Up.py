@@ -1,6 +1,5 @@
-from unittest                                                                               import TestCase
-
 import pytest
+from unittest                                                                               import TestCase
 from osbot_utils.type_safe.Type_Safe                                                        import Type_Safe
 from mgraph_ai_service_cache_client.client.client_contract.Cache__Service__Fast_API__Client import Cache__Service__Fast_API__Client
 from mgraph_ai_service_cache_client.utils.Version                                           import version__mgraph_ai_service_cache_client

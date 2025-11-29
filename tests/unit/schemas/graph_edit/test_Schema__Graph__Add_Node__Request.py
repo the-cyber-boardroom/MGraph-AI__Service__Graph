@@ -1,6 +1,6 @@
 from types                                                                                  import NoneType
 from unittest                                                                               import TestCase
-from osbot_utils.testing.__                                                                 import __, __SKIP__
+from osbot_utils.testing.__                                                                 import __
 from osbot_utils.type_safe.Type_Safe                                                        import Type_Safe
 from osbot_utils.type_safe.primitives.domains.identifiers.Obj_Id                            import Obj_Id
 from osbot_utils.type_safe.primitives.domains.identifiers.Random_Guid                       import Random_Guid
