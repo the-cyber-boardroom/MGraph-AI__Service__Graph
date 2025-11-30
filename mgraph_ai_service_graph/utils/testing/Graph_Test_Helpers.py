@@ -13,7 +13,7 @@ Usage:
 from typing                                                                                 import Dict, List, Tuple
 from mgraph_ai_service_cache_client.client.client_contract.Cache__Service__Fast_API__Client import Cache__Service__Fast_API__Client
 from mgraph_ai_service_graph.service.caching.Graph__Cache__Client                           import Graph__Cache__Client
-from mgraph_ai_service_graph.service.caching.Graph__Cache__Utils import Graph__Cache__Utils
+from mgraph_ai_service_graph.service.caching.Graph__Cache__Utils                            import Graph__Cache__Utils
 from mgraph_ai_service_graph.service.graph.Graph__Service                                   import Graph__Service
 from osbot_utils.decorators.methods.cache_on_self                                           import cache_on_self
 from osbot_utils.type_safe.Type_Safe                                                        import Type_Safe

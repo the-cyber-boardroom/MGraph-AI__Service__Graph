@@ -8,15 +8,11 @@ class test_Routes__Graph__Cache(TestCase):
 
     @classmethod
     def setUpClass(cls) -> None:
-        from osbot_utils.helpers.duration.decorators.print_duration              import print_duration
-
-
-        with print_duration():
-            cls.cache_client, cls.cache_service = client_cache_service()                                    # Create in-memory cache service
-            cls.routes_graph_cache              = Routes__Graph__Cache(cache_client = cls.cache_client)
-            cls.graph_test_helpers              = Graph_Test_Helpers  (cache_client = cls.cache_client)
-            cls.create_response, _              = cls.graph_test_helpers.create_graph_with_nodes()
-            cls.cache_utils                     = cls.graph_test_helpers.cache_utils()
+        cls.cache_client, cls.cache_service = client_cache_service()                                    # Create in-memory cache service
+        cls.routes_graph_cache              = Routes__Graph__Cache(cache_client = cls.cache_client)
+        cls.graph_test_helpers              = Graph_Test_Helpers  (cache_client = cls.cache_client)
+        cls.create_response, _              = cls.graph_test_helpers.create_graph_with_nodes()
+        cls.cache_utils                     = cls.graph_test_helpers.cache_utils()
 
     def test_SetUpClass(self):
         with self.routes_graph_cache as _:
