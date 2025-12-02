@@ -387,14 +387,14 @@ osbot-fast-api-serverless = "*"
 
 [[package]]
 name = "mgraph-db"
-version = "1.4.0"
+version = "1.5.0"
 description = "MGraph-DB"
 optional = false
 python-versions = "<4.0,>=3.11"
 groups = ["main"]
 files = [
-    {file = "mgraph_db-1.4.0-py3-none-any.whl", hash = "sha256:2dd9bfa82a72dd82ea475033a75394cc36cdd731b8146171e1b17a3fc9809711"},
-    {file = "mgraph_db-1.4.0.tar.gz", hash = "sha256:887ecff6b4320d24a9c00255c6c59dc43862709d21a75df59ff771712935638b"},
+    {file = "mgraph_db-1.5.0-py3-none-any.whl", hash = "sha256:9fdd67d1f2570e34c01ad292d85e39c805ca26122920844bfa8ae40e9035ce06"},
+    {file = "mgraph_db-1.5.0.tar.gz", hash = "sha256:dd761eb9e416e62934cb584f81ab3e1af515af004241087bb0ae5c477f77082a"},
 ]
 
 [package.dependencies]
@@ -453,14 +453,14 @@ osbot-fast-api = "*"
 
 [[package]]
 name = "osbot-utils"
-version = "3.52.0"
+version = "3.53.0"
 description = "OWASP Security Bot - Utils"
 optional = false
 python-versions = "<4.0,>=3.7"
 groups = ["main"]
 files = [
-    {file = "osbot_utils-3.52.0-py3-none-any.whl", hash = "sha256:f8cb777f806c7dd636d99f388d6db8ea44d49609f418a5ed1c2898a41da2d0fc"},
-    {file = "osbot_utils-3.52.0.tar.gz", hash = "sha256:e487d6b42e732a856005a73c83b90ba042576325696b05c8073a2aee88773af8"},
+    {file = "osbot_utils-3.53.0-py3-none-any.whl", hash = "sha256:c5915397efb161c5554970696f9331bf09bb9bc7510507ab6495c30ae63cf91c"},
+    {file = "osbot_utils-3.53.0.tar.gz", hash = "sha256:87401a18eb47f16a9e82f6f22d74638af07bc7fcbd80ccc4aa1394075a2cde2a"},
 ]
 
 [[package]]
