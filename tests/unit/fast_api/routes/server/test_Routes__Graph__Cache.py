@@ -40,8 +40,11 @@ class test_Routes__Graph__Cache(TestCase):
             print(f"Expected Cache_Id id: {id(Expected_Cache_Id)}")
             print(f"Expected Cache_Id module: {Expected_Cache_Id.__module__}")
 
-            if result:
-                actual_type = type(result[0])
-                print(f"Actual type id: {id(actual_type)}")
-                print(f"Actual type module: {actual_type.__module__}")
-                print(f"Same class? {actual_type is Expected_Cache_Id}")
+
+            actual_type = type(result[0])
+
+            print(f"Actual type id: {id(actual_type)}")
+            print(f"Actual type module: {actual_type.__module__}")
+            print(f"Same class? {actual_type is Expected_Cache_Id}")
+
+            assert actual_type == type(result[0])
