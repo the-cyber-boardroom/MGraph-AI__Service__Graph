@@ -30,21 +30,19 @@ class test_Routes__Graph__Cache(TestCase):
 
             assert cache_hashes == [cache_hash]
 
-    def test_cache_ids__cache_id__location(self):
+    def test__regression__cache_ids__cache_id__location(self):
         with self.routes_graph_cache as _:
             result = _.cache_ids(namespace=NAMESPACE__GRAPH_TEST_HELPERS)
 
             # Debug: Check class identity
             from osbot_utils.type_safe.primitives.domains.identifiers.Cache_Id import Cache_Id  as Expected_Cache_Id
 
-            print(f"Expected Cache_Id id: {id(Expected_Cache_Id)}")
-            print(f"Expected Cache_Id module: {Expected_Cache_Id.__module__}")
-
-
+            # print(f"Expected Cache_Id id: {id(Expected_Cache_Id)}")
+            # print(f"Expected Cache_Id module: {Expected_Cache_Id.__module__}")
             actual_type = type(result[0])
 
-            print(f"Actual type id: {id(actual_type)}")
-            print(f"Actual type module: {actual_type.__module__}")
-            print(f"Same class? {actual_type is Expected_Cache_Id}")
+            # print(f"Actual type id: {id(actual_type)}")
+            # print(f"Actual type module: {actual_type.__module__}")
+            # print(f"Same class? {actual_type is Expected_Cache_Id}")
 
-            assert actual_type == type(result[0])
+            assert actual_type == type(result[0])           # confirm they are the same. This was a nasty bug caused by some import conflicts, which luckily the @type_safe and Type_Safe run-time check pick up :)
