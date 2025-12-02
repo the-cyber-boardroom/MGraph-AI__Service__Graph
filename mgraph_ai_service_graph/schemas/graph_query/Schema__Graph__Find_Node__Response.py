@@ -1,4 +1,4 @@
-from mgraph_ai_service_graph.schemas.graph_ref.Node_Id                              import Node_Id
+from osbot_utils.type_safe.primitives.domains.identifiers.Node_Id                              import Node_Id
 from mgraph_db.mgraph.schemas.Schema__MGraph__Node                                  import Schema__MGraph__Node
 from osbot_utils.type_safe.Type_Safe                                                import Type_Safe
 from mgraph_ai_service_graph.schemas.graph_ref.Schema__Graph__Ref                   import Schema__Graph__Ref

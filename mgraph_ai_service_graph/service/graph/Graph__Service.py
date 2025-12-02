@@ -1,9 +1,10 @@
 from typing                                                                      import Dict
 from mgraph_db.mgraph.MGraph                                                     import MGraph
 from osbot_utils.type_safe.Type_Safe                                             import Type_Safe
+from osbot_utils.type_safe.primitives.domains.identifiers.Cache_Id               import Cache_Id
+from osbot_utils.type_safe.primitives.domains.identifiers.Graph_Id               import Graph_Id
 from osbot_utils.type_safe.primitives.domains.identifiers.Obj_Id                 import Obj_Id
 from osbot_utils.type_safe.primitives.domains.identifiers.safe_str.Safe_Str__Id  import Safe_Str__Id
-from mgraph_ai_service_cache_client.schemas.cache.Cache_Id                       import Cache_Id
 from mgraph_ai_service_graph.schemas.graph_ref.Schema__Graph__Ref                import Schema__Graph__Ref
 from mgraph_ai_service_graph.service.caching.Graph__Cache__Client                import Graph__Cache__Client
 from mgraph_ai_service_graph.service.graph.Graph__Ref__Resolver                  import Graph__Ref__Resolver
@@ -36,12 +37,12 @@ class Graph__Service(Type_Safe):                                                
     # These should eventually be removed once all code uses graph_ref pattern
     # ═══════════════════════════════════════════════════════════════════════════════
 
-    def create_new_graph(self) -> MGraph:                                       # Create a new empty MGraph instance
-        return MGraph()
+    def create_new_graph(self, **kwargs) -> MGraph:                                       # Create a new empty MGraph instance
+        return MGraph(**kwargs)
 
     def get_graph(self,                                                         # Retrieve existing graph from cache
                   cache_id  : Cache_Id      = None,
-                  graph_id  : Obj_Id        = None,
+                  graph_id  : Graph_Id      = None,
                   namespace : Safe_Str__Id  = None
              ) -> MGraph:
         return self.graph_cache_client.retrieve_graph(cache_id  = cache_id ,
@@ -50,7 +51,7 @@ class Graph__Service(Type_Safe):                                                
 
     def get_or_create_graph(self,                                               # Retrieve existing or create new
                             cache_id  : Cache_Id     = None,
-                            graph_id  : Obj_Id       = None,
+                            graph_id  : Graph_Id     = None,
                             namespace : Safe_Str__Id = None
                        ) -> MGraph:
         mgraph = self.graph_cache_client.retrieve_graph(graph_id  = graph_id ,

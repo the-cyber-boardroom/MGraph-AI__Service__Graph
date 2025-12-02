@@ -5,8 +5,8 @@ from osbot_utils.type_safe.primitives.domains.identifiers.Obj_Id                
 from osbot_utils.type_safe.primitives.domains.identifiers.Random_Guid                       import Random_Guid
 from osbot_utils.type_safe.primitives.domains.identifiers.safe_str.Safe_Str__Id             import Safe_Str__Id
 from osbot_utils.utils.Objects                                                              import base_classes
-from mgraph_ai_service_cache_client.schemas.cache.Cache_Id                                  import Cache_Id
-from mgraph_ai_service_graph.schemas.graph_ref.Graph_Id                                     import Graph_Id
+from osbot_utils.type_safe.primitives.domains.identifiers.Cache_Id                          import Cache_Id
+from osbot_utils.type_safe.primitives.domains.identifiers.Graph_Id                          import Graph_Id
 from mgraph_ai_service_graph.schemas.graph_ref.Schema__Graph__Ref                           import Schema__Graph__Ref, GRAPH_REF__DEFAULT_NAMESPACE
 
 
@@ -62,8 +62,8 @@ class test_Schema__Graph__Ref(TestCase):
             assert _.namespace == GRAPH_REF__DEFAULT_NAMESPACE
 
     def test__with_both_ids(self):                                                          # Test with both IDs set
-        graph_id = Graph_Id()
-        cache_id = Cache_Id()
+        graph_id = Graph_Id(Obj_Id())
+        cache_id = Cache_Id(Random_Guid())
 
         with Schema__Graph__Ref(graph_id = graph_id,
                                 cache_id = cache_id) as _:
@@ -77,8 +77,8 @@ class test_Schema__Graph__Ref(TestCase):
             assert _.cache_id  == ''
 
     def test__with_all_values(self):                                                        # Test with all values set
-        graph_id = Graph_Id()
-        cache_id = Cache_Id()
+        graph_id = Graph_Id(Obj_Id())
+        cache_id = Cache_Id(Random_Guid())
 
         with Schema__Graph__Ref(graph_id  = graph_id          ,
                                 cache_id  = cache_id          ,
@@ -145,7 +145,7 @@ class test_Schema__Graph__Ref(TestCase):
                 assert restored.namespace == original.namespace
 
     def test__serialization_round_trip__with_graph_id(self):                                # Test JSON round-trip with graph_id
-        graph_id = Graph_Id()
+        graph_id = Graph_Id(Obj_Id())
 
         with Schema__Graph__Ref(graph_id = graph_id) as original:
             json_data = original.json()
@@ -154,7 +154,7 @@ class test_Schema__Graph__Ref(TestCase):
                 assert restored.graph_id == graph_id
 
     def test__serialization_round_trip__with_cache_id(self):                                # Test JSON round-trip with cache_id
-        cache_id = Cache_Id()
+        cache_id = Cache_Id(Random_Guid())
 
         with Schema__Graph__Ref(cache_id = cache_id) as original:
             json_data = original.json()
@@ -163,8 +163,8 @@ class test_Schema__Graph__Ref(TestCase):
                 assert restored.cache_id == cache_id
 
     def test__serialization_round_trip__complete(self):                                     # Test JSON round-trip with all fields
-        graph_id = Graph_Id()
-        cache_id = Cache_Id()
+        graph_id = Graph_Id(Obj_Id())
+        cache_id = Cache_Id(Random_Guid())
 
         with Schema__Graph__Ref(graph_id  = graph_id     ,
                                 cache_id  = cache_id     ,
@@ -177,8 +177,8 @@ class test_Schema__Graph__Ref(TestCase):
                 assert restored.namespace == original.namespace
 
     def test__serialization_preserves_types(self):                                          # Test that types are preserved after serialization
-        graph_id = Graph_Id()
-        cache_id = Cache_Id()
+        graph_id = Graph_Id(Obj_Id())
+        cache_id = Cache_Id(Random_Guid())
 
         with Schema__Graph__Ref(graph_id  = graph_id ,
                                 cache_id  = cache_id ,
@@ -195,8 +195,8 @@ class test_Schema__Graph__Ref(TestCase):
     # ═══════════════════════════════════════════════════════════════════════════════
 
     def test__equality__same_values(self):                                                  # Test equality with same values
-        graph_id = Graph_Id()
-        cache_id = Cache_Id()
+        graph_id = Graph_Id(Obj_Id())
+        cache_id = Cache_Id(Random_Guid())
 
         ref1 = Schema__Graph__Ref(graph_id  = graph_id ,
                                   cache_id  = cache_id ,
@@ -214,7 +214,7 @@ class test_Schema__Graph__Ref(TestCase):
         assert ref1.graph_id != ref2.graph_id
 
     def test__inequality__different_namespace(self):                                        # Test inequality with different namespace
-        graph_id = Graph_Id()
+        graph_id = Graph_Id(Obj_Id())
 
         ref1 = Schema__Graph__Ref(graph_id = graph_id, namespace = 'ns-1')
         ref2 = Schema__Graph__Ref(graph_id = graph_id, namespace = 'ns-2')

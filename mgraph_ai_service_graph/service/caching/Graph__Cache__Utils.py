@@ -1,8 +1,7 @@
 from typing                                                                                 import List
-from mgraph_ai_service_cache_client.schemas.cache.Cache_Id                                  import Cache_Id
-from mgraph_ai_service_graph.schemas.graph_ref.Graph_Id                                     import Graph_Id
+from osbot_utils.type_safe.primitives.domains.identifiers.Cache_Id                          import Cache_Id
+from osbot_utils.type_safe.primitives.domains.identifiers.Graph_Id                                     import Graph_Id
 from mgraph_ai_service_graph.schemas.graph_ref.Schema__Graph__Ref                           import Schema__Graph__Ref
-from osbot_utils.type_safe.primitives.domains.identifiers.safe_str.Safe_Str__Namespace      import Safe_Str__Namespace
 from osbot_utils.type_safe.type_safe_core.decorators.type_safe                              import type_safe
 from mgraph_ai_service_cache_client.client.client_contract.Cache__Service__Fast_API__Client import Cache__Service__Fast_API__Client
 from osbot_utils.helpers.cache.Cache__Hash__Generator                                       import Cache__Hash__Generator
@@ -18,7 +17,7 @@ class Graph__Cache__Utils(Type_Safe):
     def cache_ids(self, namespace: Safe_Str__Id):                           # todo : look at refactoring all the name space Safe_Str__Id with Cache__Namespace
         return self.cache_client.namespace().cache_ids(namespace=namespace)
 
-    def cache_hashes(self, namespace: Safe_Str__Namespace):
+    def cache_hashes(self, namespace: Safe_Str__Id):
         return self.cache_client.namespace().cache_hashes(namespace=Safe_Str__Id(namespace))
     @type_safe
     def graph_id__to__cache_id(self, graph_id : Graph_Id     ,

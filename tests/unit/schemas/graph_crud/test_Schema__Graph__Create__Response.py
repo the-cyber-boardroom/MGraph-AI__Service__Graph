@@ -1,10 +1,12 @@
 from unittest                                                                               import TestCase
+from osbot_utils.type_safe.primitives.domains.identifiers.Obj_Id                            import Obj_Id
+from osbot_utils.type_safe.primitives.domains.identifiers.Random_Guid                       import Random_Guid
 from osbot_utils.testing.__                                                                 import __
 from osbot_utils.type_safe.Type_Safe                                                        import Type_Safe
 from osbot_utils.type_safe.primitives.domains.identifiers.safe_str.Safe_Str__Id             import Safe_Str__Id
 from osbot_utils.utils.Objects                                                              import base_classes
-from mgraph_ai_service_cache_client.schemas.cache.Cache_Id                                  import Cache_Id
-from mgraph_ai_service_graph.schemas.graph_ref.Graph_Id                                     import Graph_Id
+from osbot_utils.type_safe.primitives.domains.identifiers.Cache_Id                          import Cache_Id
+from osbot_utils.type_safe.primitives.domains.identifiers.Graph_Id                          import Graph_Id
 from mgraph_ai_service_graph.schemas.graph_ref.Schema__Graph__Ref                           import Schema__Graph__Ref, GRAPH_REF__DEFAULT_NAMESPACE
 from mgraph_ai_service_graph.schemas.graph_crud.Schema__Graph__Create__Response             import Schema__Graph__Create__Response
 
@@ -32,8 +34,8 @@ class test_Schema__Graph__Create__Response(TestCase):
     # ═══════════════════════════════════════════════════════════════════════════════
 
     def test__with_graph_ref(self):                                                         # Test with graph_ref containing IDs
-        graph_id  = Graph_Id()                                                              # Generate new graph_id
-        cache_id  = Cache_Id()                                                              # Generate new cache_id
+        graph_id  = Graph_Id(Obj_Id())                                                              # Generate new graph_id
+        cache_id  = Cache_Id(Random_Guid())                                                              # Generate new cache_id
         graph_ref = Schema__Graph__Ref(graph_id  = graph_id                  ,
                                        cache_id  = cache_id                  ,
                                        namespace = GRAPH_REF__DEFAULT_NAMESPACE)
@@ -46,7 +48,7 @@ class test_Schema__Graph__Create__Response(TestCase):
             assert _.cached              is True
 
     def test__with_cached_true(self):                                                       # Test cached flag
-        graph_ref = Schema__Graph__Ref(graph_id = Graph_Id())
+        graph_ref = Schema__Graph__Ref(graph_id = Graph_Id(Obj_Id()))
 
         with Schema__Graph__Create__Response(graph_ref = graph_ref,
                                              cached    = True     ) as _:
@@ -62,8 +64,8 @@ class test_Schema__Graph__Create__Response(TestCase):
             assert _.graph_ref.cache_id    == ''                                            # No cache_id when not cached
 
     def test__with_custom_namespace(self):                                                  # Test with custom namespace
-        graph_ref = Schema__Graph__Ref(graph_id  = Graph_Id()        ,
-                                       cache_id  = Cache_Id()        ,
+        graph_ref = Schema__Graph__Ref(graph_id  = Graph_Id(Obj_Id())        ,
+                                       cache_id  = Cache_Id(Random_Guid())        ,
                                        namespace = 'custom-namespace')
 
         with Schema__Graph__Create__Response(graph_ref = graph_ref,
@@ -75,8 +77,8 @@ class test_Schema__Graph__Create__Response(TestCase):
     # ═══════════════════════════════════════════════════════════════════════════════
 
     def test__graph_ref_field_types(self):                                                  # Test types within graph_ref
-        graph_id  = Graph_Id()
-        cache_id  = Cache_Id()
+        graph_id  = Graph_Id(Obj_Id())
+        cache_id  = Cache_Id(Random_Guid())
         graph_ref = Schema__Graph__Ref(graph_id  = graph_id ,
                                        cache_id  = cache_id ,
                                        namespace = 'test-ns')
@@ -102,8 +104,8 @@ class test_Schema__Graph__Create__Response(TestCase):
                 assert restored.cached          == original.cached
 
     def test__serialization_round_trip__complete(self):                                     # Test JSON round-trip with all fields
-        graph_ref = Schema__Graph__Ref(graph_id  = Graph_Id()  ,
-                                       cache_id  = Cache_Id()  ,
+        graph_ref = Schema__Graph__Ref(graph_id  = Graph_Id(Obj_Id())  ,
+                                       cache_id  = Cache_Id(Random_Guid())  ,
                                        namespace = 'serial-ns' )
 
         with Schema__Graph__Create__Response(graph_ref = graph_ref,
@@ -117,8 +119,8 @@ class test_Schema__Graph__Create__Response(TestCase):
                 assert restored.cached              == original.cached
 
     def test__serialization_preserves_types(self):                                          # Test that types are preserved after serialization
-        graph_ref = Schema__Graph__Ref(graph_id  = Graph_Id() ,
-                                       cache_id  = Cache_Id() ,
+        graph_ref = Schema__Graph__Ref(graph_id  = Graph_Id(Obj_Id()) ,
+                                       cache_id  = Cache_Id(Random_Guid()) ,
                                        namespace = 'type-test')
 
         with Schema__Graph__Create__Response(graph_ref = graph_ref,

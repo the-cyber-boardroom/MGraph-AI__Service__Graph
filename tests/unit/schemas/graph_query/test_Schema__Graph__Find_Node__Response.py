@@ -1,6 +1,6 @@
 from types                                                                                  import NoneType
 from unittest                                                                               import TestCase
-from mgraph_ai_service_graph.schemas.graph_ref.Node_Id                                      import Node_Id
+from osbot_utils.type_safe.primitives.domains.identifiers.Node_Id                                      import Node_Id
 from mgraph_db.mgraph.schemas.Schema__MGraph__Node                                          import Schema__MGraph__Node
 from osbot_utils.testing.__                                                                 import __
 from osbot_utils.type_safe.Type_Safe                                                        import Type_Safe
@@ -8,8 +8,8 @@ from osbot_utils.type_safe.primitives.domains.identifiers.Obj_Id                
 from osbot_utils.type_safe.primitives.domains.identifiers.Random_Guid                       import Random_Guid
 from osbot_utils.type_safe.primitives.domains.identifiers.safe_str.Safe_Str__Id             import Safe_Str__Id
 from osbot_utils.utils.Objects                                                              import base_classes
-from mgraph_ai_service_cache_client.schemas.cache.Cache_Id                                  import Cache_Id
-from mgraph_ai_service_graph.schemas.graph_ref.Graph_Id                                     import Graph_Id
+from osbot_utils.type_safe.primitives.domains.identifiers.Cache_Id                          import Cache_Id
+from osbot_utils.type_safe.primitives.domains.identifiers.Graph_Id                                     import Graph_Id
 from mgraph_ai_service_graph.schemas.graph_ref.Schema__Graph__Ref                           import Schema__Graph__Ref, GRAPH_REF__DEFAULT_NAMESPACE
 from mgraph_ai_service_graph.schemas.graph_query.Schema__Graph__Find_Node__Response         import Schema__Graph__Find_Node__Response
 
@@ -50,7 +50,7 @@ class test_Schema__Graph__Find_Node__Response(TestCase):
     def test__with_graph_ref__found(self):                                                  # Test successful node find
         graph_id  = Graph_Id(Obj_Id())
         cache_id  = Cache_Id(Random_Guid())
-        node_id   = Node_Id()
+        node_id   = Node_Id(Obj_Id())
         node_data = Schema__MGraph__Node()
         graph_ref = Schema__Graph__Ref(graph_id  = graph_id       ,
                                        cache_id  = cache_id       ,
@@ -68,7 +68,7 @@ class test_Schema__Graph__Find_Node__Response(TestCase):
 
     def test__with_graph_ref__not_found(self):                                              # Test node not found
         graph_id  = Graph_Id(Obj_Id())
-        node_id   = Node_Id()
+        node_id   = Node_Id(Obj_Id())
         graph_ref = Schema__Graph__Ref(graph_id  = graph_id   ,
                                        namespace = 'search-ns')
 
@@ -83,7 +83,7 @@ class test_Schema__Graph__Find_Node__Response(TestCase):
     def test__with_cache_id_lookup(self):                                                   # Test response when graph was found by cache_id
         cache_id  = Cache_Id(Random_Guid())
         graph_id  = Graph_Id(Obj_Id())
-        node_id   = Node_Id()
+        node_id   = Node_Id(Obj_Id())
         graph_ref = Schema__Graph__Ref(cache_id  = cache_id ,
                                        graph_id  = graph_id ,                               # Resolved after lookup
                                        namespace = 'cache-ns')

@@ -1,6 +1,6 @@
 import inspect
 from unittest                                                                               import TestCase
-from mgraph_ai_service_graph.schemas.graph_ref.Node_Id                                      import Node_Id
+from osbot_utils.type_safe.primitives.domains.identifiers.Node_Id                                      import Node_Id
 from osbot_utils.testing.__                                                                 import __
 from osbot_utils.type_safe.Type_Safe                                                        import Type_Safe
 from osbot_utils.type_safe.type_safe_core.collections.Type_Safe__List                       import Type_Safe__List
@@ -8,8 +8,8 @@ from osbot_utils.type_safe.primitives.core.Safe_UInt                            
 from osbot_utils.type_safe.primitives.domains.identifiers.Obj_Id                            import Obj_Id
 from osbot_utils.type_safe.primitives.domains.identifiers.safe_str.Safe_Str__Id             import Safe_Str__Id
 from osbot_utils.utils.Objects                                                              import base_classes
-from mgraph_ai_service_cache_client.schemas.cache.Cache_Id                                  import Cache_Id
-from mgraph_ai_service_graph.schemas.graph_ref.Graph_Id                                     import Graph_Id
+from osbot_utils.type_safe.primitives.domains.identifiers.Cache_Id                          import Cache_Id
+from osbot_utils.type_safe.primitives.domains.identifiers.Graph_Id                                     import Graph_Id
 from mgraph_ai_service_graph.schemas.graph_ref.Schema__Graph__Ref                           import Schema__Graph__Ref, GRAPH_REF__DEFAULT_NAMESPACE
 from mgraph_ai_service_graph.schemas.graph_crud.Schema__Graph__Create__Request              import Schema__Graph__Create__Request
 from mgraph_ai_service_graph.schemas.graph_query.Schema__Graph__Find_Nodes__Request         import Schema__Graph__Find_Nodes__Request
@@ -251,8 +251,9 @@ class test_Area__Graph__Query(TestCase):
                                                    node_id   = node_id,
                                                    found     = True,
                                                    node_data = __(node_data = __()              ,
+                                                                  node_path = None              ,
                                                                   node_id   = Obj_Id(node_id)   ,
-                                                                  node_type = 'mgraph_db.mgraph.schemas.Schema__MGraph__Node.Schema__MGraph__Node'))
+                                                                  node_type = None              ))
 
         self._delete_graph(graph_ref)
 

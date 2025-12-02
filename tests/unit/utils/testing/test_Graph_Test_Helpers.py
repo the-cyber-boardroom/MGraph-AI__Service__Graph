@@ -195,10 +195,10 @@ class test_Graph_Test_Helpers(TestCase):
         create_response = self.helpers.create_empty_graph()
         graph_id        = create_response.graph_ref.graph_id
 
-        assert self.helpers.verify_graph_exists(graph_id=graph_id) is True
+        assert self.helpers.verify_graph_exists(graph_ref=create_response.graph_ref) is True
 
         self.helpers.delete_graph(graph_id=graph_id)
-        assert self.helpers.verify_graph_exists(graph_id=graph_id) is False
+        assert self.helpers.verify_graph_exists(graph_ref=create_response.graph_ref) is False
 
     def test__verify_graph_exists_by_cache_id(self):                                        # Test verifying graph exists by cache_id
         create_response = self.helpers.create_empty_graph()
@@ -213,8 +213,7 @@ class test_Graph_Test_Helpers(TestCase):
     def test__get_graph(self):                                                              # Test retrieving graph
         create_response = self.helpers.create_empty_graph()
         graph_id        = create_response.graph_ref.graph_id
-
-        get_response = self.helpers.get_graph(graph_id=graph_id)
+        get_response    = self.helpers.get_graph(graph_ref=create_response.graph_ref)
 
         assert get_response.success            is True
         assert get_response.graph_ref.graph_id == graph_id
@@ -231,7 +230,7 @@ class test_Graph_Test_Helpers(TestCase):
         create_response = self.helpers.create_empty_graph()
         graph_id        = create_response.graph_ref.graph_id
 
-        result = self.helpers.assert_graph_exists(graph_id=graph_id)
+        result = self.helpers.assert_graph_exists(graph_ref=create_response.graph_ref)
         assert result is True
 
         self.helpers.delete_graph(graph_id=graph_id)                                        # Cleanup
@@ -242,7 +241,7 @@ class test_Graph_Test_Helpers(TestCase):
 
         self.helpers.delete_graph(graph_id=graph_id)
 
-        result = self.helpers.assert_graph_not_exists(graph_id=graph_id)
+        result = self.helpers.assert_graph_not_exists(graph_ref=create_response.graph_ref)
         assert result is True
 
     # ═══════════════════════════════════════════════════════════════════════════════
@@ -255,16 +254,16 @@ class test_Graph_Test_Helpers(TestCase):
         graph_id        = create_response.graph_ref.graph_id
         cache_id        = create_response.graph_ref.cache_id
 
-        assert self.helpers.verify_graph_exists(graph_id=graph_id, namespace=namespace) is True            # Step 2: Verify exists
+        assert self.helpers.verify_graph_exists            (graph_ref=create_response.graph_ref   ) is True            # Step 2: Verify exists
         assert self.helpers.verify_graph_exists_by_cache_id(cache_id=cache_id, namespace=namespace) is True
 
-        get_response = self.helpers.get_graph(graph_id=graph_id, namespace=namespace)       # Step 3: Get graph
+        get_response = self.helpers.get_graph(graph_ref=create_response.graph_ref)       # Step 3: Get graph
         assert get_response.success is True
 
         deleted = self.helpers.delete_graph(graph_id=graph_id, namespace=namespace)         # Step 4: Delete
         assert deleted is True
 
-        assert self.helpers.verify_graph_exists(graph_id=graph_id, namespace=namespace) is False           # Step 5: Verify deleted
+        assert self.helpers.verify_graph_exists(graph_ref=create_response.graph_ref) is False           # Step 5: Verify deleted
 
     def test__integration__add_nodes_and_edges_to_existing_graph(self):                     # Test adding nodes and edges to existing graph
         create_response = self.helpers.create_empty_graph()                                 # Step 1: Create empty graph
@@ -287,10 +286,8 @@ class test_Graph_Test_Helpers(TestCase):
 
         assert create_1.graph_ref.graph_id != create_2.graph_ref.graph_id                   # Different graph IDs
 
-        assert self.helpers.verify_graph_exists(graph_id  = create_1.graph_ref.graph_id,    # Each exists in own namespace
-                                                namespace = 'ns1'                      ) is True
-        assert self.helpers.verify_graph_exists(graph_id  = create_2.graph_ref.graph_id,
-                                                namespace = 'ns2'                      ) is True
+        assert self.helpers.verify_graph_exists(graph_ref  = create_1.graph_ref)    # Each exists in own namespace
+        assert self.helpers.verify_graph_exists(graph_ref  = create_2.graph_ref) is True
 
         self.helpers.delete_graph(graph_id=create_1.graph_ref.graph_id, namespace='ns1')    # Cleanup
         self.helpers.delete_graph(graph_id=create_2.graph_ref.graph_id, namespace='ns2')

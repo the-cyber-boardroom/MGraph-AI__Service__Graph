@@ -24,7 +24,7 @@ from osbot_utils.type_safe.primitives.domains.identifiers.Obj_Id                
 from osbot_utils.type_safe.primitives.domains.identifiers.safe_str.Safe_Str__Key            import Safe_Str__Key
 from osbot_utils.type_safe.primitives.domains.common.safe_str.Safe_Str__Text                import Safe_Str__Text
 from osbot_utils.utils.Misc                                                                 import random_string
-from mgraph_ai_service_cache_client.schemas.cache.Cache_Id                                  import Cache_Id
+from osbot_utils.type_safe.primitives.domains.identifiers.Cache_Id                          import Cache_Id
 from mgraph_ai_service_graph.schemas.graph_ref.Schema__Graph__Ref                           import Schema__Graph__Ref
 from mgraph_ai_service_graph.schemas.graph_crud.Schema__Graph__Create__Request              import Schema__Graph__Create__Request
 from mgraph_ai_service_graph.schemas.graph_crud.Schema__Graph__Create__Response             import Schema__Graph__Create__Response
@@ -286,11 +286,8 @@ class Graph_Test_Helpers(Type_Safe):                # Helper methods to create a
 
     @type_safe
     def verify_graph_exists(self,
-                            graph_id  : Obj_Id                             ,
-                            namespace : str        = NAMESPACE__GRAPH_TEST_HELPERS
+                            graph_ref: Schema__Graph__Ref
                            ) -> bool:                                                       # Verify a graph exists in cache
-        graph_ref = Schema__Graph__Ref(graph_id  = graph_id ,
-                                       namespace = namespace)
         return self.area_crud().graph_exists(graph_ref = graph_ref)
 
     @type_safe
@@ -303,12 +300,7 @@ class Graph_Test_Helpers(Type_Safe):                # Helper methods to create a
         return self.area_crud().graph_exists(graph_ref = graph_ref)
 
     @type_safe
-    def get_graph(self,
-                  graph_id  : Obj_Id                             ,
-                  namespace : str        = NAMESPACE__GRAPH_TEST_HELPERS
-                 ) -> Schema__Graph__Get__Response:                                         # Retrieve a graph
-        graph_ref = Schema__Graph__Ref(graph_id  = graph_id ,
-                                       namespace = namespace)
+    def get_graph(self, graph_ref : Schema__Graph__Ref) -> Schema__Graph__Get__Response:                                         # Retrieve a graph
         request   = Schema__Graph__Get__Request(graph_ref = graph_ref)
         return self.area_crud().get_graph(request)
 
@@ -392,20 +384,16 @@ class Graph_Test_Helpers(Type_Safe):                # Helper methods to create a
 
     @type_safe
     def assert_graph_exists(self,
-                            graph_id  : Obj_Id                             ,
-                            namespace : str        = NAMESPACE__GRAPH_TEST_HELPERS
+                            graph_ref: Schema__Graph__Ref
                            ) -> bool:                                                       # Assert graph exists (raises if not)
-        if not self.verify_graph_exists(graph_id  = graph_id ,
-                                        namespace = namespace):
-            raise AssertionError(f"Graph {graph_id} does not exist in namespace '{namespace}'")
+        if not self.verify_graph_exists(graph_ref=graph_ref):
+            raise AssertionError(f"Graph {graph_ref.graph_id} does not exist in namespace '{graph_ref.namespace}'")
         return True
 
     @type_safe
     def assert_graph_not_exists(self,
-                                graph_id  : Obj_Id                             ,
-                                namespace : str        = NAMESPACE__GRAPH_TEST_HELPERS
+                                graph_ref: Schema__Graph__Ref
                                ) -> bool:                                                   # Assert graph does NOT exist (raises if exists)
-        if self.verify_graph_exists(graph_id  = graph_id ,
-                                    namespace = namespace):
-            raise AssertionError(f"Graph {graph_id} exists in namespace '{namespace}' but should not")
+        if self.verify_graph_exists(graph_ref  = graph_ref):
+            raise AssertionError(f"Graph {graph_ref.graph_id} exists in namespace '{graph_ref.namespace}' but should not")
         return True

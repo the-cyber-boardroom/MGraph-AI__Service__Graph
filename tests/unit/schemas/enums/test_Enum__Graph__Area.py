@@ -22,7 +22,7 @@ class test_Enum__Graph__Area(TestCase):
 
     def test__enum_count(self):                                                          # Test all expected areas
         areas = list(Enum__Graph__Area)
-        assert len(areas) == 5
+        assert len(areas) == 7
 
     def test__enum_iteration(self):                                                      # Test iteration
         area_values = [area.value for area in Enum__Graph__Area]

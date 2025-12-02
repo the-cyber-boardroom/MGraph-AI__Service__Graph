@@ -1,8 +1,8 @@
 from unittest                                                                               import TestCase
 from mgraph_ai_service_graph.fast_api.routes.graph.Routes__Graph__CRUD                      import Routes__Graph__CRUD, TAG__ROUTES_GRAPH_CRUD, ROUTES_PATHS__GRAPH_CRUD
-from mgraph_ai_service_graph.schemas.graph_ref.Graph_Id                                     import Graph_Id
+from osbot_utils.type_safe.primitives.domains.identifiers.Graph_Id                          import Graph_Id
 from osbot_utils.testing.Pytest                                                             import skip_if_in_github_action
-from mgraph_ai_service_cache_client.schemas.cache.Cache_Id                                  import Cache_Id
+from osbot_utils.type_safe.primitives.domains.identifiers.Cache_Id                          import Cache_Id
 from mgraph_ai_service_graph.schemas.graph_ref.Schema__Graph__Ref                           import Schema__Graph__Ref
 from osbot_fast_api.api.routes.Fast_API__Routes                                             import Fast_API__Routes
 from osbot_utils.type_safe.Type_Safe                                                        import Type_Safe
@@ -203,7 +203,7 @@ class test_Routes__Graph__CRUD(TestCase):
     def test_get__by_cache_id__cache_id__not_found(self):                                   # Test get with non-existent cache_id
         skip_if_in_github_action()                                                          # todo: figure out why this failed in GH Action
         with self.routes as _:
-            fake_cache_id = Graph_Id(Random_Guid())
+            fake_cache_id = Cache_Id(Random_Guid())
             response = _.get__by_cache_id__cache_id(cache_id  = fake_cache_id   ,
                                                     namespace = self.test_namespace)
 
@@ -251,8 +251,7 @@ class test_Routes__Graph__CRUD(TestCase):
         graph_id        = graph_ref.graph_id
 
         with self.routes as _:
-            assert self.helpers.verify_graph_exists(graph_id  = graph_id          ,         # Verify graph exists before delete
-                                                    namespace = self.test_namespace)
+            assert self.helpers.verify_graph_exists(graph_ref = graph_ref)                   # Verify graph exists before delete
 
             response = _.delete(graph_ref = graph_ref)
 
@@ -262,12 +261,11 @@ class test_Routes__Graph__CRUD(TestCase):
             assert response.graph_ref.namespace      == self.test_namespace
             assert response.deleted                  is True                                  # Successfully deleted
 
-            assert not self.helpers.verify_graph_exists(graph_id  = graph_id        ,       # Verify graph no longer exists
-                                                        namespace = self.test_namespace)
+            assert not self.helpers.verify_graph_exists(graph_ref  = graph_ref)               # Verify graph no longer exists
 
     def test_delete__not_found(self):                                                       # Test delete non-existent graph
         with self.routes as _:
-            fake_graph_id = Graph_Id()
+            fake_graph_id = Graph_Id(Obj_Id())
             graph_ref     = Schema__Graph__Ref(graph_id  = fake_graph_id     ,
                                                namespace = self.test_namespace)
             response = _.delete(graph_ref = graph_ref)
@@ -320,7 +318,7 @@ class test_Routes__Graph__CRUD(TestCase):
 
     def test_exists__not_found(self):                                                       # Test exists for non-existent graph
         with self.routes as _:
-            fake_graph_id = Graph_Id()
+            fake_graph_id = Graph_Id(Obj_Id())
             graph_ref     = Schema__Graph__Ref(graph_id  = fake_graph_id     ,
                                                namespace = self.test_namespace)
             response = _.exists(graph_ref = graph_ref)

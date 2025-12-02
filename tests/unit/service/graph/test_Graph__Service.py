@@ -1,11 +1,12 @@
 import inspect
 from unittest                                                                               import TestCase
-from mgraph_ai_service_cache_client.schemas.cache.Cache_Id                                  import Cache_Id
+from osbot_utils.type_safe.primitives.domains.identifiers.Cache_Id                          import Cache_Id
 from osbot_utils.testing.Pytest                                                             import skip_if_in_github_action
 from osbot_utils.testing.__helpers                                                          import obj
 from mgraph_db.mgraph.MGraph                                                                import MGraph
 from osbot_utils.testing.__                                                                 import __, __SKIP__
 from osbot_utils.type_safe.Type_Safe                                                        import Type_Safe
+from osbot_utils.type_safe.primitives.domains.identifiers.Graph_Id import Graph_Id
 from osbot_utils.type_safe.primitives.domains.identifiers.Obj_Id                            import Obj_Id, is_obj_id
 from osbot_utils.type_safe.primitives.domains.identifiers.Random_Guid                       import Random_Guid
 from osbot_utils.type_safe.primitives.domains.identifiers.safe_str.Safe_Str__Id             import Safe_Str__Id
@@ -63,14 +64,6 @@ class test_Graph__Service(TestCase):
             assert callable(_.save_graph         )
             assert callable(_.delete_graph       )
             assert callable(_.graph_exists       )
-
-    def test__create_new_graph__method_signature(self):                                     # Test create_new_graph signature
-        with Graph__Service() as _:
-            sig    = inspect.signature(_.create_new_graph)
-            params = list(sig.parameters.values())
-
-            assert len(params)           == 0                                               # No parameters
-            assert sig.return_annotation == MGraph                                          # Returns MGraph
 
     def test__get_graph__method_signature(self):                                            # Test get_graph signature
         with Graph__Service() as _:
@@ -150,8 +143,8 @@ class test_Graph__Service(TestCase):
 
     def test_save_graph(self):                                                              # Test saving a new graph
         with (self.graph_service as _):
-            mgraph   = _.create_new_graph()
-            graph_id = mgraph.graph.graph_id()
+            graph_id = '442777a2'
+            mgraph   = _.create_new_graph(graph_id=graph_id)
             cache_id = _.save_graph(mgraph    = mgraph              ,                       # using .json__compress()
                                     namespace = self.test_namespace )
 
@@ -165,67 +158,111 @@ class test_Graph__Service(TestCase):
 
             assert loaded_mgraph.obj() == mgraph.obj()      # confirm round trip (using from_json__compressed)
 
-            # confirm we are saving using
-            assert raw_graph_json == { '_type_registry': { '@domain_mgraph_edge': 'mgraph_db.mgraph.domain.Domain__MGraph__Edge.Domain__MGraph__Edge',
-                                                           '@domain_mgraph_graph': 'mgraph_db.mgraph.domain.Domain__MGraph__Graph.Domain__MGraph__Graph',
-                                                           '@domain_mgraph_node': 'mgraph_db.mgraph.domain.Domain__MGraph__Node.Domain__MGraph__Node',
-                                                           '@mgraph_edit': 'mgraph_db.mgraph.actions.MGraph__Edit.MGraph__Edit',
-                                                           '@mgraph_query': 'mgraph_db.query.MGraph__Query.MGraph__Query',
-                                                           '@mgraph_screenshot': 'mgraph_db.mgraph.actions.MGraph__Screenshot.MGraph__Screenshot',
-                                                           '@model_mgraph_edge': 'mgraph_db.mgraph.models.Model__MGraph__Edge.Model__MGraph__Edge',
-                                                           '@model_mgraph_node': 'mgraph_db.mgraph.models.Model__MGraph__Node.Model__MGraph__Node',
-                                                           '@schema_mgraph_edge': 'mgraph_db.mgraph.schemas.Schema__MGraph__Edge.Schema__MGraph__Edge',
-                                                           '@schema_mgraph_graph': 'mgraph_db.mgraph.schemas.Schema__MGraph__Graph.Schema__MGraph__Graph',
-                                                           '@schema_mgraph_graph_data': 'mgraph_db.mgraph.schemas.Schema__MGraph__Graph__Data.Schema__MGraph__Graph__Data',
-                                                           '@schema_mgraph_node': 'mgraph_db.mgraph.schemas.Schema__MGraph__Node.Schema__MGraph__Node',
-                                                           '@schema_mgraph_node_data': 'mgraph_db.mgraph.schemas.Schema__MGraph__Node__Data.Schema__MGraph__Node__Data'},
-                                       'edit_class': '@mgraph_edit',
-                                       'graph': { 'domain_types': { 'edge_domain_type': '@domain_mgraph_edge',
-                                                                    'node_domain_type': '@domain_mgraph_node'},
-                                                  'graph_type': '@domain_mgraph_graph',
-                                                  'model': { 'data': { 'edges': {},
-                                                                       'graph_data': {},
-                                                                       'graph_id': graph_id,
-                                                                       'graph_type': '@schema_mgraph_graph',
-                                                                       'nodes': {},
-                                                                       'schema_types': { 'edge_type': '@schema_mgraph_edge',
-                                                                                         'graph_data_type': '@schema_mgraph_graph_data',
-                                                                                         'node_data_type': '@schema_mgraph_node_data',
-                                                                                         'node_type': '@schema_mgraph_node'}},
-                                                             'model_types': { 'edge_model_type': '@model_mgraph_edge',
-                                                                              'node_model_type': '@model_mgraph_node'}}},
-                                       'query_class': '@mgraph_query',
-                                       'screenshot_class': '@mgraph_screenshot'}
-            assert obj(raw_graph_json) == __(_type_registry = __(_domain_mgraph_node='mgraph_db.mgraph.domain.Domain__MGraph__Node.Domain__MGraph__Node',
-                                                                 _domain_mgraph_edge='mgraph_db.mgraph.domain.Domain__MGraph__Edge.Domain__MGraph__Edge',
-                                                                 _schema_mgraph_graph='mgraph_db.mgraph.schemas.Schema__MGraph__Graph.Schema__MGraph__Graph',
-                                                                 _schema_mgraph_edge='mgraph_db.mgraph.schemas.Schema__MGraph__Edge.Schema__MGraph__Edge',
-                                                                 _schema_mgraph_graph_data='mgraph_db.mgraph.schemas.Schema__MGraph__Graph__Data.Schema__MGraph__Graph__Data',
-                                                                 _schema_mgraph_node='mgraph_db.mgraph.schemas.Schema__MGraph__Node.Schema__MGraph__Node',
-                                                                 _schema_mgraph_node_data='mgraph_db.mgraph.schemas.Schema__MGraph__Node__Data.Schema__MGraph__Node__Data',
-                                                                 _model_mgraph_node='mgraph_db.mgraph.models.Model__MGraph__Node.Model__MGraph__Node',
-                                                                 _model_mgraph_edge='mgraph_db.mgraph.models.Model__MGraph__Edge.Model__MGraph__Edge',
-                                                                 _domain_mgraph_graph='mgraph_db.mgraph.domain.Domain__MGraph__Graph.Domain__MGraph__Graph',
-                                                                 _mgraph_query='mgraph_db.query.MGraph__Query.MGraph__Query',
-                                                                 _mgraph_edit='mgraph_db.mgraph.actions.MGraph__Edit.MGraph__Edit',
-                                                                 _mgraph_screenshot='mgraph_db.mgraph.actions.MGraph__Screenshot.MGraph__Screenshot'),
-                                               graph=__(domain_types=__(node_domain_type='@domain_mgraph_node',
-                                                                        edge_domain_type='@domain_mgraph_edge'),
-                                                        model=__(data=__(edges=__(),
-                                                                         graph_data=__(),
-                                                                         graph_id=graph_id,
-                                                                         graph_type='@schema_mgraph_graph',
-                                                                         nodes=__(),
-                                                                         schema_types=__(edge_type='@schema_mgraph_edge',
-                                                                                         graph_data_type='@schema_mgraph_graph_data',
-                                                                                         node_type='@schema_mgraph_node',
-                                                                                         node_data_type='@schema_mgraph_node_data')),
-                                                                 model_types=__(node_model_type='@model_mgraph_node',
-                                                                                edge_model_type='@model_mgraph_edge')),
-                                                        graph_type='@domain_mgraph_graph'),
-                                               query_class='@mgraph_query',
-                                               edit_class='@mgraph_edit',
-                                               screenshot_class='@mgraph_screenshot')
+            # confirm we are saving using _type_registry
+            assert raw_graph_json == {'_type_registry': {'@mgraph_edit': 'mgraph_db.mgraph.actions.MGraph__Edit.MGraph__Edit',
+                                                        '@mgraph_query': 'mgraph_db.query.MGraph__Query.MGraph__Query',
+                                                        '@mgraph_screenshot': 'mgraph_db.mgraph.actions.MGraph__Screenshot.MGraph__Screenshot',
+                                                        '@schema_mgraph_edge': 'mgraph_db.mgraph.schemas.Schema__MGraph__Edge.Schema__MGraph__Edge',
+                                                        '@schema_mgraph_edge_data': 'mgraph_db.mgraph.schemas.Schema__MGraph__Edge__Data.Schema__MGraph__Edge__Data',
+                                                        '@schema_mgraph_graph': 'mgraph_db.mgraph.schemas.Schema__MGraph__Graph.Schema__MGraph__Graph',
+                                                        '@schema_mgraph_graph_data': 'mgraph_db.mgraph.schemas.Schema__MGraph__Graph__Data.Schema__MGraph__Graph__Data',
+                                                        '@schema_mgraph_node': 'mgraph_db.mgraph.schemas.Schema__MGraph__Node.Schema__MGraph__Node',
+                                                        '@schema_mgraph_node_data': 'mgraph_db.mgraph.schemas.Schema__MGraph__Node__Data.Schema__MGraph__Node__Data'},
+                                     'edit_class': '@mgraph_edit',
+                                     'graph': {'domain_types': {'edge_domain_type': None, 'node_domain_type': None},
+                                               'graph_type': None,
+                                               'model': {'data': {'edges': {},
+                                                                  'graph_data': None,
+                                                                  'graph_id': '442777a2',
+                                                                  'graph_path': None,
+                                                                  'graph_type': None,
+                                                                  'nodes': {},
+                                                                  'schema_types': None},
+                                                         'model_types': {'edge_model_type': None,
+                                                                         'node_model_type': None},
+                                                         'resolver': {'mgraph_defaults': {'edge_data_type': '@schema_mgraph_edge_data',
+                                                                                          'edge_domain_type': 'mgraph_db.mgraph.domain.Domain__MGraph__Edge.Domain__MGraph__Edge',
+                                                                                          'edge_model_type': 'mgraph_db.mgraph.models.Model__MGraph__Edge.Model__MGraph__Edge',
+                                                                                          'edge_type': '@schema_mgraph_edge',
+                                                                                          'graph_data_type': '@schema_mgraph_graph_data',
+                                                                                          'graph_type': '@schema_mgraph_graph',
+                                                                                          'node_data_type': '@schema_mgraph_node_data',
+                                                                                          'node_domain_type': 'mgraph_db.mgraph.domain.Domain__MGraph__Node.Domain__MGraph__Node',
+                                                                                          'node_model_type': 'mgraph_db.mgraph.models.Model__MGraph__Node.Model__MGraph__Node',
+                                                                                          'node_type': '@schema_mgraph_node'}}},
+                                               'resolver': {'mgraph_defaults': {'edge_data_type': '@schema_mgraph_edge_data',
+                                                                                'edge_domain_type': 'mgraph_db.mgraph.domain.Domain__MGraph__Edge.Domain__MGraph__Edge',
+                                                                                'edge_model_type': 'mgraph_db.mgraph.models.Model__MGraph__Edge.Model__MGraph__Edge',
+                                                                                'edge_type': '@schema_mgraph_edge',
+                                                                                'graph_data_type': '@schema_mgraph_graph_data',
+                                                                                'graph_type': '@schema_mgraph_graph',
+                                                                                'node_data_type': '@schema_mgraph_node_data',
+                                                                                'node_domain_type': 'mgraph_db.mgraph.domain.Domain__MGraph__Node.Domain__MGraph__Node',
+                                                                                'node_model_type': 'mgraph_db.mgraph.models.Model__MGraph__Node.Model__MGraph__Node',
+                                                                                'node_type': '@schema_mgraph_node'}}},
+                                     'query_class': '@mgraph_query',
+                                     'screenshot_class': '@mgraph_screenshot'}
+
+            # assert raw_graph_json == { '_type_registry': { '@domain_mgraph_edge': 'mgraph_db.mgraph.domain.Domain__MGraph__Edge.Domain__MGraph__Edge',
+            #                                                '@domain_mgraph_graph': 'mgraph_db.mgraph.domain.Domain__MGraph__Graph.Domain__MGraph__Graph',
+            #                                                '@domain_mgraph_node': 'mgraph_db.mgraph.domain.Domain__MGraph__Node.Domain__MGraph__Node',
+            #                                                '@mgraph_edit': 'mgraph_db.mgraph.actions.MGraph__Edit.MGraph__Edit',
+            #                                                '@mgraph_query': 'mgraph_db.query.MGraph__Query.MGraph__Query',
+            #                                                '@mgraph_screenshot': 'mgraph_db.mgraph.actions.MGraph__Screenshot.MGraph__Screenshot',
+            #                                                '@model_mgraph_edge': 'mgraph_db.mgraph.models.Model__MGraph__Edge.Model__MGraph__Edge',
+            #                                                '@model_mgraph_node': 'mgraph_db.mgraph.models.Model__MGraph__Node.Model__MGraph__Node',
+            #                                                '@schema_mgraph_edge': 'mgraph_db.mgraph.schemas.Schema__MGraph__Edge.Schema__MGraph__Edge',
+            #                                                '@schema_mgraph_graph': 'mgraph_db.mgraph.schemas.Schema__MGraph__Graph.Schema__MGraph__Graph',
+            #                                                '@schema_mgraph_graph_data': 'mgraph_db.mgraph.schemas.Schema__MGraph__Graph__Data.Schema__MGraph__Graph__Data',
+            #                                                '@schema_mgraph_node': 'mgraph_db.mgraph.schemas.Schema__MGraph__Node.Schema__MGraph__Node',
+            #                                                '@schema_mgraph_node_data': 'mgraph_db.mgraph.schemas.Schema__MGraph__Node__Data.Schema__MGraph__Node__Data'},
+            #                            'edit_class': '@mgraph_edit',
+            #                            'graph': { 'domain_types': { 'edge_domain_type': '@domain_mgraph_edge',
+            #                                                         'node_domain_type': '@domain_mgraph_node'},
+            #                                       'graph_type': '@domain_mgraph_graph',
+            #                                       'model': { 'data': { 'edges': {},
+            #                                                            'graph_data': {},
+            #                                                            'graph_id': graph_id,
+            #                                                            'graph_type': '@schema_mgraph_graph',
+            #                                                            'nodes': {},
+            #                                                            'schema_types': { 'edge_type': '@schema_mgraph_edge',
+            #                                                                              'graph_data_type': '@schema_mgraph_graph_data',
+            #                                                                              'node_data_type': '@schema_mgraph_node_data',
+            #                                                                              'node_type': '@schema_mgraph_node'}},
+            #                                                  'model_types': { 'edge_model_type': '@model_mgraph_edge',
+            #                                                                   'node_model_type': '@model_mgraph_node'}}},
+            #                            'query_class': '@mgraph_query',
+            #                            'screenshot_class': '@mgraph_screenshot'}
+            # assert obj(raw_graph_json) == __(_type_registry = __(_domain_mgraph_node='mgraph_db.mgraph.domain.Domain__MGraph__Node.Domain__MGraph__Node',
+            #                                                      _domain_mgraph_edge='mgraph_db.mgraph.domain.Domain__MGraph__Edge.Domain__MGraph__Edge',
+            #                                                      _schema_mgraph_graph='mgraph_db.mgraph.schemas.Schema__MGraph__Graph.Schema__MGraph__Graph',
+            #                                                      _schema_mgraph_edge='mgraph_db.mgraph.schemas.Schema__MGraph__Edge.Schema__MGraph__Edge',
+            #                                                      _schema_mgraph_graph_data='mgraph_db.mgraph.schemas.Schema__MGraph__Graph__Data.Schema__MGraph__Graph__Data',
+            #                                                      _schema_mgraph_node='mgraph_db.mgraph.schemas.Schema__MGraph__Node.Schema__MGraph__Node',
+            #                                                      _schema_mgraph_node_data='mgraph_db.mgraph.schemas.Schema__MGraph__Node__Data.Schema__MGraph__Node__Data',
+            #                                                      _model_mgraph_node='mgraph_db.mgraph.models.Model__MGraph__Node.Model__MGraph__Node',
+            #                                                      _model_mgraph_edge='mgraph_db.mgraph.models.Model__MGraph__Edge.Model__MGraph__Edge',
+            #                                                      _domain_mgraph_graph='mgraph_db.mgraph.domain.Domain__MGraph__Graph.Domain__MGraph__Graph',
+            #                                                      _mgraph_query='mgraph_db.query.MGraph__Query.MGraph__Query',
+            #                                                      _mgraph_edit='mgraph_db.mgraph.actions.MGraph__Edit.MGraph__Edit',
+            #                                                      _mgraph_screenshot='mgraph_db.mgraph.actions.MGraph__Screenshot.MGraph__Screenshot'),
+            #                                    graph=__(domain_types=__(node_domain_type='@domain_mgraph_node',
+            #                                                             edge_domain_type='@domain_mgraph_edge'),
+            #                                             model=__(data=__(edges=__(),
+            #                                                              graph_data=__(),
+            #                                                              graph_id=graph_id,
+            #                                                              graph_type='@schema_mgraph_graph',
+            #                                                              nodes=__(),
+            #                                                              schema_types=__(edge_type='@schema_mgraph_edge',
+            #                                                                              graph_data_type='@schema_mgraph_graph_data',
+            #                                                                              node_type='@schema_mgraph_node',
+            #                                                                              node_data_type='@schema_mgraph_node_data')),
+            #                                                      model_types=__(node_model_type='@model_mgraph_node',
+            #                                                                     edge_model_type='@model_mgraph_edge')),
+            #                                             graph_type='@domain_mgraph_graph'),
+            #                                    query_class='@mgraph_query',
+            #                                    edit_class='@mgraph_edit',
+            #                                    screenshot_class='@mgraph_screenshot')
 
             # update the mgraph
             cache_id_2       = _.save_graph(mgraph    = mgraph              ,                       # now on the update path using .json__compress()
@@ -471,8 +508,7 @@ class test_Graph__Service(TestCase):
             graph    = _.create_new_graph()
             cache_id = _.save_graph(mgraph    = graph               ,
                                     namespace = self.test_namespace )
-            mgraph   = _.get_or_create_graph(graph_id = cache_id ,namespace=self.test_namespace)
-            graph_id = mgraph.graph.graph_id()
+            mgraph   = _.get_or_create_graph(cache_id = cache_id ,namespace=self.test_namespace)
 
             result_0 = _.delete_graph(cache_id = cache_id )                                 # fails because no namespace was provided
             result_1 = _.delete_graph(cache_id  = cache_id           ,
@@ -717,10 +753,10 @@ class test_Graph__Service(TestCase):
             _.delete_graph(cache_id  = cache_id           ,
                            namespace = self.test_namespace)
 
-    def test_types__graph_id_is_obj_id(self):                                               # Test graph_id type
+    def test_types__graph_id_is_graph_id(self):                                               # Test graph_id type
         with self.graph_service as _:
             graph    = _.create_new_graph()
             graph_id = graph.graph.graph_id()
 
-            assert type(graph_id)    is Obj_Id
+            assert type(graph_id)      is Graph_Id
             assert is_obj_id(graph_id) is True

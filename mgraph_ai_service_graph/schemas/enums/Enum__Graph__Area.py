@@ -6,3 +6,5 @@ class Enum__Graph__Area(str, Enum):                              # Functional ar
     GRAPH_QUERY  = "graph_query"                                 # Search and exploration
     GRAPH_CACHE  = "graph_cache"                                 # Cache operations
     GRAPH_EXPORT = "graph_export"                                # Format conversion (JSON, DOT, Mermaid)
+    GRAPH_INDEX  = "graph_index"                                 # Index operations
+    GRAPH_IMPORT = "graph_import"                                # Graph import operations

@@ -7,8 +7,8 @@ from osbot_utils.type_safe.primitives.domains.identifiers.Random_Guid           
 from osbot_utils.type_safe.primitives.domains.identifiers.safe_str.Safe_Str__Id             import Safe_Str__Id
 from osbot_utils.utils.Objects                                                              import base_classes
 from mgraph_db.mgraph.MGraph                                                                import MGraph
-from mgraph_ai_service_cache_client.schemas.cache.Cache_Id                                  import Cache_Id
-from mgraph_ai_service_graph.schemas.graph_ref.Graph_Id                                     import Graph_Id
+from osbot_utils.type_safe.primitives.domains.identifiers.Cache_Id                          import Cache_Id
+from osbot_utils.type_safe.primitives.domains.identifiers.Graph_Id                                     import Graph_Id
 from mgraph_ai_service_graph.schemas.graph_ref.Schema__Graph__Ref                           import Schema__Graph__Ref, GRAPH_REF__DEFAULT_NAMESPACE
 from mgraph_ai_service_graph.exceptions.Graph__Ref__Not_Found__Error                        import Graph__Ref__Not_Found__Error
 from mgraph_ai_service_graph.service.caching.Graph__Cache__Client                           import Graph__Cache__Client
@@ -85,7 +85,8 @@ class test_Graph__Ref__Resolver(TestCase):
             assert resolved_ref.cache_id          == cache_id
             assert resolved_ref.graph_id          == graph_id                                 # graph_id populated
             assert resolved_ref.namespace         == self.test_namespace
-            assert result_mgraph.graph.graph_id() == Obj_Id(graph_id)
+            assert result_mgraph.graph.graph_id() == Graph_Id(graph_id)
+            assert result_mgraph.graph.graph_id() == graph_id
 
         self._delete_graph(cache_id)
 
@@ -134,7 +135,7 @@ class test_Graph__Ref__Resolver(TestCase):
             assert resolved_ref.graph_id          == graph_id
             assert resolved_ref.cache_id          != ''                                       # cache_id populated
             assert resolved_ref.namespace         == self.test_namespace
-            assert result_mgraph.graph.graph_id() == Obj_Id(graph_id)
+            assert result_mgraph.graph.graph_id() == graph_id
 
         self._delete_graph(cache_id)
 
@@ -204,7 +205,7 @@ class test_Graph__Ref__Resolver(TestCase):
 
             # Should use cache_id (it takes precedence)
             assert resolved_ref.cache_id          == cache_id
-            assert result_mgraph.graph.graph_id() == Obj_Id(graph_id)
+            assert result_mgraph.graph.graph_id() == graph_id
 
         self._delete_graph(cache_id)
 

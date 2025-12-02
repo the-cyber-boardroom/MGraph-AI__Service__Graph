@@ -1,5 +1,5 @@
 from typing                                                                         import Tuple
-from mgraph_ai_service_cache_client.schemas.cache.Cache_Id                          import Cache_Id
+from osbot_utils.type_safe.primitives.domains.identifiers.Cache_Id                  import Cache_Id
 from mgraph_db.mgraph.MGraph                                                        import MGraph
 from osbot_utils.type_safe.Type_Safe                                                import Type_Safe
 from mgraph_ai_service_graph.exceptions.Graph__Ref__Not_Found__Error                import Graph__Ref__Not_Found__Error

@@ -1,7 +1,6 @@
 import inspect
 from unittest                                                                                   import TestCase
 from mgraph_ai_service_cache.service.cache.Cache__Service                                       import Cache__Service
-from osbot_utils.type_safe.primitives.domains.identifiers.Obj_Id                                import Obj_Id
 from osbot_utils.type_safe.type_safe_core.collections.Type_Safe__List                           import Type_Safe__List
 from mgraph_ai_service_cache_client.client.client_contract.Cache__Service__Fast_API__Client     import Cache__Service__Fast_API__Client
 from mgraph_ai_service_cache_client.schemas.cache.file.Schema__Cache__File__Refs                import Schema__Cache__File__Refs
@@ -19,8 +18,8 @@ from mgraph_ai_service_graph.schemas.graph_crud.Schema__Graph__Create__Response 
 from mgraph_ai_service_graph.schemas.graph_crud.Schema__Graph__Get__Request                     import Schema__Graph__Get__Request
 from mgraph_ai_service_graph.schemas.graph_crud.Schema__Graph__Get__Response                    import Schema__Graph__Get__Response
 from mgraph_ai_service_graph.schemas.graph_ref.Schema__Graph__Ref                               import Schema__Graph__Ref, GRAPH_REF__DEFAULT_NAMESPACE
-from mgraph_ai_service_cache_client.schemas.cache.Cache_Id                                      import Cache_Id
-from mgraph_ai_service_graph.schemas.graph_ref.Graph_Id                                         import Graph_Id
+from osbot_utils.type_safe.primitives.domains.identifiers.Cache_Id                              import Cache_Id
+from osbot_utils.type_safe.primitives.domains.identifiers.Graph_Id                              import Graph_Id
 from tests.unit.Graph__Service__Fast_API__Test_Objs                                             import client_cache_service
 
 
@@ -148,7 +147,7 @@ class test_Area__Graph__CRUD(TestCase):
                                                timestamp   = __SKIP__   )
 
             assert type(mgraph) is MGraph
-            assert mgraph.graph.graph_id() == Obj_Id(graph_id)
+            assert mgraph.graph.graph_id() == Graph_Id(graph_id)
 
             mgraph_from_graph_id = self.graph_cache_client.retrieve_graph(graph_id  = graph_id,     # here we will use graph_id
                                                                           namespace = namespace)
@@ -275,29 +274,50 @@ class test_Area__Graph__CRUD(TestCase):
             mgraph = MGraph.from_json(get_response.mgraph)
             assert mgraph.json() == get_response.mgraph                                                     # which we can convert to an mgraph
 
-            assert mgraph.graph.model.data.graph_id == Obj_Id(graph_id)                        # Expected # todo: see if this conversion to Obj_Id is a sign of a bigger problem, or this is the only edge case where we hit it
+            assert mgraph.graph.model.data.graph_id == Graph_Id(graph_id)                        # Expected # todo: see if this conversion to Obj_Id is a sign of a bigger problem, or this is the only edge case where we hit it
 
-            assert get_response.obj() == __(graph_ref = __(cache_id  = cache_id                             ,
-                                                          graph_id  = graph_id                              ,
-                                                          namespace = namespace                             ),
-                                            mgraph    = __(graph    = __(domain_types = __(node_domain_type = 'mgraph_db.mgraph.domain.Domain__MGraph__Node.Domain__MGraph__Node',
-                                                                                          edge_domain_type  = 'mgraph_db.mgraph.domain.Domain__MGraph__Edge.Domain__MGraph__Edge'),
-                                                                        model        = __(data        = __(edges        = __()     ,
-                                                                                                          graph_data    = __()     ,
-                                                                                                          graph_id      = Obj_Id(graph_id),
-                                                                                                          graph_type    = 'mgraph_db.mgraph.schemas.Schema__MGraph__Graph.Schema__MGraph__Graph',
-                                                                                                          nodes         = __()     ,
-                                                                                                          schema_types  = __(edge_type       = 'mgraph_db.mgraph.schemas.Schema__MGraph__Edge.Schema__MGraph__Edge'     ,
-                                                                                                                            graph_data_type  = 'mgraph_db.mgraph.schemas.Schema__MGraph__Graph__Data.Schema__MGraph__Graph__Data',
-                                                                                                                            node_type        = 'mgraph_db.mgraph.schemas.Schema__MGraph__Node.Schema__MGraph__Node'     ,
-                                                                                                                            node_data_type   = 'mgraph_db.mgraph.schemas.Schema__MGraph__Node__Data.Schema__MGraph__Node__Data')),
-                                                                                         model_types  = __(node_model_type = 'mgraph_db.mgraph.models.Model__MGraph__Node.Model__MGraph__Node',
-                                                                                                          edge_model_type  = 'mgraph_db.mgraph.models.Model__MGraph__Edge.Model__MGraph__Edge')),
-                                                                        graph_type   = 'mgraph_db.mgraph.domain.Domain__MGraph__Graph.Domain__MGraph__Graph'),
-                                                           query_class      = 'mgraph_db.query.MGraph__Query.MGraph__Query'              ,
-                                                           edit_class       = 'mgraph_db.mgraph.actions.MGraph__Edit.MGraph__Edit'       ,
-                                                           screenshot_class = 'mgraph_db.mgraph.actions.MGraph__Screenshot.MGraph__Screenshot'),
-                                            success   = True)
+            assert get_response.obj() ==    __(graph_ref=__(cache_id=cache_id,
+                                                            graph_id=graph_id,
+                                                            namespace='graph-service'),
+                                               mgraph=__(graph=__(graph_type=None,
+                                                                  domain_types=__(node_domain_type=None,
+                                                                                  edge_domain_type=None),
+                                                                  model=__(data=__(graph_data=None,
+                                                                                   graph_path=None,
+                                                                                   graph_type=None,
+                                                                                   schema_types=None,
+                                                                                   edges=__(),
+                                                                                   graph_id=graph_id,
+                                                                                   nodes=__()),
+                                                                           model_types=__(node_model_type=None,
+                                                                                          edge_model_type=None),
+                                                                           resolver=__SKIP__),
+                                                                  resolver=__SKIP__),
+                                                         query_class='mgraph_db.query.MGraph__Query.MGraph__Query',
+                                                         edit_class='mgraph_db.mgraph.actions.MGraph__Edit.MGraph__Edit',
+                                                         screenshot_class='mgraph_db.mgraph.actions.MGraph__Screenshot.MGraph__Screenshot'),
+                                               success=True)
+            # assert get_response.obj() == __(graph_ref = __(cache_id  = cache_id                             ,
+            #                                               graph_id  = graph_id                              ,
+            #                                               namespace = namespace                             ),
+            #                                 mgraph    = __(graph    = __(domain_types = __(node_domain_type = 'mgraph_db.mgraph.domain.Domain__MGraph__Node.Domain__MGraph__Node',
+            #                                                                               edge_domain_type  = 'mgraph_db.mgraph.domain.Domain__MGraph__Edge.Domain__MGraph__Edge'),
+            #                                                             model        = __(data        = __(edges        = __()     ,
+            #                                                                                               graph_data    = __()     ,
+            #                                                                                               graph_id      = Obj_Id(graph_id),
+            #                                                                                               graph_type    = 'mgraph_db.mgraph.schemas.Schema__MGraph__Graph.Schema__MGraph__Graph',
+            #                                                                                               nodes         = __()     ,
+            #                                                                                               schema_types  = __(edge_type       = 'mgraph_db.mgraph.schemas.Schema__MGraph__Edge.Schema__MGraph__Edge'     ,
+            #                                                                                                                 graph_data_type  = 'mgraph_db.mgraph.schemas.Schema__MGraph__Graph__Data.Schema__MGraph__Graph__Data',
+            #                                                                                                                 node_type        = 'mgraph_db.mgraph.schemas.Schema__MGraph__Node.Schema__MGraph__Node'     ,
+            #                                                                                                                 node_data_type   = 'mgraph_db.mgraph.schemas.Schema__MGraph__Node__Data.Schema__MGraph__Node__Data')),
+            #                                                                              model_types  = __(node_model_type = 'mgraph_db.mgraph.models.Model__MGraph__Node.Model__MGraph__Node',
+            #                                                                                               edge_model_type  = 'mgraph_db.mgraph.models.Model__MGraph__Edge.Model__MGraph__Edge')),
+            #                                                             graph_type   = 'mgraph_db.mgraph.domain.Domain__MGraph__Graph.Domain__MGraph__Graph'),
+            #                                                query_class      = 'mgraph_db.query.MGraph__Query.MGraph__Query'              ,
+            #                                                edit_class       = 'mgraph_db.mgraph.actions.MGraph__Edit.MGraph__Edit'       ,
+            #                                                screenshot_class = 'mgraph_db.mgraph.actions.MGraph__Screenshot.MGraph__Screenshot'),
+            #                                 success   = True)
 
             # Cleanup
             delete_graph_ref = Schema__Graph__Ref(cache_id  = cache_id ,

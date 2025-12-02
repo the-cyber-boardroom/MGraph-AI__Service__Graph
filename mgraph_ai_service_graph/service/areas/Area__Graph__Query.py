@@ -4,8 +4,8 @@ from osbot_utils.type_safe.primitives.domains.identifiers.Obj_Id                
 from osbot_utils.type_safe.primitives.domains.identifiers.safe_str.Safe_Str__Key            import Safe_Str__Key
 from osbot_utils.type_safe.primitives.domains.common.safe_str.Safe_Str__Text                import Safe_Str__Text
 from mgraph_ai_service_graph.schemas.graph_ref.Schema__Graph__Ref                           import Schema__Graph__Ref
-from mgraph_ai_service_graph.schemas.graph_ref.Node_Id                                      import Node_Id
-from mgraph_ai_service_graph.schemas.graph_ref.Edge_Id                                      import Edge_Id
+from osbot_utils.type_safe.primitives.domains.identifiers.Node_Id                                      import Node_Id
+from osbot_utils.type_safe.primitives.domains.identifiers.Edge_Id                                      import Edge_Id
 from mgraph_ai_service_graph.schemas.graph_query.Schema__Graph__Find_Nodes__Request         import Schema__Graph__Find_Nodes__Request
 from mgraph_ai_service_graph.schemas.graph_query.Schema__Graph__Find_Nodes__Response        import Schema__Graph__Find_Nodes__Response
 from mgraph_ai_service_graph.schemas.graph_query.Schema__Graph__Find_Node__Response         import Schema__Graph__Find_Node__Response

@@ -1,12 +1,14 @@
 from types                                                                                  import NoneType
 from unittest                                                                               import TestCase
+from osbot_utils.type_safe.primitives.domains.identifiers.Random_Guid                       import Random_Guid
+from osbot_utils.type_safe.primitives.domains.identifiers.Obj_Id                            import Obj_Id
 from osbot_utils.testing.__                                                                 import __
 from osbot_utils.type_safe.Type_Safe                                                        import Type_Safe
 from osbot_utils.type_safe.primitives.domains.identifiers.safe_str.Safe_Str__Id             import Safe_Str__Id
 from osbot_utils.utils.Objects                                                              import base_classes
-from mgraph_ai_service_cache_client.schemas.cache.Cache_Id                                  import Cache_Id
+from osbot_utils.type_safe.primitives.domains.identifiers.Cache_Id                          import Cache_Id
 from mgraph_db.mgraph.MGraph                                                                import MGraph
-from mgraph_ai_service_graph.schemas.graph_ref.Graph_Id                                     import Graph_Id
+from osbot_utils.type_safe.primitives.domains.identifiers.Graph_Id                          import Graph_Id
 from mgraph_ai_service_graph.schemas.graph_ref.Schema__Graph__Ref                           import Schema__Graph__Ref, GRAPH_REF__DEFAULT_NAMESPACE
 from mgraph_ai_service_graph.schemas.graph_crud.Schema__Graph__Get__Response                import Schema__Graph__Get__Response
 
@@ -42,8 +44,8 @@ class test_Schema__Graph__Get__Response(TestCase):
     # ═══════════════════════════════════════════════════════════════════════════════
 
     def test__with_graph_ref__success_true(self):                                           # Test successful graph retrieval
-        graph_id  = Graph_Id()
-        cache_id  = Cache_Id()
+        graph_id  = Graph_Id(Obj_Id())
+        cache_id  = Cache_Id(Random_Guid())
         graph_ref = Schema__Graph__Ref(graph_id  = graph_id       ,
                                        cache_id  = cache_id       ,
                                        namespace = 'test-namespace')
@@ -62,7 +64,7 @@ class test_Schema__Graph__Get__Response(TestCase):
             assert _.success             is True
 
     def test__with_graph_ref__success_false(self):                                          # Test failed graph retrieval (not found)
-        graph_id  = Graph_Id()
+        graph_id  = Graph_Id(Obj_Id())
         graph_ref = Schema__Graph__Ref(graph_id  = graph_id ,
                                        namespace = 'test-ns')
 
@@ -74,7 +76,7 @@ class test_Schema__Graph__Get__Response(TestCase):
             assert _.success            is False
 
     def test__with_cache_id_lookup(self):                                                   # Test retrieval by cache_id
-        cache_id  = Cache_Id()
+        cache_id  = Cache_Id(Random_Guid())
         graph_ref = Schema__Graph__Ref(cache_id  = cache_id ,
                                        namespace = 'cache-ns')
         #mgraph    = MGraph()
@@ -88,7 +90,7 @@ class test_Schema__Graph__Get__Response(TestCase):
             assert _.success             is True
 
     def test__with_graph_id_lookup(self):                                                   # Test retrieval by graph_id
-        graph_id  = Graph_Id()
+        graph_id  = Graph_Id(Obj_Id())
         graph_ref = Schema__Graph__Ref(graph_id  = graph_id  ,
                                        namespace = 'graph-ns')
         #mgraph    = MGraph()
@@ -106,8 +108,8 @@ class test_Schema__Graph__Get__Response(TestCase):
     # ═══════════════════════════════════════════════════════════════════════════════
 
     def test__graph_ref_field_types(self):                                                  # Test types within graph_ref
-        graph_id  = Graph_Id()
-        cache_id  = Cache_Id()
+        graph_id  = Graph_Id(Obj_Id())
+        cache_id  = Cache_Id(Random_Guid())
         graph_ref = Schema__Graph__Ref(graph_id  = graph_id ,
                                        cache_id  = cache_id ,
                                        namespace = 'type-ns')
@@ -147,8 +149,8 @@ class test_Schema__Graph__Get__Response(TestCase):
                 assert restored.success   == original.success
 
     def test__serialization_round_trip__with_graph_ref(self):                               # Test JSON round-trip with graph_ref (no mgraph)
-        graph_ref = Schema__Graph__Ref(graph_id  = Graph_Id()  ,
-                                       cache_id  = Cache_Id()  ,
+        graph_ref = Schema__Graph__Ref(graph_id  = Graph_Id(Obj_Id())  ,
+                                       cache_id  = Cache_Id(Random_Guid())  ,
                                        namespace = 'serial-ns' )
 
         with Schema__Graph__Get__Response(graph_ref = graph_ref,
@@ -162,8 +164,8 @@ class test_Schema__Graph__Get__Response(TestCase):
                 assert restored.success             == original.success
 
     def test__serialization_preserves_types(self):                                          # Test that types are preserved after serialization
-        graph_ref = Schema__Graph__Ref(graph_id  = Graph_Id() ,
-                                       cache_id  = Cache_Id() ,
+        graph_ref = Schema__Graph__Ref(graph_id  = Graph_Id(Obj_Id()) ,
+                                       cache_id  = Cache_Id(Random_Guid()) ,
                                        namespace = 'type-test')
 
         with Schema__Graph__Get__Response(graph_ref = graph_ref,
@@ -192,14 +194,14 @@ class test_Schema__Graph__Get__Response(TestCase):
             assert _.success            is False
 
     def test__default_namespace(self):                                                      # Test default namespace value
-        graph_ref = Schema__Graph__Ref(graph_id = Graph_Id())                               # Uses default namespace
+        graph_ref = Schema__Graph__Ref(graph_id = Graph_Id(Obj_Id()))                               # Uses default namespace
 
         with Schema__Graph__Get__Response(graph_ref = graph_ref,
                                           success   = True     ) as _:
             assert _.graph_ref.namespace == GRAPH_REF__DEFAULT_NAMESPACE
 
     def test__success_with_none_mgraph(self):                                               # Edge case: success=True but mgraph=None (shouldn't happen in practice)
-        graph_ref = Schema__Graph__Ref(graph_id = Graph_Id())
+        graph_ref = Schema__Graph__Ref(graph_id = Graph_Id(Obj_Id()))
 
         with Schema__Graph__Get__Response(graph_ref = graph_ref,
                                           mgraph    = None     ,
@@ -208,7 +210,7 @@ class test_Schema__Graph__Get__Response(TestCase):
             assert _.mgraph  is None                                                        # Inconsistent state but allowed by schema
 
     def test__success_false_with_mgraph(self):                                              # Edge case: success=False but mgraph set (shouldn't happen in practice)
-        graph_ref = Schema__Graph__Ref(graph_id = Graph_Id())
+        graph_ref = Schema__Graph__Ref(graph_id = Graph_Id(Obj_Id()))
         #mgraph    = MGraph()
         mgraph    = MGraph().json()
 
@@ -223,7 +225,7 @@ class test_Schema__Graph__Get__Response(TestCase):
     # ═══════════════════════════════════════════════════════════════════════════════
 
     def test__mgraph_is_usable(self):                                                       # Test that returned MGraph is functional
-        graph_ref = Schema__Graph__Ref(graph_id = Graph_Id())
+        graph_ref = Schema__Graph__Ref(graph_id = Graph_Id(Obj_Id()))
         #mgraph    = MGraph()
         mgraph    = MGraph().json()
 

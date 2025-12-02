@@ -36,6 +36,8 @@ class Graph_Service__Fast_API(Serverless__Fast_API):                            
         self.add_routes(Routes__Graph__Query )                                              # Graph query operations
         self.add_routes(Routes__Graph__Batch )                                              # Batch execution
         self.add_routes(Routes__Graph__Export)                                              # Graph export
+        #self.add_routes(Routes__Graph__Index )                                              # NEW: Graph index operations
+        #self.add_routes(Routes__Graph__Import)
         self.add_routes(Routes__Graph__Cache )
         self.add_routes(Routes__Graph__Server)                                              # Server details and stats
 

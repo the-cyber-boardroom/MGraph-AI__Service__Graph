@@ -313,7 +313,7 @@ class test_Graph__Batch__Executor(TestCase):
         executor.area_registry = {}                                                         # Clear registry
         executor.set_area_instances()
 
-        assert len(executor.area_registry) == 4                                             # All 4 areas
+        assert len(executor.area_registry) == 6                                             # All 4 areas
         assert Enum__Graph__Area.GRAPH_CRUD   in executor.area_registry
         assert Enum__Graph__Area.GRAPH_EDIT   in executor.area_registry
         assert Enum__Graph__Area.GRAPH_QUERY  in executor.area_registry

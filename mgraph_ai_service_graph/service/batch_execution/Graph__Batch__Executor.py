@@ -1,6 +1,8 @@
 import inspect
 from typing                                                                                 import Dict
 from mgraph_ai_service_graph.service.areas.Area__Graph__Export                              import Area__Graph__Export
+from mgraph_ai_service_graph.service.areas.Area__Graph__Import                              import Area__Graph__Import
+from mgraph_ai_service_graph.service.areas.Area__Graph__Index                               import Area__Graph__Index
 from osbot_utils.type_safe.Type_Safe                                                        import Type_Safe
 from osbot_utils.type_safe.primitives.core.Safe_UInt                                        import Safe_UInt
 from osbot_utils.type_safe.primitives.domains.common.safe_str.Safe_Str__Text                import Safe_Str__Text
@@ -23,16 +25,15 @@ class Graph__Batch__Executor(Type_Safe):                                  # Exec
 
     # todo: see if we can refactor this engine logic into another class
     def set_area_instances(self,                                          # Inject area instances with their dependencies
-                           # crud : Area__Graph__CRUD ,                   # todo: see if we need this mode of injection Area__Graph__* instances, or what we do below is enough
-                           # edit : Area__Graph__Edit ,
-                           # query: Area__Graph__Query
                           ) -> 'Graph__Batch__Executor':                  # Self for chaining
         self.area_registry[Enum__Graph__Area.GRAPH_CRUD  ] = Area__Graph__CRUD  ()
         self.area_registry[Enum__Graph__Area.GRAPH_EDIT  ] = Area__Graph__Edit  ()
         self.area_registry[Enum__Graph__Area.GRAPH_QUERY ] = Area__Graph__Query ()
         self.area_registry[Enum__Graph__Area.GRAPH_EXPORT] = Area__Graph__Export()
+        self.area_registry[Enum__Graph__Area.GRAPH_INDEX ] = Area__Graph__Index ()    # NEW
+        self.area_registry[Enum__Graph__Area.GRAPH_IMPORT] = Area__Graph__Import()    # NEW
         return self
-
+        return self
     # todo: refactor this method into smaller components
     #       add feature to validate commands before execution (which will return a nice Type_Safe object with any mapping or validation errors)
     def execute(self,                                                    # Execute a batch of commands in sequence
