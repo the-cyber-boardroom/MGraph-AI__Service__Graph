@@ -39,7 +39,7 @@ class Routes__Graph__Cache(Fast_API__Routes):
     # Routes methods
     # ═══════════════════════════════════════════════════════════════════════════════
 
-    @type_safe
+    #@type_safe
     def cache_ids(self, namespace: Safe_Str__Id = FAST_API__PARAM__NAMESPACE ) -> List[Cache_Id]:
         return self.cache_utils().cache_ids(namespace=Safe_Str__Id(namespace))
 
