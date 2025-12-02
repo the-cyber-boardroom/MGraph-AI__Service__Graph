@@ -29,3 +29,19 @@ class test_Routes__Graph__Cache(TestCase):
             cache_hash   = self.cache_utils.graph_ref__to__cache_hash(graph_ref=self.create_response.graph_ref)
 
             assert cache_hashes == [cache_hash]
+
+    def test_cache_ids__cache_id__location(self):
+        with self.routes_graph_cache as _:
+            result = _.cache_ids(namespace=NAMESPACE__GRAPH_TEST_HELPERS)
+
+            # Debug: Check class identity
+            from osbot_utils.type_safe.primitives.domains.identifiers.Cache_Id import Cache_Id  as Expected_Cache_Id
+
+            print(f"Expected Cache_Id id: {id(Expected_Cache_Id)}")
+            print(f"Expected Cache_Id module: {Expected_Cache_Id.__module__}")
+
+            if result:
+                actual_type = type(result[0])
+                print(f"Actual type id: {id(actual_type)}")
+                print(f"Actual type module: {actual_type.__module__}")
+                print(f"Same class? {actual_type is Expected_Cache_Id}")
